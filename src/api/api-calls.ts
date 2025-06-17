@@ -14,10 +14,9 @@ export class APICalls {
     }
   }
 
-  static async getAllUsers(tokenParam?: string) {
+  static async getAllUsers(filter?: string) {
     try {
-      const token = Cookies.get("token") || tokenParam;
-      const result = await HTTPMethods.get(users);
+      const result = await HTTPMethods.get(`${users}?status=${filter || ''}`);
       console.log("API Call Result:", result);
       return result?.data;
     } catch (error) {

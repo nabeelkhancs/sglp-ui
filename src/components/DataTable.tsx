@@ -8,10 +8,14 @@ interface DataTableProps {
   data?: any[];
   loading?: boolean;
   columns?: any[];
+  onFilterChange?: (filter: string) => void;
+  filterValue?: string;
 }
 
-const DataTable: FC<DataTableProps> = ({ columns, filters, data = [], loading = false }) => {
-  
+const DataTable: FC<DataTableProps> = ({ columns, filters, data = [], loading = false, onFilterChange, filterValue }) => {
+  const handleFilterClick = (filter: string) => {
+    if (onFilterChange) onFilterChange(filter);
+  };
 
   const rowSelection = {
     onChange: (selectedRowKeys: React.Key[], selectedRows: any[]) => {
@@ -24,9 +28,9 @@ const DataTable: FC<DataTableProps> = ({ columns, filters, data = [], loading = 
       <div className="card-content">
         {filters && (
           <div className="filters mb-2">
-            <Button className='active'>User Registration</Button>
-            <Button>Approved</Button>
-            <Button>Rejected</Button>
+            <Button className={filterValue === 'All' ? 'active' : ''} onClick={() => handleFilterClick('All')}>User Registration</Button>
+            <Button className={filterValue === 'Approved' ? 'active' : ''} onClick={() => handleFilterClick('Approved')}>Approved</Button>
+            <Button className={filterValue === 'Rejected' ? 'active' : ''} onClick={() => handleFilterClick('Rejected')}>Rejected</Button>
           </div>
         )}
         <Table

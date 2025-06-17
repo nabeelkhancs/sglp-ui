@@ -5,10 +5,14 @@ import { APICalls } from "@/api/api-calls";
 import { Spin } from "antd";
 import Link from "next/link";
 import Image from "next/image";
+import { UserActionButtons } from './UserActionButtons';
+import { toast } from "react-toastify";
 
 const UsersContainer = () => {
   const [users, setUsers] = useState<any[]>([]);
+  const [actions, setActions] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [filter, setFilter] = useState<string>('All');
   const columns = [
     {
       title: "Users",
@@ -26,29 +30,37 @@ const UsersContainer = () => {
       title: 'Action',
       dataIndex: 'action',
       render: (_: any, record: any) => (
-        <Link href={`/cases/${record.caseNumber}/edit`} className='table-action d-flex align-items-center gap-1 text-dark text-decoration-none'>
-          <Image src="/icons/edit-icon.svg" width={18} height={18} alt="Edit" />Edit
-        </Link>
+        <UserActionButtons
+          status={record.status}
+          id={record.id}
+        />
       ),
     },
   ];
+  const fetchUsers = async (status?: string) => {
+    setLoading(true);
+    try {
+      const data = await APICalls.getAllUsers(status);
+      setUsers(data?.records || []);
+      setActions(data?.actions || []);
+    } catch (error) {
+      toast.error("Failed to fetch users. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleFilterChange = (selected: string) => {
+    setFilter(selected);
+  };
+
   useEffect(() => {
-    const fetchUsers = async () => {
-      setLoading(true);
-      try {
-        const data = await APICalls.getAllUsers();
-        setUsers(data?.records || []);
-      } catch (error) {
-        // handle error, e.g., show message
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchUsers();
-  }, []);
+    fetchUsers(filter);
+  }, [filter]);
 
   useEffect(() => {
     console.log("Users fetched:", users);
+    console.log("Actions fetched:", actions);
   }, [users]);
   return (
     <div className="user-registration">
@@ -70,6 +82,8 @@ const UsersContainer = () => {
             })}
             columns={columns}
             filters={true}
+            onFilterChange={handleFilterChange}
+            filterValue={filter}
           />
         )}
       </div>
