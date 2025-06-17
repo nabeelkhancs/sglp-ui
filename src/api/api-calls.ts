@@ -5,8 +5,7 @@ import Cookies from "js-cookie";
 export class APICalls {
   static async getPermissions(tokenParam?: string) {
     try {
-      const token = Cookies.get("token") || tokenParam;
-      let result = await HTTPMethods.get(permissions, { token });
+      let result = await HTTPMethods.get(permissions);
       result = result?.data?.records[0]?.subItems
       return result
     } catch (error) {
