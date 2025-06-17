@@ -1,0 +1,35 @@
+{
+  "name": "my-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "ngrok": "npx ngrok http 3000 --host-header=localhost"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^6.0.0",
+    "@ngrok/ngrok": "^1.5.1",
+    "@popperjs/core": "^2.11.8",
+    "antd": "^5.25.3",
+    "axios": "^1.9.0",
+    "bootstrap": "^5.3.6",
+    "js-cookie": "^3.0.5",
+    "next": "15.3.2",
+    "react": "^19.0.0",
+    "react-calendar": "^6.0.0",
+    "react-dom": "^19.0.0",
+    "react-toastify": "^11.0.5"
+  },
+  "devDependencies": {
+    "@ant-design/v5-patch-for-react-19": "^1.0.3",
+    "@types/js-cookie": "^3.0.6",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "ngrok": "^5.0.0-beta.2",
+    "typescript": "^5"
+  }
+}

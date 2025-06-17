@@ -1,0 +1,111 @@
+export interface DropdownOption {
+  value: string;
+  label: string;
+}
+
+export const getDepartmentData = (): DropdownOption[] => [
+  { value: 'cooperativeDepartment', label: 'Cooperative Department' },
+  { value: 'informationDepartment', label: 'Information Department' },
+  { value: 'livestockFisheriesDepartment', label: 'Livestock & Fisheries Department' },
+  { value: 'collegeEducation', label: 'College Education' },
+  { value: 'womenDevelopment', label: 'Women Development' },
+  { value: 'cmiet', label: 'CMIET' },
+  { value: 'humanRights', label: 'Human Rights' },
+  { value: 'rehabilitation', label: 'Rehabilitation' },
+  { value: 'populationWelfare', label: 'Population Welfare' },
+  { value: 'homeDepartment', label: 'Home Department' },
+  { value: 'informationScienceTechnology', label: 'Information, Science & Technology' },
+  { value: 'industriesCommerce', label: 'Industries & Commerce' },
+  { value: 'exciseTaxation', label: 'Excise & Taxation' },
+  { value: 'inquiriesAntiCorruption', label: 'Inquiries & Anti-Corruption' },
+  { value: 'sportsYouthAffairs', label: 'Sports & Youth Affairs' },
+  { value: 'humanSettlementDepartment', label: 'Human Settlement Department' },
+  { value: 'socialWelfare', label: 'Social Welfare' },
+  { value: 'foodDepartment', label: 'Food Department' },
+  { value: 'minesMineralsDevelopment', label: 'Mines & Minerals Development' },
+  { value: 'healthDepartment', label: 'Health Department' },
+  { value: 'cultureTourism', label: 'Culture & Tourism' },
+  { value: 'worksServicesDepartment', label: 'Works & Services Department' },
+  { value: 'investmentDepartment', label: 'Investment Department' },
+  { value: 'trainingManagementResearchWing', label: 'Training Management & Research Wing' },
+  { value: 'minoritiesAffairsDepartment', label: 'Minorities Affairs Department' },
+  { value: 'governorsHouse', label: 'Governor’s House' },
+  { value: 'irrigation', label: 'Irrigation' },
+  { value: 'schoolEducationLiteracy', label: 'School Education & Literacy' },
+  { value: 'socialProtectionDepartment', label: 'Social Protection Department' },
+  { value: 'agricultureSupplyPricesDepartment', label: 'Agriculture, Supply & Prices Department' },
+  { value: 'auqafRAZUDepartment', label: 'Auqaf, R.A. & ZU Department' },
+  { value: 'publicHealthEngineering', label: 'Public Health Engineering' },
+  { value: 'lawDepartment', label: 'Law Department' },
+  { value: 'financeDepartment', label: 'Finance Department' },
+  { value: 'transportMassTransit', label: 'Transport & Mass Transit' },
+  { value: 'labourHumanResources', label: 'Labour & Human Resources' },
+  { value: 'localGovernment', label: 'Local Government' },
+  { value: 'boardOfRevenue', label: 'Board of Revenue' },
+  { value: 'sgacd', label: 'SGA&CD' },
+  { value: 'sgacdGA', label: 'SGA&CD (GA)' },
+  { value: 'energyDepartment', label: 'Energy Department' },
+  { value: 'planningDevelopmentDepartment', label: 'Planning & Development Department' },
+  { value: 'universitiesBoards', label: 'Universities & Boards' },
+  { value: 'igPoliceDepartment', label: 'IG / Police Department' },
+  { value: 'chiefMinistersSecretariat', label: 'Chief Minister’s Secretariat' },
+  { value: 'environment', label: 'Environment' },
+  { value: 'depd', label: 'DEPD' },
+  { value: 'provincialOmbudsman', label: 'Provincial Ombudsman' },
+  { value: 'sindhHigherEducationCommission', label: 'Sindh Higher Education Commission' }
+];
+
+export const getCourtData = (): DropdownOption[] => [
+  { value: 'supremeCourtOfPakistan', label: 'Supreme Court of Pakistan' },
+  { value: 'sindhHighCourtKarachi', label: 'Sindh High Court Karachi' },
+  { value: 'sindhHighCourtHyderabad', label: 'Sindh High Court Hyderabad' },
+  { value: 'sindhHighCourtSukkur', label: 'Sindh High Court Sukkur' },
+  { value: 'sindhHighCourtLarkana', label: 'Sindh High Court Larkana' },
+  { value: 'sindhHighCourtMirpurkhas', label: 'Sindh High Court Mirpurkhas' }
+];
+
+export const getRegionData = (): DropdownOption[] => [
+  { value: 'karachiSouth', label: 'Karachi (South)' },
+  { value: 'karachiWest', label: 'Karachi (West)' },
+  { value: 'karachiEast', label: 'Karachi (East)' },
+  { value: 'karachiCentral', label: 'Karachi (Central)' },
+  { value: 'karachiMalir', label: 'Karachi (Malir)' },
+  { value: 'hyderabad', label: 'Hyderabad' },
+  { value: 'thatta', label: 'Thatta' },
+  { value: 'badin', label: 'Badin' },
+  { value: 'dadu', label: 'Dadu' },
+  { value: 'jamshoroKotri', label: 'Jamshoro @ Kotri' },
+  { value: 'tharparkarMithi', label: 'Tharparkar @ Mithi' },
+  { value: 'mirpurkhas', label: 'Mirpurkhas' },
+  { value: 'umerkot', label: 'Umerkot' },
+  { value: 'sanghar', label: 'Sanghar' },
+  { value: 'naushahroFeroze', label: 'Naushahro Feroze' },
+  { value: 'shaheedBenazirabad', label: 'Shaheed Benazirabad' },
+  { value: 'sukkur', label: 'Sukkur' },
+  { value: 'khairpur', label: 'Khairpur' },
+  { value: 'ghotki', label: 'Ghotki' },
+  { value: 'larkana', label: 'Larkana' },
+  { value: 'kamberShahdadkot', label: 'KAMBER-SHAHDADKOT @ KAMBER' },
+  { value: 'shikarpur', label: 'Shikarpur' },
+  { value: 'jacobabad', label: 'Jacobabad' },
+  { value: 'kashmoreKandhkot', label: 'Kashmore @ Kandhkot' },
+  { value: 'tandoAllahyar', label: 'Tando Allahyar' },
+  { value: 'tandoMuhammadKhan', label: 'Tando Muhammad Khan' },
+  { value: 'matiyari', label: 'Matiyari' },
+  { value: 'sujawal', label: 'Sujawal' }
+]
+
+export const getSubjectData = (): DropdownOption[] => [
+  { value: 'hearing', label: 'Hearing' },
+  { value: 'disposedOfCase', label: 'Disposed of Case' },
+  { value: 'forOrder', label: 'For Order' },
+  { value: 'contemptApplication', label: 'Contempt application' },
+  { value: 'committee', label: 'Committee' },
+  { value: 'inquiryReport', label: 'Inquiry Report' },
+  { value: 'compliance', label: 'Compliance' },
+  { value: 'stayOrder', label: 'Stay Order' },
+  { value: 'manualEntry', label: 'Manual Entry (Type)' }
+]
+
+
+  
