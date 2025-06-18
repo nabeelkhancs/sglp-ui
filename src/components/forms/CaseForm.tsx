@@ -251,17 +251,21 @@ const CaseForm: React.FC<CaseFormProps> = ({ caseNumber }) => {
             </div>
           </div>
         </div>
-
+            
         <div className="d-flex align-items-center mt-5 px-3 gap-3" style={{ justifyContent: 'space-between' }}>
           <div className="d-flex align-items-center gap-3">
-            <Checkbox
-              checked={form.isUrgent}
-              onChange={e => handleChange("isUrgent", e.target.checked)}
-            >Mark as urgent</Checkbox>
-            <Checkbox
-              checked={form.isCallToAttention}
-              onChange={e => handleChange("isCallToAttention", e.target.checked)}
-            >Mark call to attention</Checkbox>
+            {isReviewer && (
+            <>
+              <Checkbox
+                checked={form.isUrgent}
+                onChange={e => handleChange("isUrgent", e.target.checked)}
+              >Mark as urgent</Checkbox>
+              <Checkbox
+                checked={form.isCallToAttention}
+                onChange={e => handleChange("isCallToAttention", e.target.checked)}
+              >Mark call to attention</Checkbox>
+            </>
+            )}
           </div>
           <Button
             onClick={handleSubmit}

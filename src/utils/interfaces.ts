@@ -16,3 +16,15 @@ export interface CaseFormValues {
   isUrgent?: boolean;
   isCallToAttention?: boolean;
 }
+
+export interface SignupPayload {
+  name: string;
+  cnic: string;
+  email: string;
+  govtID: string;
+  designation: string;
+  deptID: string;
+  dptIdDoc: string;
+  password: string;
+  confirmPassword: string;
+}

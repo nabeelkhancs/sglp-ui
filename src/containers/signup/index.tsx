@@ -10,17 +10,7 @@ import { Helpers } from "@/utils/helpers";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { Validations } from "@/utils/validations";
-
-interface SignupPayload {
-  name: string;
-  cnic: string;
-  email: string;
-  govtID: string;
-  designation: string;
-  deptID: string;
-  dptIdDoc: string;
-  password: string;
-}
+import { SignupPayload } from '@/utils/interfaces';
 
 const SignupContainer = () => {
   const [step, setStep] = useState<number>(1);
@@ -37,6 +27,7 @@ const SignupContainer = () => {
     deptID: "",
     dptIdDoc: "",
     password: "",
+    confirmPassword: ""
   });
 
   // Error state

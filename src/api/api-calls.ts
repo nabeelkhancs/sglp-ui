@@ -23,4 +23,14 @@ export class APICalls {
     }
   }
 
+  static async verifyEmail(token: string) {
+    try {
+      // Replace with your actual endpoint for email verification
+      const result = await HTTPMethods.post(`/v1/admin/auth/verify-email?token=${token}`);
+      return result?.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
 }
