@@ -1,10 +1,12 @@
+"use client";
+import { Suspense } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { APICalls } from '@/api/api-calls';
 
-const VerificationContainer = () => {
+function VerificationContent() {
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
   const [title, setTitle] = useState<string>();
@@ -15,25 +17,30 @@ const VerificationContainer = () => {
   useEffect(() => {
     if (!token) {
       setMessage(`We sent a verification link to the email address you used to sign up. Please click that link to confirm your account. If you can't see the email, please check your spam or junk folder.`);
+      setTitle(undefined);
     }
     if (token) {
       setMessage('Verifying your account, please wait...');
+      setTitle(undefined);
       APICalls.verifyEmail(token)
         .then((res) => {
           if (res?.status === 200) {
             setTitle('Email Verified');
             setMessage('Your email has been verified! You can now log in.');
-          } else {
+          } else if (res?.status === 400) {
             setTitle('Verification Failed');
             setMessage('Verification failed or link expired. Please try again or contact support.');
+          } else {
+            setTitle('Unexpected Response');
+            setMessage('Unexpected response. Please try again.');
           }
         })
-        .catch((err) => {
+        .catch(() => {
           setTitle('Verification Failed');
           setMessage('Verification failed or link expired. Please try again or contact support.');
         });
     }
-  }, [searchParams]);
+  }, [searchParams, token]);
 
   return (
     <div className="auth-page verify-email">
@@ -59,5 +66,11 @@ const VerificationContainer = () => {
     </div>
   );
 }
+
+const VerificationContainer = () => (
+  <Suspense>
+    <VerificationContent />
+  </Suspense>
+);
 
 export default VerificationContainer;
