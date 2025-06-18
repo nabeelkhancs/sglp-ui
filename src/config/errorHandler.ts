@@ -5,7 +5,7 @@ export const errorHandler = (error: AxiosError | any): string => {
         if (error.response.status === 401) {
             setTimeout(() => {
                 Cookies.remove('token');
-                if (typeof window !== 'undefined' && !window.location.pathname.includes('login')) {
+                if (typeof window !== 'undefined' && !window.location.pathname.includes('login') && !window.location.pathname.includes('verification')) {
                     window.location.replace('/admin/login')
                 }
             }, 1000);

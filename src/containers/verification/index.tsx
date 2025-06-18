@@ -19,12 +19,17 @@ const VerificationContainer = () => {
     if (token) {
       setMessage('Verifying your account, please wait...');
       APICalls.verifyEmail(token)
-        .then(() => {
-          setTitle("Email Verified");
-          setMessage('Your email has been verified! You can now log in.');
+        .then((res) => {
+          if (res?.status === 200) {
+            setTitle('Email Verified');
+            setMessage('Your email has been verified! You can now log in.');
+          } else {
+            setTitle('Verification Failed');
+            setMessage('Verification failed or link expired. Please try again or contact support.');
+          }
         })
-        .catch(() => {
-          setTitle("Verification Failed");
+        .catch((err) => {
+          setTitle('Verification Failed');
           setMessage('Verification failed or link expired. Please try again or contact support.');
         });
     }
