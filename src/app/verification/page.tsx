@@ -5,6 +5,7 @@ import AuthLayout from '../layouts/AuthLayout';
 const VerifyEmail = () => {
   return (
     <AuthLayout>
+      {/* hello */}
       <VerificationContainer />
     </AuthLayout>
   );
