@@ -67,6 +67,11 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
         item.actions?.some((action) => action.name === "Edit")
       );
     }
+    if (pathname.includes("view")) {
+      return permissions.some((item) =>
+        item.actions?.some((action) => action.name === "View")
+      );
+    }
     return false;
   }, [permissions, pathname]);
 
@@ -117,7 +122,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
         <Content className="page-main">
           {allowed ? children : (
             <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, color: '#ff4d4f', fontWeight: 600 }}>
-              You are not allowed to access this resource
+              Either this resource is not available or you are not allowed to access this resource
             </div>
           )}
         </Content>

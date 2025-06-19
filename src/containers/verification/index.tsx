@@ -27,12 +27,9 @@ function VerificationContent() {
           if (res?.status === 200) {
             setTitle('Email Verified');
             setMessage('Your email has been verified! You can now log in.');
-          } else if (res?.status === 400) {
+          } else {
             setTitle('Verification Failed');
             setMessage('Verification failed or link expired. Please try again or contact support.');
-          } else {
-            setTitle('Unexpected Response');
-            setMessage('Unexpected response. Please try again.');
           }
         })
         .catch(() => {

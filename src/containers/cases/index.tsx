@@ -7,7 +7,7 @@ import { Helpers } from "@/utils/helpers";
 import Link from "next/link";
 import Image from 'next/image';
 
-const CasesContainer = ({dashboardLayout = false}) => {
+const CasesContainer = ({ dashboardLayout = false }) => {
   const [permissions, setPermissions] = useState<any[]>([]);
   const [casesData, setCasesData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -32,11 +32,26 @@ const CasesContainer = ({dashboardLayout = false}) => {
     {
       title: 'Action',
       dataIndex: 'action',
-      render: (_: any, record: any) => (
-        <Link href={`/cases/${record.caseNumber}/edit`} className='table-action d-flex align-items-center gap-1 text-dark text-decoration-none'>
-          <Image src="/icons/edit-icon.svg" width={18} height={18} alt="Edit" />Edit
-        </Link>
-      ),
+      render: (_: any, record: any) => {
+        let link = '';
+        let label = '';
+        let icon = null;
+        if (permissions.includes('Edit')) {
+          link = `/cases/${record.caseNumber}/edit`;
+          label = 'Edit';
+          icon = <Image src="/icons/edit-icon.svg" width={18} height={18} alt="Edit" />;
+        } else if (permissions.includes('View')) {
+          link = `/cases/${record.caseNumber}/view`;
+          label = 'View';
+          icon = <Image src="/icons/view-icon.svg" width={18} height={18} alt="View" />;
+        }
+        if (!link) return null;
+        return (
+          <Link href={link} className='table-action d-flex align-items-center gap-1 text-dark text-decoration-none'>
+            {icon}{label}
+          </Link>
+        );
+      },
     },
   ];
 
@@ -45,14 +60,13 @@ const CasesContainer = ({dashboardLayout = false}) => {
       setLoading(true);
       try {
         const res = await HTTPMethods.get(cases);
-        console.log("Fetched cases:", res);
         setCasesData(res?.data?.result?.rows.map((caseItem: any) => {
           return {
             ...caseItem,
             createdAt: Helpers.formatDateTime(caseItem.createdAt)
           }
         }) || []);
-        setPermissions(res?.data?.permissions || []);
+        setPermissions(res?.data?.actions || []);
 
       } catch (e) {
         // Optionally handle error
@@ -62,14 +76,14 @@ const CasesContainer = ({dashboardLayout = false}) => {
     };
     fetchCases();
   }, []);
-  if(dashboardLayout){
+  if (dashboardLayout) {
     return (
       <DataTable
-          columns={columns}
-          filters={false}
-          data={casesData}
-          loading={loading}
-        />
+        columns={columns}
+        filters={false}
+        data={casesData}
+        loading={loading}
+      />
     )
   }
   return (
