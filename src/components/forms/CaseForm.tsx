@@ -25,6 +25,7 @@ const initialForm: CaseFormValues = {
   caseRemarks: "",
   isUrgent: false,
   isCallToAttention: false,
+  isCsCalledInPerson: false,
 };
 
 const CaseForm: React.FC<CaseFormProps> = ({ caseNumber }) => {
@@ -57,10 +58,11 @@ const CaseForm: React.FC<CaseFormProps> = ({ caseNumber }) => {
       dateOfHearing: form.dateOfHearing ? form.dateOfHearing.toISOString() : null,
     };
     
-    if (!isReviewer) {
-      delete payload.isUrgent;
-      delete payload.isCallToAttention;
-    }
+    // if (!isReviewer) {
+    //   delete payload.isUrgent;
+    //   delete payload.isCallToAttention;
+    //   delete payload.isCsCalledInPerson;
+    // }
     try {
       if (form.caseNumber) {
         await HTTPMethods.put(`${cases}/${form.id}`, payload);
@@ -105,6 +107,7 @@ const CaseForm: React.FC<CaseFormProps> = ({ caseNumber }) => {
               caseRemarks: data.caseRemarks || "",
               isUrgent: data.isUrgent || false,
               isCallToAttention: data.isCallToAttention || false,
+              isCsCalledInPerson: data.isCsCalledInPerson || false,
             });
           }
         })
@@ -270,7 +273,7 @@ const CaseForm: React.FC<CaseFormProps> = ({ caseNumber }) => {
             
         <div className="d-flex align-items-center mt-5 px-3 gap-3" style={{ justifyContent: 'space-between' }}>
           <div className="d-flex align-items-center gap-3">
-            {isReviewer && (
+            {/* {isReviewer && ( */}
             <>
               <Checkbox
                 checked={form.isUrgent}
@@ -280,8 +283,12 @@ const CaseForm: React.FC<CaseFormProps> = ({ caseNumber }) => {
                 checked={form.isCallToAttention}
                 onChange={e => handleChange("isCallToAttention", e.target.checked)}
               >Mark call to attention</Checkbox>
+              <Checkbox
+                checked={form.isCsCalledInPerson}
+                onChange={e => handleChange("isCsCalledInPerson", e.target.checked)}
+              >CS Called in person</Checkbox>
             </>
-            )}
+            {/* )} */}
           </div>
           <Button
             onClick={handleSubmit}

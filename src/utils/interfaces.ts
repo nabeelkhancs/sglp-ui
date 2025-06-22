@@ -16,6 +16,7 @@ export interface CaseFormValues {
   caseRemarks: string;
   isUrgent?: boolean;
   isCallToAttention?: boolean;
+  isCsCalledInPerson?: boolean;
 }
 
 export interface SignupPayload {

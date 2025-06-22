@@ -83,6 +83,7 @@ const LoginContainer = () => {
                 onChange={e => setPassword(e.target.value)}
                 iconRender={visible => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
                 status={passwordError ? "error" : ""}
+                style={{ color: "#fff"}}
               />
               {passwordError && (
                 <div style={{ color: "#ff4d4f", fontSize: "13px", marginTop: "4px", background: "transparent", padding: 0 }}>{passwordError}</div>
