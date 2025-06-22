@@ -9,6 +9,7 @@ export interface CaseFormValues {
   court: string;
   region: string;
   relativeDepartment: string;
+  subjectOfApplication: string;
   dateReceived: import("dayjs").Dayjs | null;
   dateOfHearing: import("dayjs").Dayjs | null;
   caseStatus: string;

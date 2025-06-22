@@ -61,7 +61,32 @@ export const getCourtData = (): DropdownOption[] => [
   { value: 'sindhHighCourtHyderabad', label: 'Sindh High Court Hyderabad' },
   { value: 'sindhHighCourtSukkur', label: 'Sindh High Court Sukkur' },
   { value: 'sindhHighCourtLarkana', label: 'Sindh High Court Larkana' },
-  { value: 'sindhHighCourtMirpurkhas', label: 'Sindh High Court Mirpurkhas' }
+  { value: 'sindhHighCourtMirpurkhas', label: 'Sindh High Court Mirpurkhas' },
+  { value: 'districtCourts', label: 'District Courts' },
+  { value: 'antiTerrorismCourts', label: 'Anti-Terrorism Courts' },
+  { value: 'antiCorruptionCourts', label: 'Anti Corruption Courts' },
+  { value: 'bankingCourts', label: 'Banking Courts' },
+  { value: 'labourCourts', label: 'Labour Courts' },
+  { value: 'specialCourtCNS', label: 'Special Court (CNS)' },
+  { value: 'appellateTribunalSindh', label: 'Appellate Tribunal Sindh' },
+  { value: 'revenueBoard', label: 'Revenue Board' },
+  { value: 'environmentalProtectionTribunal', label: 'Environmental Protection Tribunal' },
+  { value: 'accountabilityCourts', label: 'Accountability Courts' },
+  { value: 'customTaxationAntiSmugglingCourt', label: 'Custom, Taxation & Anti Smuggling Court' },
+  { value: 'drugCourt', label: 'Drug Court' },
+  { value: 'customsExciseSalesTaxAppellateTribunal', label: 'Customs, Excise & Sales Tax Appellate Tribunal' },
+  { value: 'specialCourtOffenceInBanks', label: 'Special Court (Offence in Banks)' },
+  { value: 'specialCourtCommercial', label: 'Special Court Commercial' },
+  { value: 'insuranceTribunal', label: 'Insurance Tribunal' },
+  { value: 'foreignExchangeAppellateTribunal', label: 'Foreign Exchange Appellate Tribunal' },
+  { value: 'removalOfAntiEncroachment', label: 'Removal of Anti Encroachment' },
+  { value: 'federalServiceTribunal', label: 'Federal Service Tribunal' },
+  { value: 'intellectualPropertyTribunal', label: 'Intellectual Property Tribunal' },
+  { value: 'appellateTribunalLocalCouncilsSindh', label: 'Appellate Tribunal Local Councils Sindh' },
+  { value: 'consumerCourt', label: 'Consumer' },
+  { value: 'consumerProtectionCourt', label: 'Consumer Protection Court' },
+  { value: 'commercialCourtsMagistrate', label: 'Commercial Courts (Magistrate)' },
+  { value: 'gasTheftCourt', label: 'Gas Theft' },
 ];
 
 export const getRegionData = (): DropdownOption[] => [
@@ -108,4 +133,3 @@ export const getSubjectData = (): DropdownOption[] => [
 ]
 
 
-  

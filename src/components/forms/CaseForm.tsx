@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Button, Checkbox, DatePicker, Input, Select, message } from "antd";
-import { getCourtData, getDepartmentData, getRegionData } from "@/utils/dropdownData";
+import { getCourtData, getDepartmentData, getRegionData, getSubjectData } from "@/utils/dropdownData";
 import HTTPMethods from "@/api";
 import { cases } from "@/api/communications";
 import { useRouter } from "next/navigation";
@@ -18,6 +18,7 @@ const initialForm: CaseFormValues = {
   court: "",
   region: "",
   relativeDepartment: "",
+  subjectOfApplication: "",
   dateReceived: null,
   dateOfHearing: null,
   caseStatus: "",
@@ -97,6 +98,7 @@ const CaseForm: React.FC<CaseFormProps> = ({ caseNumber }) => {
               court: data.court || "",
               region: data.region || "",
               relativeDepartment: data.relativeDepartment || "",
+              subjectOfApplication: data.subjectOfApplication || "",
               dateReceived: data.dateReceived ? dayjs(data.dateReceived) : null,
               dateOfHearing: data.dateOfHearing ? dayjs(data.dateOfHearing) : null,
               caseStatus: data.caseStatus || "",
@@ -182,6 +184,20 @@ const CaseForm: React.FC<CaseFormProps> = ({ caseNumber }) => {
                 status={errors.relativeDepartment ? "error" : undefined}
               />
               {errors.relativeDepartment && <div className="text-danger fs-12">{errors.relativeDepartment}</div>}
+            </div>
+          </div>
+          <div className="col-md-3">
+            <div className="form-group">
+              <label className="input-label">Subject/Type of Application</label>
+              <Select
+                className="w-100"
+                placeholder="Select"
+                options={getSubjectData()}
+                value={form.subjectOfApplication || undefined}
+                onChange={val => handleChange("subjectOfApplication", val)}
+                status={errors.subjectOfApplication ? "error" : undefined}
+              />
+              {errors.subjectOfApplication && <div className="text-danger fs-12">{errors.subjectOfApplication}</div>}
             </div>
           </div>
           <div className="col-md-3">

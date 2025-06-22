@@ -12,7 +12,7 @@ const DashboardContainer = () => {
   const [value, setValue] = useState<Date | null>(new Date());
 
   const userType = Cookies.get("userType");
-  if (userType !== "ADMIN") {
+  // if (userType !== "ADMIN") {
     return (
       <div className="manager dashboard-page">
         <div className="page-title mb-3">
@@ -61,18 +61,18 @@ const DashboardContainer = () => {
         </div>
       </div>
     );
-  }
-  return (
-    <div className="dashboard-page">
-      <div className="page-title mb-3">
-        <h1 className="mb-0">Dashboard</h1>
-      </div>
-      <div className="content">
-        <CountCards />
-        <UsersContainer />
-      </div>
-    </div>
-  )
+  // }
+  // return (
+  //   <div className="dashboard-page">
+  //     <div className="page-title mb-3">
+  //       <h1 className="mb-0">Dashboard</h1>
+  //     </div>
+  //     <div className="content">
+  //       <CountCards />
+  //       <UsersContainer />
+  //     </div>
+  //   </div>
+  // )
 };
 
 export default DashboardContainer;
