@@ -158,19 +158,15 @@ const CasesContainer = ({ dashboardLayout = false }) => {
               </div>
               <div className="col-md-3">
                 <div className="form-group">
-                  <label className="input-label fw-semibold">Button Type</label>
-                  <div className="d-flex gap-2">
-                    <Button
-                      type={buttonType === 'TypeA' ? 'primary' : 'default'}
-                      style={buttonType === 'TypeA'
-                        ? { background: '#3c763d', color: '#fff', borderColor: '#3c763d', width: 180, height: 48, padding: 0 }
-                        : { background: '#fff', color: '#adadad', borderColor: '#D9D9D9', width: 180, height: 48, padding: 0 }}
-                      onClick={() => handleButtonTypeChange('TypeA')}
-                      tabIndex={-1}
-                    >
-                      CS Called in Person
-                    </Button>
-                  </div>
+                  <label className="input-label fw-semibold">By Court</label>
+                  <Select
+                    className="w-100"
+                    style={{ height: 32 }}
+                    placeholder="Select Court"
+                    options={getCourtData()}
+                    value={courtFilter || undefined}
+                    onChange={val => setCourtFilter(val)}
+                  />
                 </div>
               </div>
               <div className="col-md-3">
@@ -197,7 +193,7 @@ const CasesContainer = ({ dashboardLayout = false }) => {
                     type={secretaryCalled ? 'primary' : 'default'}
                     style={secretaryCalled
                       ? { background: '#3c763d', color: '#fff', borderColor: '#3c763d', width: 180, height: 48, padding: 0 }
-                      : { background: '#fff', color: '#3c763d', borderColor: '#D9D9D9', width: 180, height: 48, padding: 0 }}
+                      : { background: '#fff', color: '#adadad', borderColor: '#D9D9D9', width: 180, height: 48, padding: 0 }}
                     onClick={() => setSecretaryCalled(!secretaryCalled)}
                     tabIndex={-1}
                   >
@@ -205,19 +201,7 @@ const CasesContainer = ({ dashboardLayout = false }) => {
                   </Button>
                 </div>
               </div>
-              <div className="col-md-3">
-                <div className="form-group">
-                  <label className="input-label fw-semibold">By Court</label>
-                  <Select
-                    className="w-100"
-                    style={{ height: 32 }}
-                    placeholder="Select Court"
-                    options={getCourtData()}
-                    value={courtFilter || undefined}
-                    onChange={val => setCourtFilter(val)}
-                  />
-                </div>
-              </div>
+              
             </div>
           </div>
         </div>
