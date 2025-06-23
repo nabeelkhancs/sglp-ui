@@ -122,7 +122,7 @@ const CasesContainer = ({ dashboardLayout = false }) => {
             <div className="row mb-3">
               <div className="col-md-3">
                 <div className="form-group">
-                  <label className="input-label">By Date</label>
+                  <label className="input-label fw-semibold">By Date</label>
                   <DatePicker
                     className="w-100"
                     style={{ height: 48 }}
@@ -133,7 +133,7 @@ const CasesContainer = ({ dashboardLayout = false }) => {
               </div>
               <div className="col-md-3">
                 <div className="form-group">
-                  <label className="input-label">Relevant Department</label>
+                  <label className="input-label fw-semibold">Relevant Department</label>
                   <Select
                     className="w-100"
                     style={{ height: 32 }}
@@ -146,7 +146,7 @@ const CasesContainer = ({ dashboardLayout = false }) => {
               </div>
               <div className="col-md-3">
                 <div className="form-group">
-                  <label className="input-label">By Party Name</label>
+                  <label className="input-label fw-semibold">By Party Name</label>
                   <Input
                     className="w-100"
                     style={{ height: 32 }}
@@ -158,7 +158,7 @@ const CasesContainer = ({ dashboardLayout = false }) => {
               </div>
               <div className="col-md-3">
                 <div className="form-group">
-                  <label className="input-label">CS Called in Person</label>
+                  <label className="input-label fw-semibold">Button Type</label>
                   <div className="d-flex gap-2">
                     <Button
                       type={buttonType === 'TypeA' ? 'primary' : 'default'}
@@ -175,7 +175,24 @@ const CasesContainer = ({ dashboardLayout = false }) => {
               </div>
               <div className="col-md-3">
                 <div className="form-group">
-                  <label className="input-label">Secretary Called in Person</label>
+                  <label className="input-label fw-semibold">CS Called in Person</label>
+                  <div className="d-flex gap-2">
+                    <Button
+                      type={buttonType === 'TypeA' ? 'primary' : 'default'}
+                      style={buttonType === 'TypeA'
+                        ? { background: '#3c763d', color: '#fff', borderColor: '#3c763d', width: 180, height: 48, padding: 0 }
+                        : { background: '#fff', color: '#adadad', borderColor: '#D9D9D9', width: 180, height: 48, padding: 0 }}
+                      onClick={() => handleButtonTypeChange('TypeA')}
+                      tabIndex={-1}
+                    >
+                      CS Called in Person
+                    </Button>
+                  </div>
+                </div>
+              </div>
+              <div className="col-md-3">
+                <div className="form-group">
+                  <label className="input-label fw-semibold">Secretary Called in Person</label>
                   <Button
                     type={secretaryCalled ? 'primary' : 'default'}
                     style={secretaryCalled
@@ -190,7 +207,7 @@ const CasesContainer = ({ dashboardLayout = false }) => {
               </div>
               <div className="col-md-3">
                 <div className="form-group">
-                  <label className="input-label">By Court</label>
+                  <label className="input-label fw-semibold">By Court</label>
                   <Select
                     className="w-100"
                     style={{ height: 32 }}
