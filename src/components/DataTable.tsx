@@ -34,7 +34,7 @@ const DataTable: FC<DataTableProps> = ({ columns, filters, data = [], loading = 
           </div>
         )}
         <Table
-          rowSelection={{ type: 'checkbox', ...rowSelection }}
+          // rowSelection={{ type: 'checkbox', ...rowSelection }}
           columns={columns}
           dataSource={data}
           pagination={false}
