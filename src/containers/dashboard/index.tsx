@@ -1,3 +1,4 @@
+import React from 'react';
 import { Divider } from "antd";
 import CountCards from "../../components/CountCard";
 import UsersContainer from "../users";
@@ -8,9 +9,25 @@ import 'react-calendar/dist/Calendar.css';
 import { useState } from "react";
 import CasesContainer from "../cases";
 
+// Highlighted dates
+const redDates = [
+  new Date(2025, 5, 24), // June 24, 2025
+];
+const yellowDates = [
+  new Date(2025, 6, 1), // July 1, 2025
+  new Date(2025, 5, 1), // July 1, 2025
+];
+const greenDates = [
+  new Date(2025, 6, 7), // July 7, 2025
+  new Date(2025, 5, 7), // July 7, 2025
+];
+
+function isSameDay(a: Date, b: Date) {
+  return a.getDate() === b.getDate() && a.getMonth() === b.getMonth() && a.getFullYear() === b.getFullYear();
+}
+
 const DashboardContainer = () => {
   const [value, setValue] = useState<Date | null>(new Date());
-
   const userType = Cookies.get("userType");
   // if (userType !== "ADMIN") {
     return (
@@ -27,17 +44,25 @@ const DashboardContainer = () => {
                 <Divider className="my-2" />
                 <CasesContainer dashboardLayout={true} />
               </div>
-
             </div>
-
             <div className="col-md-4">
               <div className="calender mb-3"  >
-                <Calendar onChange={(val) => setValue(val as Date | null)} value={value} />
+                <Calendar
+                  onChange={(val) => setValue(val as Date | null)}
+                  value={value}
+                  tileClassName={({ date, view }) => {
+                    if (view === 'month') {
+                      if (redDates.some(d => isSameDay(d, date))) return 'calendar-red';
+                      if (yellowDates.some(d => isSameDay(d, date))) return 'calendar-yellow';
+                      if (greenDates.some(d => isSameDay(d, date))) return 'calendar-green';
+                    }
+                    return '';
+                  }}
+                />
               </div>
               <div className="bg-white rounded-4">
                 <h3 className="fw-semibold fs-5 py-2 px-4">Matters</h3>
                 <Divider className="my-0" />
-
                 <div className="notice py-2 px-4">
                   {/* <p className="mb-1">Matters</p> */}
                   <p className="mb-1 fw-bold text-danger">!CS Summoned in person</p>
@@ -59,6 +84,7 @@ const DashboardContainer = () => {
             </div>
           </div>
         </div>
+        <style jsx global>{``}</style>
       </div>
     );
   // }
