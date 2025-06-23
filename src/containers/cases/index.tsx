@@ -7,8 +7,8 @@ import { Helpers } from "@/utils/helpers";
 import Link from "next/link";
 import Image from 'next/image';
 import { DatePicker, Select, Input, Button } from "antd";
+import { getDepartmentData, getCourtData } from "@/utils/dropdownData";
 import dayjs from "dayjs";
-import { getDepartmentData } from "@/utils/dropdownData";
 
 const CasesContainer = ({ dashboardLayout = false }) => {
   const [permissions, setPermissions] = useState<any[]>([]);
@@ -21,6 +21,8 @@ const CasesContainer = ({ dashboardLayout = false }) => {
   const [relativeDepartment, setRelativeDepartment] = useState<string>("");
   const [partyName, setPartyName] = useState<string>("");
   const [buttonType, setButtonType] = useState<string>("");
+  const [secretaryCalled, setSecretaryCalled] = useState<boolean>(false);
+  const [courtFilter, setCourtFilter] = useState<string>("");
 
   const columns = [
     {
@@ -76,6 +78,8 @@ const CasesContainer = ({ dashboardLayout = false }) => {
       if (relativeDepartment) params.relativeDepartment = relativeDepartment;
       if (partyName) params.partyName = partyName;
       if (buttonType) params.buttonType = buttonType;
+      if (secretaryCalled) params.secretaryCalled = secretaryCalled;
+      if (courtFilter) params.courtFilter = courtFilter;
       const res = await HTTPMethods.get(cases, params);
       setCasesData(res?.data?.result?.rows.map((caseItem: any) => {
         return {
@@ -95,7 +99,7 @@ const CasesContainer = ({ dashboardLayout = false }) => {
   useEffect(() => {
     fetchCases();
     // eslint-disable-next-line
-  }, [dateReceived, caseStatus, court, region, relativeDepartment, partyName, buttonType]);
+  }, [dateReceived, caseStatus, court, region, relativeDepartment, partyName, buttonType, secretaryCalled, courtFilter]);
 
   const handleChange = (field: string, value: any) => {
     if (field === "dateReceived") setDateReceived(value);
@@ -167,6 +171,34 @@ const CasesContainer = ({ dashboardLayout = false }) => {
                       CS Called in Person
                     </Button>
                   </div>
+                </div>
+              </div>
+              <div className="col-md-3">
+                <div className="form-group">
+                  <label className="input-label">Secretary Called in Person</label>
+                  <Button
+                    type={secretaryCalled ? 'primary' : 'default'}
+                    style={secretaryCalled
+                      ? { background: '#3c763d', color: '#fff', borderColor: '#3c763d', width: 180, height: 48, padding: 0 }
+                      : { background: '#fff', color: '#3c763d', borderColor: '#D9D9D9', width: 180, height: 48, padding: 0 }}
+                    onClick={() => setSecretaryCalled(!secretaryCalled)}
+                    tabIndex={-1}
+                  >
+                    Secretary Called in Person
+                  </Button>
+                </div>
+              </div>
+              <div className="col-md-3">
+                <div className="form-group">
+                  <label className="input-label">By Court</label>
+                  <Select
+                    className="w-100"
+                    style={{ height: 32 }}
+                    placeholder="Select Court"
+                    options={getCourtData()}
+                    value={courtFilter || undefined}
+                    onChange={val => setCourtFilter(val)}
+                  />
                 </div>
               </div>
             </div>
