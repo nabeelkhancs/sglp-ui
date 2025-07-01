@@ -8,16 +8,18 @@ interface EmployerDetailsProps {
   values: {
     govtID: string;
     designation: string;
+    roleType: string;
     deptID: string;
     dptIdDoc: string;
   };
   errors: {
     govtID?: string;
+    roleType?: string;
     designation?: string;
     deptID?: string;
     // dptIdDoc?: string; // No validation for upload document
   };
-  onChange: (data: { govtID: string; designation: string; deptID: string; dptIdDoc: string }) => void;
+  onChange: (data: { govtID: string; designation: string; roleType: string; deptID: string; dptIdDoc: string }) => void;
 }
 
 const errorStyle = { color: "red", fontSize: 13, background: "transparent", padding: 0, margin: 0 };
