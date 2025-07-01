@@ -25,8 +25,9 @@ export interface SignupPayload {
   email: string;
   govtID: string;
   designation: string;
+  roleType: string;
   deptID: string;
-  dptIdDoc: string;
+  dptIdDoc: string[];
   password: string;
   confirmPassword: string;
 }

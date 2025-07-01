@@ -27,7 +27,7 @@ export class APICalls {
     try {
       // Replace with your actual endpoint for email verification
       const result = await HTTPMethods.post(`/v1/verify-email?token=${token}`);
-      return result?.data;
+      return result;
     } catch (error) {
       throw error;
     }

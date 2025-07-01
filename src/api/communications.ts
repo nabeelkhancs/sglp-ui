@@ -10,6 +10,7 @@ export const logout = `/v1/auth/logout`;
 export const forgotPassword = `${commonEP}forgotPassword`;
 export const modules = `${commonEP}modules`;
 export const typedata = `${commonEP}general/typedata`;
+export const uploads = `/v1/uploads`;
 
 //user
 export const users = `${commonEP}users`;

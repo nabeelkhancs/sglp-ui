@@ -24,7 +24,7 @@ function VerificationContent() {
       setTitle(undefined);
       APICalls.verifyEmail(token)
         .then((res) => {
-          if (res?.status === 200) {
+          if (res?.status === "success") {
             setTitle('Email Verified');
             setMessage('Your email has been verified! You can now log in.');
           } else {

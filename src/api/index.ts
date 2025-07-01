@@ -8,17 +8,17 @@ class HTTPMethods {
             if (result?.status === 200) return result?.data;
             else throw result;
         } catch (e) {
-            return errorHandler(e);
+            throw errorHandler(e);
         }
     }
 
-    static async post(endPoint: string, data?: any) {
+    static async post(endPoint: string, data?: any, config?: any) {
         try {
-            const result = await Axios.post(endPoint, data);
+            const result = await Axios.post(endPoint, data, config);
             if (result?.status === 200) return result?.data;
             else throw result;
         } catch (e) {
-            return errorHandler(e);
+            throw errorHandler(e);
         }
     }
 
