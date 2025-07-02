@@ -1,6 +1,5 @@
-import { permissions, users } from "./communications";
+import { permissions, users, verifyEmail } from "./communications";
 import HTTPMethods from "./index";
-import Cookies from "js-cookie";
 
 export class APICalls {
   static async getPermissions(tokenParam?: string) {
@@ -25,8 +24,16 @@ export class APICalls {
 
   static async verifyEmail(token: string) {
     try {
-      // Replace with your actual endpoint for email verification
-      const result = await HTTPMethods.post(`/v1/verify-email?token=${token}`);
+      const result = await HTTPMethods.post(`${verifyEmail}?token=${token}`);
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async verification(){
+    try {
+      const result = await HTTPMethods.get(`/v1/verification`);
       return result;
     } catch (error) {
       throw error;

@@ -1,19 +1,22 @@
-const commonEP = '/v1/admin/';
+const commonAdminEP = '/v1/admin/';
+const commonEP = '/v1/';
 
 //auth
-export const login = `${commonEP}auth/login`;
-export const register = `${commonEP}auth/register`;
-export const permissions = `${commonEP}auth/permissions`;
+export const login = `${commonAdminEP}auth/login`;
+export const register = `${commonAdminEP}auth/register`;
+export const permissions = `${commonAdminEP}auth/permissions`;
 export const revieweroperatorLogin = `/v1/auth/login`;
 export const logout = `/v1/auth/logout`;
 
-export const forgotPassword = `${commonEP}forgotPassword`;
-export const modules = `${commonEP}modules`;
-export const typedata = `${commonEP}general/typedata`;
-export const uploads = `/v1/uploads`;
+export const forgotPassword = `${commonAdminEP}forgotPassword`;
+export const modules = `${commonAdminEP}modules`;
+export const typedata = `${commonAdminEP}general/typedata`;
+export const uploads = `${commonEP}uploads`;
+export const verifyEmail = `${commonEP}verify-email`;
+export const verification = `${commonEP}verification`;
 
 //user
-export const users = `${commonEP}users`;
+export const users = `${commonAdminEP}users`;
 
 //cases
-export const cases = `${commonEP}cases`;
+export const cases = `${commonAdminEP}cases`;

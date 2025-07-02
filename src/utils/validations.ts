@@ -61,10 +61,10 @@ export class Validations {
       errors.deptID = "Department ID is required";
       valid = false;
     }
-    // if (!dptIdDoc) {
-    //     errors.dptIdDoc = "Document is required";
-    //     valid = false;
-    // }
+    if (!dptIdDoc.length) {
+        errors.dptIdDoc = "Document is required";
+        valid = false;
+    }
     return { valid, errors };
   }
 
@@ -72,11 +72,21 @@ export class Validations {
     const errors: Record<string, string> = {};
     let valid = true;
 
+    // Password length
     if (!password || password.length < 6) {
       errors.password = "Password must be at least 6 characters";
       valid = false;
     }
 
+    // Alphanumeric and special character check
+    const alphanumericRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+[\]{};':"\\|,.<>/?]).+$/;
+    if (password && !alphanumericRegex.test(password)) {
+      errors.password =
+        "Password must include letters, numbers, and at least one special character";
+      valid = false;
+    }
+
+    // Confirm password match
     if (confirmPassword && password !== confirmPassword) {
       errors.confirmPassword = "Passwords do not match";
       valid = false;

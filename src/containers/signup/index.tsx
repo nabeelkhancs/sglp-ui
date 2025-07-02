@@ -1,10 +1,10 @@
-import { Button, message } from "antd";
+import { Button } from "antd";
 import Link from "next/link";
 import PersonalDetails from "./PersonalDetails";
 import EmployerDetails from "./EmlpoyerDetails";
 import PasswordScreen from "./PasswordScreen";
 import { useState } from "react";
-import { register, uploads } from "@/api/communications";
+import { register, uploads, verification } from "@/api/communications";
 import HTTPMethods from "@/api";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
@@ -15,7 +15,6 @@ const SignupContainer = () => {
   const [step, setStep] = useState<number>(1);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-
   const [docFiles, setDocFiles] = useState<File[]>([]);
 
   const [form, setForm] = useState<SignupPayload>({
@@ -63,7 +62,26 @@ const SignupContainer = () => {
       );
       setErrors(errors);
       if (!valid) return;
-      setStep(2);
+
+      // Server-side verification for email & cnic
+      try {
+        await HTTPMethods.post(verification, {
+          email: form.email,
+          cnic: form.cnic,
+        });
+        setStep(2);
+      } catch (err: any) {
+        console.log("Server-side errors:", err);
+        const newErrors: any = {};
+        if (err?.data?.errors) {
+
+          err.data.errors.forEach((e: any) => {
+            newErrors[e.type] = e.message;
+          });
+        }
+        setErrors(newErrors);
+      }
+
     } else if (step === 2) {
       const { valid, errors } = Validations.validateEmployerDetails(
         form.govtID,
@@ -74,6 +92,23 @@ const SignupContainer = () => {
       setErrors(errors);
       if (!valid) return;
 
+      // Server-side verification for govtID
+      try {
+        await HTTPMethods.post(verification, {
+          govtID: form.govtID,
+        });
+      } catch (err: any) {
+        const newErrors: any = {};
+        if (err?.data?.errors) {
+          err.data.errors.forEach((e: any) => {
+            newErrors[e.type] = e.message;
+          });
+        }
+        setErrors(newErrors);
+        return;
+      }
+
+      // Upload documents
       if (docFiles.length) {
         const formData = new FormData();
         docFiles.forEach((file) => formData.append("file", file));

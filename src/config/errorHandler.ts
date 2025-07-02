@@ -15,7 +15,7 @@ export const errorHandler = (error: AxiosError | any): string => {
         }
       }, 1000);
     }
-    return error.response.data?.message || 'Unauthorized';
+    return error.response.data || 'Unauthorized';
   } else if (error?.request) {
     return error.message || 'No response from server';
   } else {
