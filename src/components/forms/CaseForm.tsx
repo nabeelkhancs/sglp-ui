@@ -7,7 +7,7 @@ import { cases, uploads } from "@/api/communications";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import Dragger from "antd/es/upload/Dragger";
-import dayjs, { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 import { Validations } from "@/utils/validations";
 import { toast } from "react-toastify";
 import { CaseFormProps, CaseFormValues } from "@/utils/interfaces";
@@ -27,12 +27,13 @@ const initialForm: CaseFormValues = {
   dateOfHearing: null,
   caseStatus: [],
   caseRemarks: "",
-  uploadedFiles: [], // renamed from documents
+  uploadedFiles: [],
   isUrgent: false,
   isCallToAttention: false,
   isCsCalledInPerson: false,
-  isContempt: false, // new
-  isShowCause: false, // new
+  isContempt: false,
+  isShowCause: false,
+  committeeApprovalFile: ""
 };
 
 const CaseForm: React.FC<CaseFormProps> = ({ caseNumber }) => {
@@ -41,23 +42,22 @@ const CaseForm: React.FC<CaseFormProps> = ({ caseNumber }) => {
   const [errors, setErrors] = useState<Partial<Record<keyof CaseFormValues, string>>>({});
   const [loading, setLoading] = useState(false);
   const [docFiles, setDocFiles] = useState<File[]>([]);
+  const [committeeFile, setCommitteeFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
 
   const userType = Cookies.get("userType");
-  const isReviewer = userType === "REVIEWER";
 
   const validate = (): boolean => {
     const { valid, errors } = Validations.validateCaseForm(form);
+    if (form.subjectOfApplication === "committee" && !committeeFile) {
+      errors.committeeApprovalFile = "Committee approval file is required";
+    }
     setErrors(errors);
-    return valid;
+    return valid && (!form.subjectOfApplication || form.subjectOfApplication !== "committee" || !!committeeFile);
   };
 
   const handleChange = (field: keyof CaseFormValues, value: any) => {
-    if (field === "caseStatus" || field === "relativeDepartment") {
-      setForm(prev => ({ ...prev, [field]: Array.isArray(value) ? value : [value] }));
-    } else {
-      setForm(prev => ({ ...prev, [field]: value }));
-    }
+    setForm(prev => ({ ...prev, [field]: value }));
     setErrors(prev => ({ ...prev, [field]: undefined }));
   };
 
@@ -86,6 +86,32 @@ const CaseForm: React.FC<CaseFormProps> = ({ caseNumber }) => {
     }
   };
 
+  const handleCommitteeFileChange = async (info: any) => {
+    console.log("infor", info)
+    const file = info.file?.originFileObj;
+    if (!file) return;
+    setUploading(true);
+    const formData = new FormData();
+    formData.append("file", file);
+    try {
+      const uploadRes = await HTTPMethods.post(uploads, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      const uploadedFilename = uploadRes?.files?.[0]?.filename;
+      if (uploadedFilename) {
+        setCommitteeFile(file);
+        setForm((prev) => ({ ...prev, committeeApprovalFile: uploadedFilename }));
+        toast.success("Committee approval file uploaded successfully");
+      } else {
+        toast.error("Committee file upload failed");
+      }
+    } catch (e) {
+      toast.error("Committee file upload error");
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
@@ -95,13 +121,6 @@ const CaseForm: React.FC<CaseFormProps> = ({ caseNumber }) => {
       dateReceived: form.dateReceived ? form.dateReceived.toISOString() : null,
       dateOfHearing: form.dateOfHearing ? form.dateOfHearing.toISOString() : null,
     };
-    console.log("Submitting case with payload:", payload);
-    // return;
-    // if (!isReviewer) {
-    //   delete payload.isUrgent;
-    //   delete payload.isCallToAttention;
-    //   delete payload.isCsCalledInPerson;
-    // }
     try {
       if (form.caseNumber) {
         await HTTPMethods.put(`${cases}/${form.id}`, payload);
@@ -133,25 +152,10 @@ const CaseForm: React.FC<CaseFormProps> = ({ caseNumber }) => {
           if (res && res.data) {
             const data = res.data;
             setForm({
-              id: data.id || "",
-              cpNumber: data.cpNumber || "",
-              caseNumber: data.caseNumber || "",
-              caseTitle: data.caseTitle || "",
-              caseType: data.caseType || "",
-              court: data.court || "",
-              region: data.region || "",
-              relativeDepartment: data.relativeDepartment || "",
-              subjectOfApplication: data.subjectOfApplication || "",
+              ...initialForm,
+              ...data,
               dateReceived: data.dateReceived ? dayjs(data.dateReceived) : null,
               dateOfHearing: data.dateOfHearing ? dayjs(data.dateOfHearing) : null,
-              caseStatus: data.caseStatus || "",
-              caseRemarks: data.caseRemarks || "",
-              uploadedFiles: data.uploadedFiles || [],
-              isUrgent: data.isUrgent || false,
-              isCallToAttention: data.isCallToAttention || false,
-              isCsCalledInPerson: data.isCsCalledInPerson || false,
-              isContempt: data.isContempt || false, // new
-              isShowCause: data.isShowCause || false, // new
             });
           }
         })
@@ -348,6 +352,32 @@ const CaseForm: React.FC<CaseFormProps> = ({ caseNumber }) => {
               {errors.caseRemarks && <div className="text-danger fs-12">{errors.caseRemarks}</div>}
             </div>
           </div>
+          {form.subjectOfApplication === "committee" && (
+            <div className="col-md-3">
+              <div className="form-group">
+                <label className="input-label">Committee Approval File</label>
+                <Dragger
+                  name="file"
+                  multiple={false}
+                  showUploadList={true}
+                  beforeUpload={() => false}
+                  onChange={handleCommitteeFileChange}
+                  fileList={committeeFile ? [{
+                    uid: committeeFile.name,
+                    name: committeeFile.name,
+                    status: 'done',
+                    originFileObj: committeeFile,
+                  } as UploadFile] : []}
+                  disabled={uploading}
+                >
+                  <p className="ant-upload-text text-dark d-flex align-items-center justify-content-center gap-2  fs-14 fw-medium">
+                    <span className="primary-color">Choose file</span> or drop here
+                  </p>
+                </Dragger>
+                {errors.committeeApprovalFile && <div className="text-danger fs-12">{errors.committeeApprovalFile}</div>}
+              </div>
+            </div>
+          )}
           <div className="col-md-12">
             <div className="form-group " style={{ height: '140px' }}>
               <label className="input-label  ">Documents</label>

@@ -22,6 +22,7 @@ export interface CaseFormValues {
   isCsCalledInPerson?: boolean;
   isContempt?: boolean;
   isShowCause?: boolean;
+  committeeApprovalFile: string;
 }
 
 export interface SignupPayload {
