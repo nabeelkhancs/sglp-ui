@@ -4,6 +4,7 @@ export interface DropdownOption {
 }
 
 export const getDepartmentData = (): DropdownOption[] => [
+  { value: 'cheifSecretary', label: 'Chief Secretary' },
   { value: 'cooperativeDepartment', label: 'Cooperative Department' },
   { value: 'informationDepartment', label: 'Information Department' },
   { value: 'livestockFisheriesDepartment', label: 'Livestock & Fisheries Department' },
@@ -131,5 +132,23 @@ export const getSubjectData = (): DropdownOption[] => [
   { value: 'stayOrder', label: 'Stay Order' },
   { value: 'manualEntry', label: 'Manual Entry (Type)' }
 ]
+
+export const getCaseTypeData = (): DropdownOption[] => [
+  { value: 'cp', label: 'CP' },
+  { value: 'civilSuite', label: 'Civil Suite' },
+  { value: 'appeal', label: 'Appeal' },
+  { value: 'criminalAppeal', label: 'Criminal Appeal' },
+  { value: 'civilAppeal', label: 'Civil Appeal' },
+  { value: 'CMA', label: 'CMA' },
+  { value: 'servicAppeal', label: 'Servic Appeal' },
+];
+
+export const getCaseStatusData = (): DropdownOption[] => [
+  { value: 'pending', label: 'Pending' },
+  { value: 'committeConstitution', label: 'Committe Constitution' },
+  { value: 'underReview', label: 'Under Review' },
+  { value: 'underCompliance', label: 'Under Compliance' },
+  { value: 'compliedWith', label: 'Complied With' },
+];
 
 

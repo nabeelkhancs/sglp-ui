@@ -4,19 +4,24 @@ export interface CaseFormProps {
 
 export interface CaseFormValues {
   id?: number;
+  cpNumber: string;
   caseNumber: string;
   caseTitle: string;
+  caseType: string;
   court: string;
   region: string;
-  relativeDepartment: string;
+  relativeDepartment: string[];
   subjectOfApplication: string;
   dateReceived: import("dayjs").Dayjs | null;
   dateOfHearing: import("dayjs").Dayjs | null;
-  caseStatus: string;
+  caseStatus: string[];
   caseRemarks: string;
+  uploadedFiles: string[];
   isUrgent?: boolean;
   isCallToAttention?: boolean;
   isCsCalledInPerson?: boolean;
+  isContempt?: boolean;
+  isShowCause?: boolean;
 }
 
 export interface SignupPayload {

@@ -17,8 +17,8 @@ const Header = () => {
                             <div className="notification-dropdown">
                                 <NotificationDropdown />
                             </div>
-                             <div className="user-dropdown">
-                                <UserDropdown  />
+                            <div className="user-dropdown">
+                                <UserDropdown />
                             </div>
 
                         </div>

@@ -11,7 +11,7 @@ import { getDepartmentData, getCourtData } from "@/utils/dropdownData";
 import dayjs from "dayjs";
 
 const CasesContainer = ({ dashboardLayout = false }) => {
-  const [permissions, setPermissions] = useState<any[]>([]);
+  const [permissions, setPermissions] = useState<any[]>(["Edit"]);
   const [casesData, setCasesData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [dateReceived, setDateReceived] = useState<any>(null);
@@ -27,7 +27,7 @@ const CasesContainer = ({ dashboardLayout = false }) => {
   const columns = [
     {
       title: 'Case #',
-      dataIndex: 'caseNumber',
+      dataIndex: 'cpNumber',
     },
     {
       title: 'Case Title',
@@ -87,7 +87,7 @@ const CasesContainer = ({ dashboardLayout = false }) => {
           createdAt: Helpers.formatDateTime(caseItem.createdAt)
         }
       }) || []);
-      setPermissions(res?.data?.actions || []);
+      setPermissions( ["Edit"]);
 
     } catch (e) {
       // Optionally handle error

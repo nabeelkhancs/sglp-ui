@@ -97,23 +97,26 @@ export class Validations {
 
   static validateCaseForm(form: {
     caseTitle: string;
+    caseType: string;
     court: string;
     region: string;
-    relativeDepartment: string;
+    relativeDepartment: string[];
+    subjectOfApplication: string;
     dateReceived: any;
     dateOfHearing: any;
-    caseStatus: string;
+    caseStatus: string[];
     caseRemarks: string;
   }) {
     let valid = true;
     let errors: Partial<Record<string, string>> = {};
     if (!form.caseTitle) { errors.caseTitle = "Case Title is required"; valid = false; }
+    if (!form.caseType) { errors.caseType = "Case Type is required"; valid = false; }
     if (!form.court) { errors.court = "Court is required"; valid = false; }
     if (!form.region) { errors.region = "Region is required"; valid = false; }
-    if (!form.relativeDepartment) { errors.relativeDepartment = "Department is required"; valid = false; }
+    if (!form.relativeDepartment || !form.relativeDepartment.length) { errors.relativeDepartment = "Department is required"; valid = false; }
     if (!form.dateReceived) { errors.dateReceived = "Date Received is required"; valid = false; }
     if (!form.dateOfHearing) { errors.dateOfHearing = "Date of Hearing is required"; valid = false; }
-    if (!form.caseStatus) { errors.caseStatus = "Status is required"; valid = false; }
+    if (!form.caseStatus || !form.caseStatus.length) { errors.caseStatus = "Status is required"; valid = false; }
     if (!form.caseRemarks) { errors.caseRemarks = "Remarks are required"; valid = false; }
     return { valid, errors };
   }
