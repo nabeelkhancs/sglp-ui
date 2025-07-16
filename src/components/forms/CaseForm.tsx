@@ -338,7 +338,7 @@ const CaseForm: React.FC<CaseFormProps> = ({ caseNumber }) => {
               {errors.caseStatus && <div className="text-danger fs-12">{errors.caseStatus}</div>}
             </div>
           </div>
-          <div className="col-md-6">
+          <div className="col-md-12">
             <div className="form-group">
               <label className="input-label">Remarks / Actions</label>
               <TextArea
@@ -347,7 +347,7 @@ const CaseForm: React.FC<CaseFormProps> = ({ caseNumber }) => {
                 status={errors.caseRemarks ? "error" : undefined}
                 disabled={userType === "REVIEWER"}
                 rows={3}
-                style={{ resize: 'vertical' }}
+                className="fixed-textarea"
               />
               {errors.caseRemarks && <div className="text-danger fs-12">{errors.caseRemarks}</div>}
             </div>

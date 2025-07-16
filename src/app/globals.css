@@ -696,3 +696,13 @@ button.react-calendar__navigation__label {
   background: none !important;
   color: inherit !important;
 }
+
+
+.tors-textarea {
+  height: 150px !important;
+}
+
+.ant-input.css-dev-only-do-not-override-5uvb3z.ant-input-outlined.fixed-textarea {
+  min-height: 120px !important;
+  resize: none;
+}

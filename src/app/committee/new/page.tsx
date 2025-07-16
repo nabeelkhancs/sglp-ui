@@ -1,13 +1,15 @@
+'use client'
 import DashboardLayout from "@/app/layouts/DashboardLayout"
+import CommitteeReportForm from "@/containers/committee/new";
 
 const NewCommittee = () => {
-    return (
-        <>
-            <DashboardLayout>
-                Error loading committee page
-            </DashboardLayout>
-        </>
-    )
+  return (
+    <>
+      <DashboardLayout>
+        <CommitteeReportForm />
+      </DashboardLayout>
+    </>
+  )
 }
 
 export default NewCommittee;
