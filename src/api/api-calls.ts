@@ -44,7 +44,7 @@ export class APICalls {
     try {
       const result = await HTTPMethods.get(`${cases}?subjectOfApplication=committee`);
       return result?.data?.result?.rows?.map((item: any) => ({
-        value: item.id,
+        value: item.cpNumber,
         label: item.cpNumber
       })) || [];
     } catch (error) {

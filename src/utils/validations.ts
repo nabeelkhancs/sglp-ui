@@ -124,9 +124,9 @@ export class Validations {
   static validateCommitteeForm(form: {
     cpNumber: string;
     court: string;
-    headedBy: string;
+    compositionHeadedBy: string;
     tors: string;
-    reportResponse: string;
+    report: string;
     status: string;
   }) {
     let valid = true;
@@ -140,16 +140,16 @@ export class Validations {
       errors.court = "Court is required"; 
       valid = false; 
     }
-    if (!form.headedBy) { 
-      errors.headedBy = "Composition Headed By is required"; 
+    if (!form.compositionHeadedBy) { 
+      errors.compositionHeadedBy = "Composition Headed By is required"; 
       valid = false; 
     }
     if (!form.tors) { 
       errors.tors = "Terms of References are required"; 
       valid = false; 
     }
-    if (!form.reportResponse) { 
-      errors.reportResponse = "Report/Response is required"; 
+    if (!form.report) { 
+      errors.report = "Report/Response is required"; 
       valid = false; 
     }
     if (!form.status) { 

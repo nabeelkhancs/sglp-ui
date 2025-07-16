@@ -23,9 +23,9 @@ interface CommitteeReportFormValues {
   id?: number;
   cpNumber: string;
   court: string;
-  headedBy: string;
+  compositionHeadedBy: string;
   tors: string;
-  reportResponse: string;
+  report: string;
   status: string;
   uploadedFiles: string[];
 }
@@ -34,9 +34,9 @@ const initialForm: CommitteeReportFormValues = {
   id: undefined,
   cpNumber: "",
   court: "",
-  headedBy: "",
+  compositionHeadedBy: "",
   tors: "",
-  reportResponse: "",
+  report: "",
   status: "",
   uploadedFiles: [],
 };
@@ -206,11 +206,11 @@ const CommitteeReportForm: React.FC = () => {
           <label className="input-label">Composition Headed By</label>
           <Input
             placeholder="Headed by"
-            value={form.headedBy}
-            onChange={(e) => handleChange("headedBy", e.target.value)}
-            status={errors.headedBy ? "error" : undefined}
+            value={form.compositionHeadedBy}
+            onChange={(e) => handleChange("compositionHeadedBy", e.target.value)}
+            status={errors.compositionHeadedBy ? "error" : undefined}
           />
-          {errors.headedBy && <div className="text-danger fs-12">{errors.headedBy}</div>}
+          {errors.compositionHeadedBy && <div className="text-danger fs-12">{errors.compositionHeadedBy}</div>}
         </div>
       </div>
 
@@ -241,9 +241,9 @@ const CommitteeReportForm: React.FC = () => {
           <TextArea
             rows={4}
             placeholder="Committee Response"
-            value={form.reportResponse}
-            onChange={(e) => handleChange("reportResponse", e.target.value)}
-            status={errors.reportResponse ? "error" : undefined}
+            value={form.report}
+            onChange={(e) => handleChange("report", e.target.value)}
+            status={errors.report ? "error" : undefined}
             style={{ 
               minHeight: '120px',
               resize: 'vertical',
@@ -252,7 +252,7 @@ const CommitteeReportForm: React.FC = () => {
               lineHeight: '1.5'
             }}
           />
-          {errors.reportResponse && <div className="text-danger fs-12">{errors.reportResponse}</div>}
+          {errors.report && <div className="text-danger fs-12">{errors.report}</div>}
         </div>
       </div>
 
