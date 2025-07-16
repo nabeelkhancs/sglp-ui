@@ -41,8 +41,8 @@ const CaseForm: React.FC<CaseFormProps> = ({ caseNumber }) => {
   const [form, setForm] = useState<CaseFormValues>(initialForm);
   const [errors, setErrors] = useState<Partial<Record<keyof CaseFormValues, string>>>({});
   const [loading, setLoading] = useState(false);
-  const [docFiles, setDocFiles] = useState<File[]>([]);
-  const [committeeFile, setCommitteeFile] = useState<File | null>(null);
+  const [docFiles, setDocFiles] = useState<UploadFile[]>([]);
+  const [committeeFile, setCommitteeFile] = useState<UploadFile | null>(null);
   const [uploading, setUploading] = useState(false);
 
   const userType = Cookies.get("userType");
@@ -62,51 +62,97 @@ const CaseForm: React.FC<CaseFormProps> = ({ caseNumber }) => {
   };
 
   const handleFileChange = async (info: any) => {
-    const files = info.fileList.map((f: any) => f.originFileObj).filter(Boolean) as File[];
-    setDocFiles(files);
-    if (!files.length) return;
+    const { fileList } = info;
+    setDocFiles(fileList);
+    
+    // Find new files that need to be uploaded
+    const newFiles = fileList.filter((file: UploadFile) => 
+      file.originFileObj && file.status !== 'done' && file.status !== 'error'
+    );
+    
+    if (!newFiles.length) return;
+    
     setUploading(true);
     const formData = new FormData();
-    files.forEach((file) => formData.append("file", file));
+    
+    for (const file of newFiles) {
+      if (file.originFileObj) {
+        formData.append("file", file.originFileObj);
+      }
+    }
+    
     try {
       const uploadRes = await HTTPMethods.post(uploads, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
+      
       const uploadedFilenames = uploadRes?.files?.map((f: any) => f.filename) || [];
       if (uploadedFilenames.length) {
-        setForm((prev) => ({ ...prev, uploadedFiles: uploadedFilenames }));
+        // Update file status to done
+        const updatedFileList = fileList.map((file: UploadFile) => {
+          if (newFiles.some((newFile: UploadFile) => newFile.uid === file.uid)) {
+            return { ...file, status: 'done' };
+          }
+          return file;
+        });
+        setDocFiles(updatedFileList);
+        
+        // Update form with uploaded filenames
+        const existingFiles = form.uploadedFiles || [];
+        setForm((prev) => ({ 
+          ...prev, 
+          uploadedFiles: [...existingFiles, ...uploadedFilenames] 
+        }));
         toast.success("Files uploaded successfully");
       } else {
         toast.error("No files uploaded");
       }
     } catch (e) {
       toast.error("Document upload failed");
+      // Update file status to error
+      const updatedFileList = fileList.map((file: UploadFile) => {
+        if (newFiles.some((newFile: UploadFile) => newFile.uid === file.uid)) {
+          return { ...file, status: 'error' };
+        }
+        return file;
+      });
+      setDocFiles(updatedFileList);
     } finally {
       setUploading(false);
     }
   };
 
   const handleCommitteeFileChange = async (info: any) => {
-    console.log("infor", info)
-    const file = info.file?.originFileObj;
-    if (!file) return;
+    const { fileList } = info;
+    const file = fileList[0];
+    
+    if (!file || !file.originFileObj) {
+      setCommitteeFile(null);
+      return;
+    }
+    
+    setCommitteeFile(file);
     setUploading(true);
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("file", file.originFileObj);
+    
     try {
       const uploadRes = await HTTPMethods.post(uploads, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
+      
       const uploadedFilename = uploadRes?.files?.[0]?.filename;
       if (uploadedFilename) {
-        setCommitteeFile(file);
+        setCommitteeFile({ ...file, status: 'done' });
         setForm((prev) => ({ ...prev, committeeApprovalFile: uploadedFilename }));
         toast.success("Committee approval file uploaded successfully");
       } else {
         toast.error("Committee file upload failed");
+        setCommitteeFile({ ...file, status: 'error' });
       }
     } catch (e) {
       toast.error("Committee file upload error");
+      setCommitteeFile({ ...file, status: 'error' });
     } finally {
       setUploading(false);
     }
@@ -116,20 +162,28 @@ const CaseForm: React.FC<CaseFormProps> = ({ caseNumber }) => {
     e.preventDefault();
     if (!validate()) return;
     setLoading(true);
+    
     const payload = {
       ...form,
       dateReceived: form.dateReceived ? form.dateReceived.toISOString() : null,
       dateOfHearing: form.dateOfHearing ? form.dateOfHearing.toISOString() : null,
     };
+    
     try {
-      if (form.caseNumber) {
+      if (form.id) {
+        // Update existing case
         await HTTPMethods.put(`${cases}/${form.id}`, payload);
         toast.success("Case updated successfully");
       } else {
+        // Create new case
         await HTTPMethods.post(cases, payload);
         toast.success("Case added successfully");
       }
+      
       setForm(initialForm);
+      setDocFiles([]);
+      setCommitteeFile(null);
+      
       const userType = Cookies.get("userType");
       if (userType === "OPERATOR") {
         router.push("/cases/submitted");
@@ -157,6 +211,27 @@ const CaseForm: React.FC<CaseFormProps> = ({ caseNumber }) => {
               dateReceived: data.dateReceived ? dayjs(data.dateReceived) : null,
               dateOfHearing: data.dateOfHearing ? dayjs(data.dateOfHearing) : null,
             });
+            
+            // Set existing uploaded files
+            if (data.uploadedFiles && data.uploadedFiles.length > 0) {
+              const existingFiles = data.uploadedFiles.map((filename: string, index: number) => ({
+                uid: `existing-${index}`,
+                name: filename,
+                status: 'done' as const,
+                originFileObj: undefined,
+              }));
+              setDocFiles(existingFiles);
+            }
+            
+            // Set existing committee file
+            if (data.committeeApprovalFile) {
+              setCommitteeFile({
+                uid: 'committee-file',
+                name: data.committeeApprovalFile,
+                status: 'done' as const,
+                originFileObj: undefined,
+              });
+            }
           }
         })
         .catch(() => {
@@ -183,18 +258,6 @@ const CaseForm: React.FC<CaseFormProps> = ({ caseNumber }) => {
               {errors.cpNumber && <div className="text-danger fs-12">{errors.cpNumber}</div>}
             </div>
           </div>
-          {/* {caseNumber && (
-            <div className="col-md-3">
-              <div className="form-group">
-                <label className="input-label">Case Number</label>
-                <Input
-                  placeholder="Case Number"
-                  value={form.caseNumber}
-                  disabled={!!caseNumber}
-                />
-              </div>
-            </div>
-          )} */}
           <div className="col-md-3">
             <div className="form-group">
               <label className="input-label">Case Title</label>
@@ -285,9 +348,50 @@ const CaseForm: React.FC<CaseFormProps> = ({ caseNumber }) => {
                 value={form.relativeDepartment}
                 onChange={val => handleChange("relativeDepartment", val)}
                 status={errors.relativeDepartment ? "error" : undefined}
-                maxTagCount={2}
+                maxTagCount={1}
                 maxTagPlaceholder={omittedValues => `+${omittedValues.length} more`}
-                style={{ minWidth: 0 }}
+                style={{ 
+                  minWidth: 0,
+                  minHeight: '48px',
+                  height: 'auto'
+                }}
+                tagRender={(props) => {
+                  const { label, closable, onClose } = props;
+                  return (
+                    <span 
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        background: '#f0f0f0',
+                        border: '1px solid #d9d9d9',
+                        borderRadius: '6px',
+                        padding: '2px 8px',
+                        margin: '2px',
+                        fontSize: '12px',
+                        maxWidth: '100%',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap'
+                      }}
+                    >
+                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {label}
+                      </span>
+                      {closable && (
+                        <span 
+                          style={{ 
+                            marginLeft: '4px', 
+                            cursor: 'pointer',
+                            fontSize: '12px'
+                          }}
+                          onClick={onClose}
+                        >
+                          ×
+                        </span>
+                      )}
+                    </span>
+                  );
+                }}
               />
               {errors.relativeDepartment && <div className="text-danger fs-12">{errors.relativeDepartment}</div>}
             </div>
@@ -331,9 +435,50 @@ const CaseForm: React.FC<CaseFormProps> = ({ caseNumber }) => {
                 value={form.caseStatus}
                 onChange={val => handleChange("caseStatus", val)}
                 status={errors.caseStatus ? "error" : undefined}
-                maxTagCount={2}
+                maxTagCount={1}
                 maxTagPlaceholder={omittedValues => `+${omittedValues.length} more`}
-                style={{ minWidth: 0 }}
+                style={{ 
+                  minWidth: 0,
+                  minHeight: '48px',
+                  height: 'auto'
+                }}
+                tagRender={(props) => {
+                  const { label, closable, onClose } = props;
+                  return (
+                    <span 
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        background: '#f0f0f0',
+                        border: '1px solid #d9d9d9',
+                        borderRadius: '6px',
+                        padding: '2px 8px',
+                        margin: '2px',
+                        fontSize: '12px',
+                        maxWidth: '100%',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap'
+                      }}
+                    >
+                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {label}
+                      </span>
+                      {closable && (
+                        <span 
+                          style={{ 
+                            marginLeft: '4px', 
+                            cursor: 'pointer',
+                            fontSize: '12px'
+                          }}
+                          onClick={onClose}
+                        >
+                          ×
+                        </span>
+                      )}
+                    </span>
+                  );
+                }}
               />
               {errors.caseStatus && <div className="text-danger fs-12">{errors.caseStatus}</div>}
             </div>
@@ -346,8 +491,15 @@ const CaseForm: React.FC<CaseFormProps> = ({ caseNumber }) => {
                 onChange={e => handleChange("caseRemarks", e.target.value)}
                 status={errors.caseRemarks ? "error" : undefined}
                 disabled={userType === "REVIEWER"}
-                rows={3}
-                className="fixed-textarea"
+                rows={4}
+                style={{ 
+                  minHeight: '120px',
+                  resize: 'vertical',
+                  fontFamily: 'inherit',
+                  fontSize: '14px',
+                  lineHeight: '1.5'
+                }}
+                placeholder="Enter case remarks and actions..."
               />
               {errors.caseRemarks && <div className="text-danger fs-12">{errors.caseRemarks}</div>}
             </div>
@@ -359,16 +511,24 @@ const CaseForm: React.FC<CaseFormProps> = ({ caseNumber }) => {
                 <Dragger
                   name="file"
                   multiple={false}
-                  showUploadList={true}
+                  showUploadList={{
+                    showPreviewIcon: true,
+                    showRemoveIcon: true,
+                    // showDownloadIcon: true,
+                  }}
                   beforeUpload={() => false}
                   onChange={handleCommitteeFileChange}
-                  fileList={committeeFile ? [{
-                    uid: committeeFile.name,
-                    name: committeeFile.name,
-                    status: 'done',
-                    originFileObj: committeeFile,
-                  } as UploadFile] : []}
+                  fileList={committeeFile ? [committeeFile] : []}
                   disabled={uploading}
+                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                  onPreview={(file) => {
+                    // This will be replaced with your download API
+                    window.open(`/api/downloads/${file.name}`, '_blank');
+                  }}
+                  onDownload={(file) => {
+                    // This will be replaced with your download API
+                    window.open(`/api/downloads/${file.name}`, '_blank');
+                  }}
                 >
                   <p className="ant-upload-text text-dark d-flex align-items-center justify-content-center gap-2  fs-14 fw-medium">
                     <span className="primary-color">Choose file</span> or drop here
@@ -379,29 +539,29 @@ const CaseForm: React.FC<CaseFormProps> = ({ caseNumber }) => {
             </div>
           )}
           <div className="col-md-12">
-            <div className="form-group " style={{ height: '140px' }}>
-              <label className="input-label  ">Documents</label>
+            <div className="form-group" style={{ minHeight: '160px' }}>
+              <label className="input-label">Documents</label>
               <Dragger
                 name="file"
                 multiple={true}
-                showUploadList={true}
+                showUploadList={{
+                  showPreviewIcon: true,
+                  showRemoveIcon: true,
+                  showDownloadIcon: true,
+                }}
                 beforeUpload={() => false}
                 onChange={handleFileChange}
-                fileList={docFiles.map((file) => {
-                  const rcFile = file as RcFile;
-                  return {
-                    uid: rcFile.uid || file.name + file.lastModified,
-                    name: file.name,
-                    status: 'done',
-                    originFileObj: rcFile,
-                    lastModified: file.lastModified,
-                    lastModifiedDate: rcFile.lastModifiedDate || new Date(file.lastModified),
-                    size: file.size,
-                    type: file.type,
-                    percent: 100,
-                  } as UploadFile;
-                })}
+                fileList={docFiles}
                 disabled={uploading}
+                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                onPreview={(file) => {
+                  // This will be replaced with your download API
+                  window.open(`/api/downloads/${file.name}`, '_blank');
+                }}
+                onDownload={(file) => {
+                  // This will be replaced with your download API
+                  window.open(`/api/downloads/${file.name}`, '_blank');
+                }}
               >
                 <p className="ant-upload-text text-dark d-flex align-items-center justify-content-center gap-2  fs-14 fw-medium">
                   <span className="primary-color">Choose file</span> or drop here
@@ -413,7 +573,6 @@ const CaseForm: React.FC<CaseFormProps> = ({ caseNumber }) => {
 
         <div className="d-flex align-items-center mt-5 px-3 gap-3" style={{ justifyContent: 'space-between' }}>
           <div className="d-flex align-items-center gap-3">
-            {/* {isReviewer && ( */}
             <>
               <Checkbox
                 checked={form.isUrgent}
@@ -436,14 +595,14 @@ const CaseForm: React.FC<CaseFormProps> = ({ caseNumber }) => {
                 onChange={e => handleChange("isShowCause", e.target.checked)}
               >Is Show Cause</Checkbox>
             </>
-            {/* )} */}
           </div>
           <Button
             onClick={handleSubmit}
             className="primary-btn"
             style={{ height: '40px', width: '170px' }}
+            loading={loading}
           >
-            Submit
+            {form.id ? 'Update' : 'Submit'}
           </Button>
         </div>
       </div>

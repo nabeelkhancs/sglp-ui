@@ -20,3 +20,4 @@ export const users = `${commonAdminEP}users`;
 
 //cases
 export const cases = `${commonAdminEP}cases`;
+export const committees = `${commonAdminEP}committees`;

@@ -120,4 +120,43 @@ export class Validations {
     if (!form.caseRemarks) { errors.caseRemarks = "Remarks are required"; valid = false; }
     return { valid, errors };
   }
+
+  static validateCommitteeForm(form: {
+    cpNumber: string;
+    court: string;
+    headedBy: string;
+    tors: string;
+    reportResponse: string;
+    status: string;
+  }) {
+    let valid = true;
+    let errors: Partial<Record<string, string>> = {};
+    
+    if (!form.cpNumber) { 
+      errors.cpNumber = "CP Number is required"; 
+      valid = false; 
+    }
+    if (!form.court) { 
+      errors.court = "Court is required"; 
+      valid = false; 
+    }
+    if (!form.headedBy) { 
+      errors.headedBy = "Composition Headed By is required"; 
+      valid = false; 
+    }
+    if (!form.tors) { 
+      errors.tors = "Terms of References are required"; 
+      valid = false; 
+    }
+    if (!form.reportResponse) { 
+      errors.reportResponse = "Report/Response is required"; 
+      valid = false; 
+    }
+    if (!form.status) { 
+      errors.status = "Status is required"; 
+      valid = false; 
+    }
+    
+    return { valid, errors };
+  }
 }

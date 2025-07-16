@@ -1,4 +1,4 @@
-import { cases, permissions, users, verifyEmail } from "./communications";
+import { cases, permissions, users, verifyEmail, committees } from "./communications";
 import HTTPMethods from "./index";
 
 export class APICalls {
@@ -52,4 +52,48 @@ export class APICalls {
     }
   }
 
+  static async createCommitteeReport(data: any) {
+    try {
+      const result = await HTTPMethods.post(committees, data);
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async updateCommitteeReport(id: number, data: any) {
+    try {
+      const result = await HTTPMethods.put(`${committees}/${id}`, data);
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async getCommitteeReport(id: number) {
+    try {
+      const result = await HTTPMethods.get(`${committees}/${id}`);
+      return result?.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async getAllCommitteeReports() {
+    try {
+      const result = await HTTPMethods.get(committees);
+      return result?.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async deleteCommitteeReport(id: number) {
+    try {
+      const result = await HTTPMethods.deleted(`${committees}/${id}`);
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
