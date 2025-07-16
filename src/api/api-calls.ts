@@ -1,4 +1,4 @@
-import { permissions, users, verifyEmail } from "./communications";
+import { cases, permissions, users, verifyEmail } from "./communications";
 import HTTPMethods from "./index";
 
 export class APICalls {
@@ -31,10 +31,22 @@ export class APICalls {
     }
   }
 
-  static async verification(){
+  static async verification() {
     try {
       const result = await HTTPMethods.get(`/v1/verification`);
       return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async getCommmitteeCases() {
+    try {
+      const result = await HTTPMethods.get(`${cases}?subjectOfApplication=committee`);
+      return result?.data?.result?.rows?.map((item: any) => ({
+        value: item.id,
+        label: item.cpNumber
+      })) || [];
     } catch (error) {
       throw error;
     }

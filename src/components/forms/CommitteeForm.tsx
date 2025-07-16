@@ -3,6 +3,7 @@ import { Input, Select, Button, Upload } from "antd";
 import { getCourtData } from "@/utils/dropdownData";
 import type { UploadFile, UploadProps } from "antd/es/upload/interface";
 import type { RcFile } from "antd/es/upload";
+import { APICalls } from "@/api/api-calls";
 
 const { TextArea } = Input;
 const { Dragger } = Upload;
@@ -35,6 +36,7 @@ const CommitteeReportForm: React.FC = () => {
   const [form, setForm] = useState<CommitteeReportFormValues>(initialForm);
   const [submitting, setSubmitting] = useState(false);
   const [files, setFiles] = useState<UploadFile[]>([]);
+  const [committeeCases, setCommitteeCases] = useState([]);
 
   const handleChange = (field: keyof CommitteeReportFormValues, value: any) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -59,6 +61,17 @@ const CommitteeReportForm: React.FC = () => {
     setSubmitting(false);
   };
 
+  const getComCases = async () => {
+    try {
+      let res = await APICalls.getCommmitteeCases();
+      setCommitteeCases(res || []);
+    } catch (error) {
+      console.error("Error fetching committee cases:", error);
+    }
+  }
+  useEffect(() => {
+    getComCases();
+  }, []);
   return (
     <div className="row g-2">
       <div className="col-md-4">
@@ -67,7 +80,7 @@ const CommitteeReportForm: React.FC = () => {
           <Select
             className="w-100"
             placeholder="Select CP Number"
-            options={[]} // TODO: populate with dynamic CP numbers
+            options={committeeCases || []}
             value={form.cpNumber}
             onChange={(val) => handleChange("cpNumber", val)}
           />
@@ -107,7 +120,7 @@ const CommitteeReportForm: React.FC = () => {
             value={form.tors}
             onChange={(e) => handleChange("tors", e.target.value)}
             className="fixed-textarea"
-        />
+          />
         </div>
       </div>
 

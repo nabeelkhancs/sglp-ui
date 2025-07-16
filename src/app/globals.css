@@ -703,6 +703,7 @@ button.react-calendar__navigation__label {
 }
 
 .ant-input.css-dev-only-do-not-override-5uvb3z.ant-input-outlined.fixed-textarea {
-  min-height: 120px !important;
+  /* min-height: 120px !important; */
+  height: auto !important;
   resize: none;
 }
