@@ -4,7 +4,7 @@ const NewCommittee = () => {
     return (
         <>
             <DashboardLayout>
-                hello
+                Error loading committee page
             </DashboardLayout>
         </>
     )
