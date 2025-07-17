@@ -24,7 +24,7 @@ const NotificationDropdown = () => {
         <Dropdown menu={{ items }} trigger={['click']} placement="bottomLeft">
             <a onClick={e => e.preventDefault()}>
                 <span>
-                    <img src="/src/assets/icons/notification-icon.svg" alt="" />
+                    <img src="/icons/notification-icon.svg" alt="" />
                 </span>
             </a>
         </Dropdown>
