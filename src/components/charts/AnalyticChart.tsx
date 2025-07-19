@@ -79,7 +79,7 @@ const AnalyticsChart = () => {
   return (
     <div className="content-wrapper">
       <div className="d-flex justify-content-between align-items-center mb-3">
-        <h5 className="mb-0 fw-bold">Analytics</h5>
+        <h5 className="mb-0 fw-semibold">Analytics</h5>
         <div className="d-flex gap-3">
           <Select defaultValue="2025" style={{ width: 100 }} suffixIcon={<img src='/icons/chevron-down.svg' />}>
           <Select.Option value="2024">2024</Select.Option>
