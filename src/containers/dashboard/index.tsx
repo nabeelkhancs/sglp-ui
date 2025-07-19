@@ -9,6 +9,9 @@ import 'react-calendar/dist/Calendar.css';
 import { useState } from "react";
 import CasesContainer from "../cases";
 import CourtsCards from '@/components/CourtsCard';
+import AnalyticsChart from '@/components/charts/AnalyticChart';
+import DonutChart from '@/components/charts/AnalyticChart2';
+import AnalyticsChart2 from '@/components/charts/AnalyticChart2';
 
 // Highlighted dates
 const redDates = [
@@ -38,7 +41,7 @@ const DashboardContainer = () => {
       </div>
       <div className="content ">
         
-        <div className="row mb-4">
+        <div className="row mb-34">
           <div className="col-md-4">
             <div className="court-card">
               <CourtsCards
@@ -68,7 +71,7 @@ const DashboardContainer = () => {
           </div>
         </div>
 
-        <div className="row mb-4 count-cards g-4">
+        <div className="row mb-34 count-cards g-4">
           <div className="col-md-4">
            <CountCards  
            badgeCount={13}
@@ -120,8 +123,12 @@ const DashboardContainer = () => {
         </div>
 
         <div className="row">
-          <div className="col-md-4"></div>
-          <div className="col-md-4"></div>
+          <div className="col-md-4">
+            <AnalyticsChart />
+          </div>
+          <div className="col-md-4">
+            <AnalyticsChart2 />
+          </div>
            <div className="col-md-4">
             <div className="calender mb-3"  >
                 <Calendar

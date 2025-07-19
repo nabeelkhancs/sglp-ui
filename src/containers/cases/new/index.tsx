@@ -22,7 +22,7 @@ const NewCaseContainer: React.FC<NewCaseContainerProps> = ({ caseNumber }) => {
             <div className="page-title mb-3">
                 <h1 className="mb-0">{caseNumber ? "Edit Case "+caseNumber  : "New Case"}</h1>
             </div>
-            <div className="content p-4 bg-white">
+            <div className="content content-wrapper p-4 bg-white">
                 <CaseForm caseNumber={caseNumber} />
             </div>
             {/* <div className="d-flex justify-content-end mt-4 px-3">

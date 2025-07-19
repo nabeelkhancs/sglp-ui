@@ -19,7 +19,7 @@ const NewCommitteeContainer = () => {
                 <div className="page-title mb-3">
                     <h1 className="mb-0">{"New Committee"}</h1>
                 </div>
-                <div className="content p-4 bg-white">
+                <div className="content content-wrapper p-4 bg-white">
                     <CommitteeReportForm />
                 </div>
             </div>

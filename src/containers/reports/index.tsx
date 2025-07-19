@@ -17,7 +17,7 @@ const ReportsContainer: React.FC = () => {
       <div className="page-title mb-3">
         <h1 className="mb-0">Generate Reports</h1>
       </div>
-      <div className="content p-4 bg-white">
+      <div className="content p-4 bg-white content-wrapper">
         <div className="row align-items-end">
           <div className="col-md-5">
             <CustomMonthSelector />
