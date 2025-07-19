@@ -5,6 +5,9 @@
   --heading-color: #383838;
   --background-color: #fbfbfb;
   --text-color: #2C2C2C;
+  --dashboard-theme-bg: #00331A;
+  --dashboard-item: #17452F;
+  --dashboard-selected: #018243;
 
   /* === Fonts === */
   --font-family-base: "General-Sans", sans-serif;

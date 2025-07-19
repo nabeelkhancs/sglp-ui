@@ -351,7 +351,7 @@ header .user-dropdown .user-wrapper {
 
 .dashboard-page .count-cards .box {
   border-radius: 10px;
-  padding: 22px 26px;
+  padding: 27px 17px;
 }
 
 .table-wrapper .card-content {
@@ -511,12 +511,19 @@ header .user-dropdown .user-wrapper {
 /* Data Operator */
 
 .operator-layout .sidebar {
-  background: linear-gradient(260.08deg, #04B961 -38.81%, #006C37 127.68%);
+  background: var(--dashboard-theme-bg)
 }
 
-.operator-layout .ant-menu,
-.operator-layout .ant-menu-item,
+
+.operator-layout .ant-menu-item {
+  background-color: var(--dashboard-item);
+}
+
 .operator-layout .ant-menu-item:hover {
+  background-color: var(--dashboard-selected) !important;
+}
+
+.operator-layout .ant-menu.ant-menu-root {
   background-color: transparent;
 }
 
@@ -534,14 +541,14 @@ header .user-dropdown .user-wrapper {
 }
 
 .operator-layout .ant-menu-item.ant-menu-item-selected {
-  background-color: #fff !important;
-  color: #000;
+  background-color: var(--dashboard-selected) !important;
+  color: #fff;
 }
 
-.operator-layout .ant-menu-item.ant-menu-item-selected img {
+/* .operator-layout .ant-menu-item.ant-menu-item-selected img {
   filter: brightness(0) saturate(100%) invert(43%) sepia(96%) saturate(748%) hue-rotate(97deg) brightness(97%) contrast(101%);
 
-}
+} */
 
 .operator-layout .ant-table-wrapper .ant-table-thead>tr>th {
   background: #01824312;
@@ -564,7 +571,8 @@ header .user-dropdown .user-wrapper {
 }
 
 
-.month-selector .ant-select, .month-selector .ant-select-selector {
+.month-selector .ant-select,
+.month-selector .ant-select-selector {
   height: auto !important;
   border: none !important;
 }
@@ -577,8 +585,8 @@ header .user-dropdown .user-wrapper {
   background: transparent !important;
 }
 
-:where(.css-dev-only-do-not-override-5uvb3z).ant-input-affix-wrapper >input.ant-input, 
-:where(.css-dev-only-do-not-override-5uvb3z).ant-input-affix-wrapper >textarea.ant-input {
+:where(.css-dev-only-do-not-override-5uvb3z).ant-input-affix-wrapper>input.ant-input,
+:where(.css-dev-only-do-not-override-5uvb3z).ant-input-affix-wrapper>textarea.ant-input {
   color: #fff !important;
 }
 
@@ -594,60 +602,70 @@ header .user-dropdown .user-wrapper {
 .ant-checkbox-inner {
   border-radius: 4px;
 }
+
 .ant-checkbox-checked .ant-checkbox-inner {
   background-color: #018243 !important;
   border-color: #018243 !important;
 }
+
 .ant-checkbox-checked .ant-checkbox-inner:after {
   border-color: #fff !important;
 }
+
 .ant-checkbox-wrapper,
-.ant-checkbox + span,
+.ant-checkbox+span,
 .ant-checkbox-inner {
   font-weight: bold !important;
 }
 
 /* Calendar Styles */
 
- .react-calendar {
-    border: none !important;
-    width: 100% !important;
-    border-radius: 15px !important;
-    font-family: var(--font-family-base) !important;
+.react-calendar {
+  border: none !important;
+  width: 100% !important;
+  border-radius: 15px !important;
+  font-family: var(--font-family-base) !important;
 }
 
-.react-calendar abbr[title], .react-calendar abbr[data-original-title] {
-font-size: 12px;
-font-weight: 600;
-text-decoration: none;
+.react-calendar abbr[title],
+.react-calendar abbr[data-original-title] {
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
 }
-.calendar .react-calendar button, .react-calendar__tile {
+
+.calendar .react-calendar button,
+.react-calendar__tile {
   font-size: 14px;
   font-weight: 500;
 }
-button.react-calendar__tile.react-calendar__month-view__days__day.react-calendar__month-view__days__day--neighboringMonth { 
-    color: #00175426;
+
+button.react-calendar__tile.react-calendar__month-view__days__day.react-calendar__month-view__days__day--neighboringMonth {
+  color: #00175426;
 }
 
 .react-calendar__viewContainer button.react-calendar__tile {
-    width: 44px;
-    height: 39px;
-    line-height: 0;
+  width: 44px;
+  height: 39px;
+  line-height: 0;
 }
+
 .react-calendar__tile--now {
-    background: #FFF2D8;
+  background: #FFF2D8;
 }
+
 span.react-calendar__navigation__label__labelText.react-calendar__navigation__label__labelText--from {
-    font-size: 16px;
-    font-weight: 700;
+  font-size: 16px;
+  font-weight: 700;
 }
+
 button.react-calendar__navigation__arrow {
-    font-size: 24px;
+  font-size: 24px;
 }
 
 button.react-calendar__navigation__label {
-    font-size: 16px;
-    font-weight: 600;
+  font-size: 16px;
+  font-weight: 600;
 }
 
 /* User action button colors for Ant Design buttons */
@@ -656,13 +674,17 @@ button.react-calendar__navigation__label {
 .accept-action {
   color: #3c763d !important;
 }
-.reject-action, .reject-img {
+
+.reject-action,
+.reject-img {
   color: #a94442 !important;
 }
+
 .delete-action,
 .view-action {
   color: #000 !important;
 }
+
 .table-action {
   cursor: pointer;
   font-weight: 500;
@@ -670,6 +692,7 @@ button.react-calendar__navigation__label {
   text-align: center;
   text-decoration: none !important;
 }
+
 .table-action:hover {
   text-decoration: none !important;
 }
@@ -680,18 +703,21 @@ button.react-calendar__navigation__label {
   border-radius: 6px !important;
   border: 2px solid #d32f2f !important;
 }
+
 .calendar-yellow {
   background: #fff9c4 !important;
   color: #fbc02d !important;
   border-radius: 6px !important;
   border: 2px solid #fbc02d !important;
 }
+
 .calendar-green {
   background: #d0f8ce !important;
   color: #388e3c !important;
   border-radius: 6px !important;
   border: 2px solid #388e3c !important;
 }
+
 .react-calendar__tile--now:not(.calendar-red):not(.calendar-yellow):not(.calendar-green) {
   background: none !important;
   color: inherit !important;
@@ -884,4 +910,17 @@ textarea.ant-input.ant-input-outlined {
 
 .ant-upload-list-item .anticon-file {
   color: #666 !important;
+}
+
+
+.court-card .badge,
+.count-cards .badge {
+  height: 22px;
+  line-height: 15px;
+  font-size: 12px;
+  right: 15px;
+  width: 22px;
+  display: flex;
+  justify-content: center;
+  font-weight: 600;
 }

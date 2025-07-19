@@ -8,6 +8,7 @@ import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { useState } from "react";
 import CasesContainer from "../cases";
+import CourtsCards from '@/components/CourtsCard';
 
 // Highlighted dates
 const redDates = [
@@ -30,23 +31,99 @@ const DashboardContainer = () => {
   const [value, setValue] = useState<Date | null>(new Date());
   const userType = Cookies.get("userType");
   // if (userType !== "ADMIN") {
-    return (
-      <div className="manager dashboard-page">
-        <div className="page-title mb-3">
-          <h1 className="mb-0">Dashboard</h1>
-        </div>
-        <div className="content ">
-          <div className="row">
-            <div className="col-md-8">
-              <CountCards isManager={true} />
-              <div className="content-wrapper">
-                <h4 className="fw-medium fs-5">Cases</h4>
-                <Divider className="my-2" />
-                <CasesContainer dashboardLayout={true} />
-              </div>
+  return (
+    <div className="manager dashboard-page">
+      <div className="page-title mb-3">
+        <h1 className="mb-0">Dashboard</h1>
+      </div>
+      <div className="content ">
+        
+        <div className="row mb-4">
+          <div className="col-md-4">
+            <div className="court-card">
+              <CourtsCards
+                badgeCount={4}
+                courtName="Supreme Court"
+                courtNumber={48}
+              />
             </div>
-            <div className="col-md-4">
-              <div className="calender mb-3"  >
+          </div>
+          <div className="col-md-4">
+            <div className="court-card">
+              <CourtsCards
+                badgeCount={2}
+                courtName="High Court"
+                courtNumber={70}
+              />
+            </div>
+          </div>
+          <div className="col-md-4">
+            <div className="court-card">
+              <CourtsCards
+                badgeCount={8}
+                courtName="District  Court"
+                courtNumber={32}
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="row mb-4 count-cards g-4">
+          <div className="col-md-4">
+           <CountCards  
+           badgeCount={13}
+           title='Total Cases'
+           caseCount={150}
+            cardColor='linear-gradient(90deg, #0050FF 0%, #7FAEF6 100%)'
+           />
+          </div>
+          <div className="col-md-4">
+           <CountCards  
+           badgeCount={35}
+           title='Directions '
+           caseCount={49}
+            cardColor='linear-gradient(90deg, #FE0604 0%, #FF937E 100%)'
+           />
+          </div>
+          <div className="col-md-4">
+           <CountCards  
+           badgeCount={20}
+           title='Call for Appearance'
+           caseCount={48}
+            cardColor='linear-gradient(90deg, #E08303 0%, #E3B94D 100%)'
+           />
+          </div>
+          <div className="col-md-4">
+           <CountCards  
+           badgeCount={2}
+           title='Committee '
+           caseCount={34}
+            cardColor='linear-gradient(90deg, #3E9069 0%, #35B476 100%)'
+           />
+          </div>
+          <div className="col-md-4">
+           <CountCards  
+           badgeCount={2}
+           title='Contempt '
+           caseCount={26}
+            cardColor='linear-gradient(270deg, #B89DE0 0%, #9659F3 100%)'
+           />
+          </div>
+          <div className="col-md-4">
+           <CountCards  
+           badgeCount={2}
+           title='Status of Compliance'
+           caseCount={13}
+            cardColor='linear-gradient(90deg, #00B69E 0%, #5ED5CA 56.5%)'
+           />
+          </div>
+        </div>
+
+        <div className="row">
+          <div className="col-md-4"></div>
+          <div className="col-md-4"></div>
+           <div className="col-md-4">
+            <div className="calender mb-3"  >
                 <Calendar
                   onChange={(val) => setValue(val as Date | null)}
                   value={value}
@@ -60,33 +137,12 @@ const DashboardContainer = () => {
                   }}
                 />
               </div>
-              <div className="bg-white rounded-4">
-                <h3 className="fw-semibold fs-5 py-2 px-4">Matters</h3>
-                <Divider className="my-0" />
-                <div className="notice py-2 px-4">
-                  {/* <p className="mb-1">Matters</p> */}
-                  <p className="mb-1 fw-bold text-danger">!CS Summoned in person</p>
-                  <p className="mb-1">In 3 Days on - 24/11/2025</p>
-                  <p className="mb-1">Cp No - 4567 of 2025</p>
-                  <p className="mb-1">Kamran khan vs Gos</p>
-                  <p className="mb-1">With order date 6/3/2025</p>
-                </div>
-                <Divider className="my-0" />
-                <div className="notice py-2 px-4">
-                  {/* <p className="mb-1">Matters</p> */}
-                  <p className="mb-1 fw-bold text-danger">!Secretary GA Summond in person</p>
-                  <p className="mb-1">IN 7 DAYS-ON 01/07/2025</p>
-                  <p className="mb-1">Suit No 3192 of 2025</p>
-                  <p className="mb-1">Abdul Khalid V Government of sindh</p>
-                  <p className="mb-1">With vide order dated 6.7.2025</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <style jsx global>{``}</style>
+           </div>
+        </div> 
       </div>
-    );
+      <style jsx global>{``}</style>
+    </div>
+  );
   // }
   // return (
   //   <div className="dashboard-page">
