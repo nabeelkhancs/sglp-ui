@@ -38,7 +38,7 @@ const DashboardContainer = () => {
         <div className="content ">
           <div className="row">
             <div className="col-md-8">
-              <CountCards isManager={true} />
+              <CountCards badgeCount={0} title="Total" caseCount={0} cardColor="linear-gradient(90deg, #0050FF 0%, #7FAEF6 100%)" />
               <div className="content-wrapper">
                 <h4 className="fw-medium fs-5">Cases</h4>
                 <Divider className="my-2" />
