@@ -92,7 +92,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   }
 
   return (
-    <Layout style={{ minHeight: "100vh" }} className={userType == "ADMIN" ? "" : `operator-layout ${userType == 'OPERATOR' ? 'operator' : 'manger'}` }>
+    <Layout style={{ minHeight: "100vh" }} className={`operator-layout ${userType == 'OPERATOR' ? 'operator' : 'manger'}` }>
       <Header />
       <Layout>
         <Sider
