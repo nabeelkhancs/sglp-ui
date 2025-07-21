@@ -11,10 +11,11 @@ import {
   ChartOptions,
 } from "chart.js";
 import { MoreOutlined } from "@ant-design/icons";
+import React from "react";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const chartData = {
+const defaultChartData = {
   labels: [
     "Total Cases",
     "Directions",
@@ -73,31 +74,31 @@ const items = [
   },
 ];
 
+interface AnalyticsChart2Props {
+  chartData?: any;
+}
 
-
-const AnalyticsChart2 = () => {
+const AnalyticsChart2: React.FC<AnalyticsChart2Props> = ({ chartData }) => {
   return (
     <div className="content-wrapper">
       <div className="d-flex justify-content-between align-items-center mb-3">
-        <h5 className="mb-0 fw-semibold">Analytics</h5>
+        <h5 className="mb-0 fw-semibold">Courts Cases</h5>
         <div className="d-flex gap-3">
           <Select defaultValue="2025" style={{ width: 100 }} suffixIcon={<img src='/icons/chevron-down.svg' />}>
-          <Select.Option value="2024">2024</Select.Option>
-          <Select.Option value="2025">2025</Select.Option>
-        </Select>
-
-        <Dropdown
-          menu={{ items }}
-          trigger={['click']}
-          placement="bottomRight"
-        >
-          <MoreOutlined style={{ fontSize: 20, cursor: 'pointer' }} />
-        </Dropdown>
+            <Select.Option value="2024">2024</Select.Option>
+            <Select.Option value="2025">2025</Select.Option>
+          </Select>
+          <Dropdown
+            menu={{ items }}
+            trigger={['click']}
+            placement="bottomRight"
+          >
+            <MoreOutlined style={{ fontSize: 20, cursor: 'pointer' }} />
+          </Dropdown>
         </div>
       </div>
-
       <div className="" style={{ height: '230px' }}>
-        <Doughnut data={chartData} options={options} />
+        <Doughnut data={chartData || defaultChartData} options={options} />
       </div>
     </div>
   );

@@ -72,6 +72,67 @@ const DashboardContainer = () => {
   const contemptsCount = countByStatus("contempt");
   const complianceStatusCount = countByStatus("committeConstitution");
 
+  // Prepare chart data for graphs
+  const chartData = {
+    labels: [
+      "Directions",
+      "Call for Appearance",
+      "Committee",
+      "Contempt",
+      "Status of Compliance",
+    ],
+    datasets: [
+      {
+        label: "Case Count",
+        data: [
+          directionsCount,
+          callForAppearanceCount,
+          committeesCount,
+          contemptsCount,
+          complianceStatusCount,
+        ],
+        backgroundColor: [
+          "#ff5b5b",
+          "#f9b233",
+          "#3ba55d",
+          "#b77cf1",
+          "#40c4c1",
+        ],
+        borderColor: "#fff",
+        borderWidth: 2,
+      },
+    ],
+  };
+
+  // Prepare court-wise chart data for AnalyticsChart2
+  const courtWiseChartData = {
+    labels: [
+      "Supreme Court",
+      "High Court",
+      "District Court",
+      "Other Courts/Tribunals",
+    ],
+    datasets: [
+      {
+        label: "Cases by Court",
+        data: [
+          supremeCourtCount,
+          highCourtCount,
+          districtCourtCount,
+          otherCourtsCount,
+        ],
+        backgroundColor: [
+          "#2f74ff",
+          "#ff5b5b",
+          "#f9b233",
+          "#3ba55d",
+        ],
+        borderColor: "#fff",
+        borderWidth: 2,
+      },
+    ],
+  };
+
   if (loading) {
     return <div style={{ minHeight: "60vh", display: "flex", alignItems: "center", justifyContent: "center" }}><Spin size="large" /></div>;
   }
@@ -178,10 +239,10 @@ const DashboardContainer = () => {
 
         <div className="row">
           <div className="col-md-4">
-            <AnalyticsChart />
+            <AnalyticsChart chartData={chartData} />
           </div>
           <div className="col-md-4">
-            <AnalyticsChart2 />
+            <AnalyticsChart2 chartData={courtWiseChartData} />
           </div>
            <div className="col-md-4">
             <div className="calender mb-3"  >
