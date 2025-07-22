@@ -16,7 +16,7 @@ const CountCards: FC<CountCardsProps> = ({ badgeCount, title, cardColor, caseCou
       style={{ background: `${cardColor}`, cursor: link ? 'pointer' : 'default' }}
     >
       <span className="position-absolute badge rounded-pill bg-danger" style={{ top: '12px' }}>{badgeCount}</span>
-      <span className="fs-5 text-white fw-semibold">{title}</span>
+      <span className="fs-4 text-white fw-semibold">{title}</span>
       <h3 className="mt-2 text-white fs-1 fw-semibold" >
         {caseCount}
       </h3>

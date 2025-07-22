@@ -189,7 +189,8 @@ const countBySubject = (subject: string) => dashboardData.filter((item) => (item
           <div className="col-md-4">
             <CountCards
               badgeCount={totalCases}
-              title='TOTAL CASES OF CS'
+              title='Total Cases of CS'
+              // title='TOTAL CASES OF CS'
               caseCount={totalCases}
               cardColor='linear-gradient(90deg, #0050FF 0%, #7FAEF6 100%)'
               link={userType === "ADMIN" ? "/cases" : "/cases/submitted"}
@@ -198,7 +199,7 @@ const countBySubject = (subject: string) => dashboardData.filter((item) => (item
           <div className="col-md-4">
             <CountCards
               badgeCount={directionsCount}
-              title='DIRECTIONS'
+              title='Directions'
               caseCount={directionsCount}
               cardColor='linear-gradient(90deg, #FE0604 0%, #FF937E 100%)'
               link={userType === "ADMIN" ? "/cases" : "/cases/submitted"}
@@ -207,7 +208,7 @@ const countBySubject = (subject: string) => dashboardData.filter((item) => (item
           <div className="col-md-4">
             <CountCards
               badgeCount={callForAppearanceCount}
-              title='CALL FOR APPEARANCE'
+              title='Call for Appearance / Urgency'
               caseCount={callForAppearanceCount}
               cardColor='linear-gradient(90deg, #E08303 0%, #E3B94D 100%)'
               link={userType === "ADMIN" ? "/cases" : "/cases/submitted"}
@@ -216,7 +217,7 @@ const countBySubject = (subject: string) => dashboardData.filter((item) => (item
           <div className="col-md-4">
             <CountCards
               badgeCount={committeesCount}
-              title='COMMITTEES'
+              title='Committe / Inquiries'
               caseCount={committeesCount}
               cardColor='linear-gradient(90deg, #3E9069 0%, #35B476 100%)'
               link={userType === "ADMIN" ? "/cases" : "/cases/submitted"}
@@ -225,7 +226,7 @@ const countBySubject = (subject: string) => dashboardData.filter((item) => (item
           <div className="col-md-4">
             <CountCards
               badgeCount={contemptsCount}
-              title='CONTEMPTS'
+              title='Contempts'
               caseCount={contemptsCount}
               cardColor='linear-gradient(270deg, #B89DE0 0%, #9659F3 100%)'
               link={userType === "ADMIN" ? "/cases" : "/cases/submitted"}
@@ -234,7 +235,7 @@ const countBySubject = (subject: string) => dashboardData.filter((item) => (item
           <div className="col-md-4">
             <CountCards
               badgeCount={complianceStatusCount}
-              title='COMPLIANCE STATUS'
+              title='Compliance Status'
               caseCount={complianceStatusCount}
               cardColor='linear-gradient(90deg, #00B69E 0%, #5ED5CA 56.5%)'
               link={userType === "ADMIN" ? "/cases" : "/cases/submitted"}
