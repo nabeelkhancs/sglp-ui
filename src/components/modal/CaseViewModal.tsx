@@ -8,6 +8,7 @@ import {
   getCaseStatusData,
   getSubjectData
 } from '@/utils/dropdownData';
+import dayjs from 'dayjs';
 
 interface CaseViewModalProps {
   open: boolean;
@@ -23,6 +24,13 @@ const CaseViewModal: React.FC<CaseViewModalProps> = ({ open, onClose, caseData }
   ];
   // Helper to get label for dropdown value
   const getLabel = (key: string, value: any) => {
+    // Format date fields
+    if (key.toLowerCase().includes('date') && value) {
+      const d = dayjs(value);
+      if (d.isValid()) {
+        return d.format('DD-MMM-YYYY');
+      }
+    }
     let options;
     switch (key) {
       case 'relativeDepartment':
