@@ -53,9 +53,8 @@ const DashboardContainer = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  // Helper functions to count cases by type/status/court/region
+  // Helper functions to count cases by type/subject/court/region
   const countByCourt = (court: string) => dashboardData.filter((item) => item.court === court).length;
-  const countByStatus = (status: string) => dashboardData.filter((item) => (item.caseStatus || []).includes(status)).length;
   const countBySubject = (subject: string) => dashboardData.filter((item) => item.subjectOfApplication === subject).length;
 
   // Example court names from your sample data
@@ -64,13 +63,13 @@ const DashboardContainer = () => {
   const districtCourtCount = countByCourt("districtCourt");
   const otherCourtsCount = countByCourt("otherCourt");
 
-  // Example status/subject counts
+  // Example subject counts
   const totalCases = dashboardData.length;
-  const directionsCount = countByStatus("underCompliance");
-  const callForAppearanceCount = countByStatus("pending");
+  const directionsCount = countBySubject("directions");
+  const callForAppearanceCount = countBySubject("callForAppearance");
   const committeesCount = countBySubject("committee");
-  const contemptsCount = countByStatus("contempt");
-  const complianceStatusCount = countByStatus("committeConstitution");
+  const contemptsCount = countBySubject("contempt");
+  const complianceStatusCount = countBySubject("complianceStatus");
 
   // Prepare chart data for graphs
   const chartData = {
