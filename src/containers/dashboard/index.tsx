@@ -69,7 +69,7 @@ const countBySubject = (subject: string) => dashboardData.filter((item) => (item
   const callForAppearanceCount = countBySubject("callForAppearance");
   const committeesCount = countBySubject("committee");
   const contemptsCount = countBySubject("contempt");
-  const complianceStatusCount = countBySubject("complianceStatus");
+  const complianceStatusCount = countBySubject("compliance");
 
   // Prepare chart data for graphs
   const chartData = {
