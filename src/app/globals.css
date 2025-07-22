@@ -649,9 +649,11 @@ button.react-calendar__tile.react-calendar__month-view__days__day.react-calendar
 }
 
 .react-calendar__viewContainer button.react-calendar__tile {
-  width: 44px;
-  height: 39px;
+  width: 40px;
+  height: 38px;
   line-height: 0;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .react-calendar__tile--now {
@@ -659,17 +661,22 @@ button.react-calendar__tile.react-calendar__month-view__days__day.react-calendar
 }
 
 span.react-calendar__navigation__label__labelText.react-calendar__navigation__label__labelText--from {
-  font-size: 16px;
-  font-weight: 700;
+    font-size: 20px;
+    font-weight: 600;
 }
 
 button.react-calendar__navigation__arrow {
-  font-size: 24px;
+  font-size: 30px;
+  padding-bottom: 10px;
 }
 
 button.react-calendar__navigation__label {
   font-size: 16px;
   font-weight: 600;
+}
+
+.react-calendar__navigation__prev2-button, .react-calendar__navigation__next2-button {
+  display: none;
 }
 
 /* User action button colors for Ant Design buttons */
@@ -702,25 +709,29 @@ button.react-calendar__navigation__label {
 }
 
 .calendar-red {
-  background: #ffdddd !important;
-  color: #d32f2f !important;
-  border-radius: 6px !important;
-  border: 2px solid #d32f2f !important;
+   background: linear-gradient(180deg, #D14D4D 0%, #CA6969 100%) !important;
+  color: #fff !important;
+  border-radius: 4px !important; 
 }
 
 .calendar-yellow {
-  background: #fff9c4 !important;
-  color: #fbc02d !important;
-  border-radius: 6px !important;
-  border: 2px solid #fbc02d !important;
+background: linear-gradient(180deg, #E2B459 0%, #F8CE7A 100%) !important; 
+  color: #fff !important;
+  border-radius: 4px !important; 
 }
 
 .calendar-green {
-  background: #d0f8ce !important;
-  color: #388e3c !important;
-  border-radius: 6px !important;
-  border: 2px solid #388e3c !important;
+  background: linear-gradient(180deg, #3E9069 0%, #35B476 100%) !important;
+  color: #fff !important;
+  border-radius: 4px !important; 
 }
+.react-calendar__tile {
+  border-radius: 4px;
+}
+.react-calendar__month-view__weekdays {
+      margin-bottom: 10px;
+    font-size: 14px;
+} 
 
 .react-calendar__tile--now:not(.calendar-red):not(.calendar-yellow):not(.calendar-green) {
   background: none !important;

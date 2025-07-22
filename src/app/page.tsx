@@ -2,6 +2,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import { Flex, Spin } from 'antd';
 
 export default function Home() {
   const router = useRouter();
@@ -14,8 +15,8 @@ export default function Home() {
     }
   }, [router]);
   return (
-    <div>
-      Loading...
-    </div>
+    <Flex align="center" gap="middle"> 
+      <Spin size="large" />
+    </Flex>
   );
 }

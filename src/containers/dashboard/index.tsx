@@ -250,9 +250,11 @@ const countBySubject = (subject: string) => dashboardData.filter((item) => (item
           <div className="col-md-4">
             <AnalyticsChart2 chartData={courtWiseChartData} />
           </div>
-          <div className="col-md-4">
-            <div className="calender mb-3"  >
+           <div className="col-md-3 mx-auto" style={{width:'27%'}}>
+            <div className="calender mt-4"  >
               <Calendar
+              next2Label={false}
+              prev2Label={false} 
                 onChange={(val) => setValue(val as Date | null)}
                 value={value}
                 tileClassName={({ date, view }) => {
