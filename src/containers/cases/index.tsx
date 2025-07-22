@@ -7,7 +7,15 @@ import { Helpers } from "@/utils/helpers";
 import Link from "next/link";
 import Image from 'next/image';
 import { DatePicker, Select, Input, Button } from "antd";
-import { getDepartmentData, getCourtData } from "@/utils/dropdownData";
+import {
+  getDepartmentData,
+  getCourtData,
+  getRegionData,
+  getCaseTypeData,
+  getCaseStatusData,
+  getSubjectData
+} from "@/utils/dropdownData";
+// ...existing code...
 import dayjs from "dayjs";
 
 import React from 'react';
@@ -28,6 +36,49 @@ const CasesContainer = ({ dashboardLayout = false }) => {
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [selectedCase, setSelectedCase] = useState<any>(null);
 
+  // Helper to get label for dropdown value
+  const getLabel = (key: string, value: any) => {
+    // Format date fields
+    if (key.toLowerCase().includes('date') && value) {
+      const d = dayjs(value);
+      if (d.isValid()) {
+        return d.format('DD-MMM-YYYY');
+      }
+    }
+    let options;
+    switch (key) {
+      case 'relativeDepartment':
+        options = getDepartmentData();
+        break;
+      case 'court':
+        options = getCourtData();
+        break;
+      case 'region':
+        options = getRegionData();
+        break;
+      case 'caseType':
+        options = getCaseTypeData();
+        break;
+      case 'caseStatus':
+        options = getCaseStatusData();
+        break;
+      case 'subject':
+        options = getSubjectData();
+        break;
+      default:
+        return Array.isArray(value) ? value.join(', ') : String(value);
+    }
+    if (Array.isArray(value)) {
+      return value.map((v: string) => {
+        const found = options.find(opt => opt.value === v);
+        return found ? found.label : v;
+      }).join(', ');
+    } else {
+      const found = options.find(opt => opt.value === value);
+      return found ? found.label : value;
+    }
+  };
+
   const columns = [
     {
       title: 'Case #',
@@ -40,10 +91,12 @@ const CasesContainer = ({ dashboardLayout = false }) => {
     {
       title: 'Case Status',
       dataIndex: 'caseStatus',
+      render: (_: any, record: any) => getLabel('caseStatus', record.caseStatus),
     },
     {
       title: 'Activity Log',
       dataIndex: 'createdAt',
+      render: (_: any, record: any) => getLabel('createdAt', record.createdAt),
     },
     {
       title: 'Action',
