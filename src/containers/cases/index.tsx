@@ -10,8 +10,10 @@ import { DatePicker, Select, Input, Button } from "antd";
 import { getDepartmentData, getCourtData } from "@/utils/dropdownData";
 import dayjs from "dayjs";
 
+import React from 'react';
+
 const CasesContainer = ({ dashboardLayout = false }) => {
-  const [permissions, setPermissions] = useState<any[]>(["Edit"]);
+  const [permissions, setPermissions] = useState<any[]>(["View"]);
   const [casesData, setCasesData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [dateReceived, setDateReceived] = useState<any>(null);
@@ -23,6 +25,8 @@ const CasesContainer = ({ dashboardLayout = false }) => {
   const [buttonType, setButtonType] = useState<string>("");
   const [secretaryCalled, setSecretaryCalled] = useState<boolean>(false);
   const [courtFilter, setCourtFilter] = useState<string>("");
+  const [viewModalOpen, setViewModalOpen] = useState(false);
+  const [selectedCase, setSelectedCase] = useState<any>(null);
 
   const columns = [
     {
@@ -45,23 +49,19 @@ const CasesContainer = ({ dashboardLayout = false }) => {
       title: 'Action',
       dataIndex: 'action',
       render: (_: any, record: any) => {
-        let link = '';
-        let label = '';
-        let icon = null;
-        if (permissions.includes('Edit')) {
-          link = `/cases/${record.caseNumber}/edit`;
-          label = 'Edit';
-          icon = <Image src="/icons/edit-icon.svg" width={18} height={18} alt="Edit" />;
-        } else if (permissions.includes('View')) {
-          link = `/cases/${record.caseNumber}/view`;
-          label = 'View';
-          icon = <Image src="/icons/view-icon.svg" width={18} height={18} alt="View" />;
-        }
-        if (!link) return null;
+        if (!permissions.includes('View')) return null;
         return (
-          <Link href={link} className='table-action d-flex align-items-center gap-1 text-dark text-decoration-none'>
-            {icon}{label}
-          </Link>
+          <span
+            className='table-action d-flex align-items-center gap-1 text-dark text-decoration-none'
+            style={{ cursor: 'pointer' }}
+            onClick={() => {
+              setSelectedCase(record);
+              setViewModalOpen(true);
+            }}
+          >
+            <Image src="/icons/view-icon.svg" width={18} height={18} alt="View" />
+            View
+          </span>
         );
       },
     },
@@ -87,7 +87,7 @@ const CasesContainer = ({ dashboardLayout = false }) => {
           createdAt: Helpers.formatDateTime(caseItem.createdAt)
         }
       }) || []);
-      setPermissions( ["Edit"]);
+      setPermissions(["View"]);
 
     } catch (e) {
       // Optionally handle error
@@ -201,7 +201,7 @@ const CasesContainer = ({ dashboardLayout = false }) => {
                   </Button>
                 </div>
               </div>
-              
+
             </div>
           </div>
         </div>
@@ -227,6 +227,23 @@ const CasesContainer = ({ dashboardLayout = false }) => {
           loading={loading}
         />
       </div>
+      {/* Modal for viewing case data */}
+      <React.Suspense fallback={null}>
+        {viewModalOpen && (
+          <>
+            {(() => {
+              const CaseViewModal = require('@/components/modal/CaseViewModal').default;
+              return (
+                <CaseViewModal
+                  open={viewModalOpen}
+                  onClose={() => setViewModalOpen(false)}
+                  caseData={selectedCase}
+                />
+              );
+            })()}
+          </>
+        )}
+      </React.Suspense>
     </div>
   );
 }
