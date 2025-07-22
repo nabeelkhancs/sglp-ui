@@ -55,7 +55,7 @@ const DashboardContainer = () => {
 
   // Helper functions to count cases by type/subject/court/region
   const countByCourt = (court: string) => dashboardData.filter((item) => item.court === court).length;
-  const countBySubject = (subject: string) => dashboardData.filter((item) => item.subjectOfApplication === subject).length;
+const countBySubject = (subject: string) => dashboardData.filter((item) => (item.subjectOfApplication || '').includes(subject)).length;
 
   // Example court names from your sample data
   const supremeCourtCount = countByCourt("supremeCourtOfPakistan");
