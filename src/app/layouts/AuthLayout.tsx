@@ -33,7 +33,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ isAdmin, children }) => {
                 <img src="/images/sindh-logo.png" alt="Logo" />
                 <h2 className="pe-3">
                   Welcome To <br />
-                  <span className="primary-color fw-semibold">S&GAD</span> LAW Section
+                  <span className="primary-color fw-semibold">SGA&CD</span> Legal Wing
                 </h2>
               </div>
             </div>

@@ -55,7 +55,7 @@ const AdminLoginContainer = () => {
     <div className="auth-page admin ">
       <div className="title text-center mb-4">
         <img src="/logo-green.png" className="mb-4" />
-        <h2><span className="primary-color">Welcome To S&GAD</span> LAW Section</h2>
+        <h2><span className="primary-color">Welcome To SGA&CD</span> Legal Wing</h2>
         <p className="fw-medium fs-6">Welcome back to Administration Login</p>
       </div>
       <div className="form-area">
