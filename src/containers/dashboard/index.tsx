@@ -146,7 +146,7 @@ const DashboardContainer = () => {
         <h1 className="mb-0">Dashboard</h1>
       </div> */}
       <div className="content ">
-        
+
         <div className="row mb-34">
           <div className="col-md-3">
             <div className="court-card">
@@ -188,52 +188,58 @@ const DashboardContainer = () => {
 
         <div className="row mb-34 count-cards g-4">
           <div className="col-md-4">
-           <CountCards  
-           badgeCount={totalCases}
-           title='TOTAL CASES OF CS'
-           caseCount={totalCases}
-            cardColor='linear-gradient(90deg, #0050FF 0%, #7FAEF6 100%)'
-           />
+            <CountCards
+              badgeCount={totalCases}
+              title='TOTAL CASES OF CS'
+              caseCount={totalCases}
+              cardColor='linear-gradient(90deg, #0050FF 0%, #7FAEF6 100%)'
+              link={userType === "ADMIN" ? "/cases" : "/cases/submitted"}
+            />
           </div>
           <div className="col-md-4">
-           <CountCards  
-           badgeCount={directionsCount}
-           title='DIRECTIONS'
-           caseCount={directionsCount}
-            cardColor='linear-gradient(90deg, #FE0604 0%, #FF937E 100%)'
-           />
+            <CountCards
+              badgeCount={directionsCount}
+              title='DIRECTIONS'
+              caseCount={directionsCount}
+              cardColor='linear-gradient(90deg, #FE0604 0%, #FF937E 100%)'
+              link={userType === "ADMIN" ? "/cases" : "/cases/submitted"}
+            />
           </div>
           <div className="col-md-4">
-           <CountCards  
-           badgeCount={callForAppearanceCount}
-           title='CALL FOR APPEARANCE'
-           caseCount={callForAppearanceCount}
-            cardColor='linear-gradient(90deg, #E08303 0%, #E3B94D 100%)'
-           />
+            <CountCards
+              badgeCount={callForAppearanceCount}
+              title='CALL FOR APPEARANCE'
+              caseCount={callForAppearanceCount}
+              cardColor='linear-gradient(90deg, #E08303 0%, #E3B94D 100%)'
+              link={userType === "ADMIN" ? "/cases" : "/cases/submitted"}
+            />
           </div>
           <div className="col-md-4">
-           <CountCards  
-           badgeCount={committeesCount}
-           title='COMMITTEES'
-           caseCount={committeesCount}
-            cardColor='linear-gradient(90deg, #3E9069 0%, #35B476 100%)'
-           />
+            <CountCards
+              badgeCount={committeesCount}
+              title='COMMITTEES'
+              caseCount={committeesCount}
+              cardColor='linear-gradient(90deg, #3E9069 0%, #35B476 100%)'
+              link={userType === "ADMIN" ? "/cases" : "/cases/submitted"}
+            />
           </div>
           <div className="col-md-4">
-           <CountCards  
-           badgeCount={contemptsCount}
-           title='CONTEMPTS'
-           caseCount={contemptsCount}
-            cardColor='linear-gradient(270deg, #B89DE0 0%, #9659F3 100%)'
-           />
+            <CountCards
+              badgeCount={contemptsCount}
+              title='CONTEMPTS'
+              caseCount={contemptsCount}
+              cardColor='linear-gradient(270deg, #B89DE0 0%, #9659F3 100%)'
+              link={userType === "ADMIN" ? "/cases" : "/cases/submitted"}
+            />
           </div>
           <div className="col-md-4">
-           <CountCards  
-           badgeCount={complianceStatusCount}
-           title='COMPLIANCE STATUS'
-           caseCount={complianceStatusCount}
-            cardColor='linear-gradient(90deg, #00B69E 0%, #5ED5CA 56.5%)'
-           />
+            <CountCards
+              badgeCount={complianceStatusCount}
+              title='COMPLIANCE STATUS'
+              caseCount={complianceStatusCount}
+              cardColor='linear-gradient(90deg, #00B69E 0%, #5ED5CA 56.5%)'
+              link={userType === "ADMIN" ? "/cases" : "/cases/submitted"}
+            />
           </div>
         </div>
 
@@ -244,23 +250,23 @@ const DashboardContainer = () => {
           <div className="col-md-4">
             <AnalyticsChart2 chartData={courtWiseChartData} />
           </div>
-           <div className="col-md-4">
+          <div className="col-md-4">
             <div className="calender mb-3"  >
-                <Calendar
-                  onChange={(val) => setValue(val as Date | null)}
-                  value={value}
-                  tileClassName={({ date, view }) => {
-                    if (view === 'month') {
-                      if (redDates.some(d => isSameDay(d, date))) return 'calendar-red';
-                      if (yellowDates.some(d => isSameDay(d, date))) return 'calendar-yellow';
-                      if (greenDates.some(d => isSameDay(d, date))) return 'calendar-green';
-                    }
-                    return '';
-                  }}
-                />
-              </div>
-           </div>
-        </div> 
+              <Calendar
+                onChange={(val) => setValue(val as Date | null)}
+                value={value}
+                tileClassName={({ date, view }) => {
+                  if (view === 'month') {
+                    if (redDates.some(d => isSameDay(d, date))) return 'calendar-red';
+                    if (yellowDates.some(d => isSameDay(d, date))) return 'calendar-yellow';
+                    if (greenDates.some(d => isSameDay(d, date))) return 'calendar-green';
+                  }
+                  return '';
+                }}
+              />
+            </div>
+          </div>
+        </div>
       </div>
       <style jsx global>{``}</style>
     </div>
