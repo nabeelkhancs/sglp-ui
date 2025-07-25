@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import { Divider } from "antd";
 import CountCards from "../../components/CountCard";
 import UsersContainer from "../users";
@@ -148,40 +149,48 @@ const countBySubject = (subject: string) => dashboardData.filter((item) => (item
 
         <div className="row mb-34">
           <div className="col-md-3">
-            <div className="court-card">
-              <CourtsCards
-                badgeCount={supremeCourtCount}
-                courtName="Supreme Court"
-                courtNumber={supremeCourtCount}
-              />
-            </div>
+            <Link href="/cases/supremecourt" style={{ textDecoration: 'none', color: 'inherit' }}>
+              <div className="court-card">
+                <CourtsCards
+                  badgeCount={supremeCourtCount}
+                  courtName="Supreme Court"
+                  courtNumber={supremeCourtCount}
+                />
+              </div>
+            </Link>
           </div>
           <div className="col-md-3">
-            <div className="court-card">
-              <CourtsCards
-                badgeCount={highCourtCount}
-                courtName="High Court"
-                courtNumber={highCourtCount}
-              />
-            </div>
+            <Link href="/cases/highcourt" style={{ textDecoration: 'none', color: 'inherit' }}>
+              <div className="court-card">
+                <CourtsCards
+                  badgeCount={highCourtCount}
+                  courtName="High Court"
+                  courtNumber={highCourtCount}
+                />
+              </div>
+            </Link>
           </div>
           <div className="col-md-3">
-            <div className="court-card">
-              <CourtsCards
-                badgeCount={districtCourtCount}
-                courtName="District Court"
-                courtNumber={districtCourtCount}
-              />
-            </div>
+            <Link href="/cases/districtcourts" style={{ textDecoration: 'none', color: 'inherit' }}>
+              <div className="court-card">
+                <CourtsCards
+                  badgeCount={districtCourtCount}
+                  courtName="District Court"
+                  courtNumber={districtCourtCount}
+                />
+              </div>
+            </Link>
           </div>
           <div className="col-md-3">
-            <div className="court-card">
-              <CourtsCards
-                badgeCount={otherCourtsCount}
-                courtName="Other Courts/Tribunals"
-                courtNumber={otherCourtsCount}
-              />
-            </div>
+            <Link href="/cases" style={{ textDecoration: 'none', color: 'inherit' }}>
+              <div className="court-card">
+                <CourtsCards
+                  badgeCount={otherCourtsCount}
+                  courtName="Other Courts/Tribunals"
+                  courtNumber={otherCourtsCount}
+                />
+              </div>
+            </Link>
           </div>
         </div>
 
@@ -220,7 +229,7 @@ const countBySubject = (subject: string) => dashboardData.filter((item) => (item
               title='Committees / Inquiries'
               caseCount={committeesCount}
               cardColor='linear-gradient(90deg, #3E9069 0%, #35B476 100%)'
-              link={userType === "ADMIN" ? "/cases" : "/cases/submitted"}
+              link={userType === "ADMIN" ? "/committee" : "/cases/submitted"}
             />
           </div>
           <div className="col-md-4">
@@ -229,7 +238,7 @@ const countBySubject = (subject: string) => dashboardData.filter((item) => (item
               title='Contempts'
               caseCount={contemptsCount}
               cardColor='linear-gradient(270deg, #B89DE0 0%, #9659F3 100%)'
-              link={userType === "ADMIN" ? "/cases" : "/cases/submitted"}
+              link={userType === "ADMIN" ? "/cases/contemptApplication" : "/cases/submitted"}
             />
           </div>
           <div className="col-md-4">
@@ -238,7 +247,7 @@ const countBySubject = (subject: string) => dashboardData.filter((item) => (item
               title='Compliance Status'
               caseCount={complianceStatusCount}
               cardColor='linear-gradient(90deg, #00B69E 0%, #5ED5CA 56.5%)'
-              link={userType === "ADMIN" ? "/cases" : "/cases/submitted"}
+              link={userType === "ADMIN" ? "/cases/compliance" : "/cases/submitted"}
             />
           </div>
         </div>
