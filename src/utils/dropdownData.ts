@@ -149,6 +149,11 @@ export const getCaseStatusData = (): DropdownOption[] => [
   { value: 'underReview', label: 'Under Review' },
   { value: 'underCompliance', label: 'Under Compliance' },
   { value: 'compliedWith', label: 'Complied With' },
+  { value: 'urgent', label: 'Mark as urgent' },
+  { value: 'callToAttention', label: 'Mark call to attention' },
+  { value: 'csCalledInPerson', label: 'CS Called in person' },
+  { value: 'contempt', label: 'Is Contempt' },
+  { value: 'showCause', label: 'Is Show Cause' },
 ];
 
 

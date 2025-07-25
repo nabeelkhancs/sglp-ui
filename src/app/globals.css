@@ -939,3 +939,7 @@ textarea.ant-input.ant-input-outlined {
   justify-content: center;
   font-weight: 600;
 }
+
+.color-green-dashboard-selected {
+  color: var(--dashboard-selected)
+}

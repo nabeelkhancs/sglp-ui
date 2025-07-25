@@ -570,31 +570,7 @@ const CaseForm: React.FC<CaseFormProps> = ({ id }) => {
           </div>
         </div>
 
-        <div className="d-flex align-items-center mt-5 px-3 gap-3" style={{ justifyContent: 'space-between' }}>
-          <div className="d-flex align-items-center gap-3">
-            <>
-              <Checkbox
-                checked={form.isUrgent}
-                onChange={e => handleChange("isUrgent", e.target.checked)}
-              >Mark as urgent</Checkbox>
-              <Checkbox
-                checked={form.isCallToAttention}
-                onChange={e => handleChange("isCallToAttention", e.target.checked)}
-              >Mark call to attention</Checkbox>
-              <Checkbox
-                checked={form.isCsCalledInPerson}
-                onChange={e => handleChange("isCsCalledInPerson", e.target.checked)}
-              >CS Called in person</Checkbox>
-              <Checkbox
-                checked={form.isContempt}
-                onChange={e => handleChange("isContempt", e.target.checked)}
-              >Is Contempt</Checkbox>
-              <Checkbox
-                checked={form.isShowCause}
-                onChange={e => handleChange("isShowCause", e.target.checked)}
-              >Is Show Cause</Checkbox>
-            </>
-          </div>
+        <div className="d-flex align-items-center " style={{ justifyContent: 'flex-end' }}>
           <Button
             onClick={handleSubmit}
             className="primary-btn"
