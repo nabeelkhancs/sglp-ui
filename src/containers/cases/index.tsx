@@ -306,6 +306,8 @@ const CasesContainer = ({ pageName = "", dashboardLayout = false, caseType = "" 
           pageSize={pageSize}
           onPageChange={setCurrentPage}
           onPageSizeChange={setPageSize}
+          setSelectedCase={setSelectedCase}
+          setViewModalOpen={setViewModalOpen}
         />
       </>
     )
@@ -326,6 +328,8 @@ const CasesContainer = ({ pageName = "", dashboardLayout = false, caseType = "" 
           pageSize={pageSize}
           onPageChange={setCurrentPage}
           onPageSizeChange={setPageSize}
+          setSelectedCase={setSelectedCase}
+          setViewModalOpen={setViewModalOpen}
         />
       </div>
       {/* Modal for viewing case data */}

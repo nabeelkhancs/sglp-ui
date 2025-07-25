@@ -12,6 +12,7 @@ export const forgotPassword = `${commonAdminEP}forgotPassword`;
 export const modules = `${commonAdminEP}modules`;
 export const typedata = `${commonAdminEP}general/typedata`;
 export const uploads = `${commonEP}uploads`;
+export const download = `${commonEP}download`;
 export const verifyEmail = `${commonEP}verify-email`;
 export const verification = `${commonEP}verification`;
 

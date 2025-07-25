@@ -15,6 +15,8 @@ interface DataTableProps {
   pageSize?: number;
   onPageChange?: (page: number) => void;
   onPageSizeChange?: (size: number) => void;
+  setSelectedCase?: (record: any) => void;
+  setViewModalOpen?: (open: boolean) => void;
 }
 
 const DataTable: FC<DataTableProps> = ({
@@ -29,19 +31,21 @@ const DataTable: FC<DataTableProps> = ({
   pageSize = 10,
   onPageChange = () => {},
   onPageSizeChange = () => {},
+  setSelectedCase,
+  setViewModalOpen,
 }) => {
   const handleFilterClick = (filter: string) => {
     if (onFilterChange) onFilterChange(filter);
   } 
-
-  // Pagination props are now destructured from the function argument above
-
+  
   const rowSelection = {
     onChange: (selectedRowKeys: React.Key[], selectedRows: any[]) => {
       console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
     },
   };
-  console.log("DataTable Rendered with data:", data);
+ 
+  const viewHandler = columns?.find(col => col.dataIndex === 'actions')?.render;
+
   return (
     <div className="table-wrapper">
       <div className="card-content">
@@ -59,6 +63,13 @@ const DataTable: FC<DataTableProps> = ({
           pagination={false}
           rowKey="id"
           loading={loading}
+          onRow={record => ({
+            onClick: () => {
+              if (setSelectedCase) setSelectedCase(record);
+              if (setViewModalOpen) setViewModalOpen(true);
+            },
+            style: { cursor: 'pointer' },
+          })}
         />
       </div>
       <TablePagination 

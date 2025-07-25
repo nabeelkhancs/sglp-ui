@@ -2,6 +2,24 @@ import { cases, permissions, users, verifyEmail, committees, dashboard } from ".
 import HTTPMethods from "./index";
 
 export class APICalls {
+  static async downloadFile(filename: string) {
+    try {
+      const url = `/v1/download?filename=${encodeURIComponent(filename)}`;
+      const response = await HTTPMethods.get(url, { responseType: 'blob' });
+      
+      let blob, contentType;
+      if (response?.data instanceof Blob) {
+        blob = response.data;
+        contentType = response.headers?.['content-type'] || blob.type;
+      } else {
+        blob = new Blob([response?.data]);
+        contentType = blob.type;
+      }
+      return { data: blob, contentType };
+    } catch (error) {
+      throw error;
+    }
+  }
   static async getPermissions(tokenParam?: string) {
     try {
       let result = await HTTPMethods.get(permissions);
