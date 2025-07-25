@@ -943,3 +943,7 @@ textarea.ant-input.ant-input-outlined {
 .color-green-dashboard-selected {
   color: var(--dashboard-selected)
 }
+
+.cursor-pointer {
+  cursor: pointer;
+}

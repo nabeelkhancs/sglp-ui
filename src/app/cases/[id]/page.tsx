@@ -17,8 +17,8 @@ const CaseTypePage = () => {
         <div className="content ">
           <div className="row ">
             {id && courtData[id].map((court: any, idx: any) => (
-              <div className="col-md-6 mb-3" key={court.courtName + idx}>
-                <div className="court-card">
+              <div className="col-md-6 mb-3" key={court.courtName + idx} onClick={() => setShowTable(true)}>
+                <div className="court-card cursor-pointer">
                   <CourtsCards
                     showbadgeCount={false}
                     courtName={court.courtName}
