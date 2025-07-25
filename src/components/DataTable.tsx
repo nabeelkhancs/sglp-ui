@@ -10,19 +10,38 @@ interface DataTableProps {
   columns?: any[];
   onFilterChange?: (filter: string) => void;
   filterValue?: string;
+  totalCases?: number;
+  currentPage?: number;
+  pageSize?: number;
+  onPageChange?: (page: number) => void;
+  onPageSizeChange?: (size: number) => void;
 }
 
-const DataTable: FC<DataTableProps> = ({ columns, filters, data = [], loading = false, onFilterChange, filterValue }) => {
+const DataTable: FC<DataTableProps> = ({
+  columns,
+  filters,
+  data = [],
+  loading = false,
+  onFilterChange,
+  filterValue,
+  totalCases,
+  currentPage = 1,
+  pageSize = 10,
+  onPageChange = () => {},
+  onPageSizeChange = () => {},
+}) => {
   const handleFilterClick = (filter: string) => {
     if (onFilterChange) onFilterChange(filter);
-  };
+  } 
+
+  // Pagination props are now destructured from the function argument above
 
   const rowSelection = {
     onChange: (selectedRowKeys: React.Key[], selectedRows: any[]) => {
       console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
     },
   };
-
+  console.log("DataTable Rendered with data:", data);
   return (
     <div className="table-wrapper">
       <div className="card-content">
@@ -43,11 +62,11 @@ const DataTable: FC<DataTableProps> = ({ columns, filters, data = [], loading = 
         />
       </div>
       <TablePagination 
-        currentpageno={1} 
-        pagesize={10} 
-        totalrecords={data.length} 
-        handlepagechange={() => {}} 
-        handlepagesizechange={() => {}} 
+        currentpageno={currentPage} 
+        pagesize={pageSize} 
+        totalrecords={totalCases} 
+        handlepagechange={onPageChange} 
+        handlepagesizechange={onPageSizeChange} 
       />
     </div>
   );

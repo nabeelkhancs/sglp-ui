@@ -23,6 +23,7 @@ import React from 'react';
 const CasesContainer = ({ dashboardLayout = false, caseType = "" }: { dashboardLayout?: boolean, caseType?: string }) => {
   const [permissions, setPermissions] = useState<any[]>(["Edit"]);
   const [casesData, setCasesData] = useState<any[]>([]);
+  const [totalData, setTotalData] = useState<number>();
   const [loading, setLoading] = useState(false);
   const [dateReceived, setDateReceived] = useState<any>(null);
   const [caseStatus, setCaseStatus] = useState<string>("");
@@ -35,6 +36,9 @@ const CasesContainer = ({ dashboardLayout = false, caseType = "" }: { dashboardL
   const [courtFilter, setCourtFilter] = useState<string>("");
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [selectedCase, setSelectedCase] = useState<any>(null);
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   // Helper to get label for dropdown value
   const getLabel = (key: string, value: any) => {
@@ -149,7 +153,9 @@ const CasesContainer = ({ dashboardLayout = false, caseType = "" }: { dashboardL
     setLoading(true);
     try {
       const params: any = {};
-      
+      // Pagination params
+      params.pageNumber = currentPage;
+      params.pageSize = pageSize;
       if (caseType && caseType.includes("court")) {
         params.courts = caseType;
       } else if (caseType) {
@@ -171,6 +177,7 @@ const CasesContainer = ({ dashboardLayout = false, caseType = "" }: { dashboardL
           createdAt: Helpers.formatDateTime(caseItem.createdAt)
         }
       }) || []);
+      setTotalData(res?.data?.result?.count);
       setPermissions(["Edit"]);
 
     } catch (e) {
@@ -183,7 +190,7 @@ const CasesContainer = ({ dashboardLayout = false, caseType = "" }: { dashboardL
   useEffect(() => {
     fetchCases();
     // eslint-disable-next-line
-  }, [dateReceived, caseStatus, court, region, relativeDepartment, partyName, buttonType, secretaryCalled, courtFilter]);
+  }, [dateReceived, caseStatus, court, region, relativeDepartment, partyName, buttonType, secretaryCalled, courtFilter, currentPage, pageSize]);
 
   const handleChange = (field: string, value: any) => {
     if (field === "dateReceived") setDateReceived(value);
@@ -294,6 +301,11 @@ const CasesContainer = ({ dashboardLayout = false, caseType = "" }: { dashboardL
           // filters={false}
           data={casesData}
           loading={loading}
+          totalCases={totalData}
+          currentPage={currentPage}
+          pageSize={pageSize}
+          onPageChange={setCurrentPage}
+          onPageSizeChange={setPageSize}
         />
       </>
     )
@@ -309,6 +321,11 @@ const CasesContainer = ({ dashboardLayout = false, caseType = "" }: { dashboardL
           filters={false}
           data={casesData}
           loading={loading}
+          totalCases={totalData}
+          currentPage={currentPage}
+          pageSize={pageSize}
+          onPageChange={setCurrentPage}
+          onPageSizeChange={setPageSize}
         />
       </div>
       {/* Modal for viewing case data */}
