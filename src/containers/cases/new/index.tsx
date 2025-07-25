@@ -3,10 +3,10 @@ import { useRouter } from "next/navigation";
 import CaseForm from "@/components/forms/CaseForm";
 
 interface NewCaseContainerProps {
-  caseNumber?: string;
+  id?: string;
 }
 
-const NewCaseContainer: React.FC<NewCaseContainerProps> = ({ caseNumber }) => {
+const NewCaseContainer: React.FC<NewCaseContainerProps> = ({ id }) => {
   const router = useRouter();
 
     const handleBack = () => {
@@ -20,10 +20,10 @@ const NewCaseContainer: React.FC<NewCaseContainerProps> = ({ caseNumber }) => {
                     <span><img src="/icons/chevron-left-black.svg" alt="Back" /></span>Back</Button>
             </div>
             <div className="page-title mb-3">
-                <h1 className="mb-0">{caseNumber ? "Edit Case "+caseNumber  : "New Case"}</h1>
+                <h1 className="mb-0">{id ? "Edit Case "+id  : "New Case"}</h1>
             </div>
             <div className="content content-wrapper p-4 bg-white">
-                <CaseForm caseNumber={caseNumber} />
+                <CaseForm id={id} />
             </div>
             {/* <div className="d-flex justify-content-end mt-4 px-3">
                 <Button className="primary-btn" style={{ height: '40px', width: '170px' }}>

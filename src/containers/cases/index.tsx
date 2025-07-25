@@ -20,8 +20,8 @@ import dayjs from "dayjs";
 
 import React from 'react';
 
-const CasesContainer = ({ dashboardLayout = false }) => {
-  const [permissions, setPermissions] = useState<any[]>(["View"]);
+const CasesContainer = ({ dashboardLayout = false, caseType = "" }: { dashboardLayout?: boolean, caseType?: string }) => {
+  const [permissions, setPermissions] = useState<any[]>(["Edit"]);
   const [casesData, setCasesData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [dateReceived, setDateReceived] = useState<any>(null);
@@ -102,20 +102,45 @@ const CasesContainer = ({ dashboardLayout = false }) => {
       title: 'Action',
       dataIndex: 'action',
       render: (_: any, record: any) => {
-        if (!permissions.includes('View')) return null;
-        return (
-          <span
-            className='table-action d-flex align-items-center gap-1 text-dark text-decoration-none'
-            style={{ cursor: 'pointer' }}
-            onClick={() => {
-              setSelectedCase(record);
-              setViewModalOpen(true);
-            }}
-          >
-            <Image src="/icons/view-icon.svg" width={18} height={18} alt="View" />
-            View
-          </span>
-        );
+        if (permissions.includes('Edit')) {
+          return (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <span
+                className='table-action d-flex align-items-center gap-1 text-dark text-decoration-none'
+                style={{ cursor: 'pointer' }}
+                onClick={() => {
+                  window.location.href = `/cases/${record.id}/edit`;
+                }}
+              >
+                <Image src="/icons/edit-icon.svg" width={18} height={18} alt="Edit" />
+              </span>
+              <span
+                className='table-action d-flex align-items-center gap-1 text-dark text-decoration-none'
+                style={{ cursor: 'pointer' }}
+                onClick={() => {
+                  setSelectedCase(record);
+                  setViewModalOpen(true);
+                }}
+              >
+                <Image src="/icons/view-icon.svg" width={18} height={18} alt="View" />
+              </span>
+            </div>
+          );
+        } else if (permissions.includes('View')) {
+          return (
+            <span
+              className='table-action d-flex align-items-center gap-1 text-dark text-decoration-none'
+              style={{ cursor: 'pointer' }}
+              onClick={() => {
+                setSelectedCase(record);
+                setViewModalOpen(true);
+              }}
+            >
+              <Image src="/icons/view-icon.svg" width={18} height={18} alt="View" />
+            </span>
+          );
+        }
+        return null;
       },
     },
   ];
@@ -124,6 +149,12 @@ const CasesContainer = ({ dashboardLayout = false }) => {
     setLoading(true);
     try {
       const params: any = {};
+      
+      if (caseType && caseType.includes("court")) {
+        params.courts = caseType;
+      } else if (caseType) {
+        params.subjectOfApplication = caseType;
+      }
       if (dateReceived) params.dateReceived = dayjs(dateReceived).format("YYYY-MM-DD");
       if (caseStatus) params.caseStatus = caseStatus;
       if (court) params.court = court;
@@ -140,7 +171,7 @@ const CasesContainer = ({ dashboardLayout = false }) => {
           createdAt: Helpers.formatDateTime(caseItem.createdAt)
         }
       }) || []);
-      setPermissions(["View"]);
+      setPermissions(["Edit"]);
 
     } catch (e) {
       // Optionally handle error

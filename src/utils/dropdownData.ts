@@ -127,10 +127,10 @@ export const getSubjectData = (): DropdownOption[] => [
   { value: 'forOrder', label: 'For Order' },
   { value: 'contemptApplication', label: 'Contempt application' },
   { value: 'committee', label: 'Committee' },
-  { value: 'inquiryReport', label: 'Inquiry Report' },
+  { value: 'inquiryReport', label: 'Inquiry' },
   { value: 'compliance', label: 'Compliance' },
   { value: 'stayOrder', label: 'Stay Order' },
-  { value: 'manualEntry', label: 'Manual Entry (Type)' }
+  { value: 'manualEntry', label: 'Manual Entry (Type)' },
 ]
 
 export const getCaseTypeData = (): DropdownOption[] => [

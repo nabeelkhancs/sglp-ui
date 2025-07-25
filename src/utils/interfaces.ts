@@ -1,5 +1,5 @@
 export interface CaseFormProps {
-  caseNumber?: string;
+  id?: string;
 }
 
 export interface CaseFormValues {

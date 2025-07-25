@@ -36,7 +36,7 @@ const initialForm: CaseFormValues = {
   committeeApprovalFile: ""
 };
 
-const CaseForm: React.FC<CaseFormProps> = ({ caseNumber }) => {
+const CaseForm: React.FC<CaseFormProps> = ({ id }) => {
   const router = useRouter();
   const [form, setForm] = useState<CaseFormValues>(initialForm);
   const [errors, setErrors] = useState<Partial<Record<keyof CaseFormValues, string>>>({});
@@ -198,10 +198,9 @@ const CaseForm: React.FC<CaseFormProps> = ({ caseNumber }) => {
   };
 
   useEffect(() => {
-    if (caseNumber) {
+    if (id) {
       setLoading(true);
-      let id = Number(caseNumber.split("-")[2]);
-      HTTPMethods.get(`${cases}/${id}`)
+      HTTPMethods.get(`${cases}/${Number(id)}`)
         .then((res) => {
           if (res && res.data) {
             const data = res.data;
@@ -239,7 +238,7 @@ const CaseForm: React.FC<CaseFormProps> = ({ caseNumber }) => {
         })
         .finally(() => setLoading(false));
     }
-  }, [caseNumber]);
+  }, [id]);
 
   return (
     <>

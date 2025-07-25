@@ -10,7 +10,7 @@ const EditCase = () => {
     console.log("Edit Case ID:", id);
     return (
         <DashboardLayout>
-          <NewCaseContainer caseNumber={id} />
+          <NewCaseContainer id={id} />
         </DashboardLayout>
     );
 }

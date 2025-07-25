@@ -217,7 +217,7 @@ const countBySubject = (subject: string) => dashboardData.filter((item) => (item
           <div className="col-md-4">
             <CountCards
               badgeCount={committeesCount}
-              title='Committe / Inquiries'
+              title='Committees / Inquiries'
               caseCount={committeesCount}
               cardColor='linear-gradient(90deg, #3E9069 0%, #35B476 100%)'
               link={userType === "ADMIN" ? "/cases" : "/cases/submitted"}
