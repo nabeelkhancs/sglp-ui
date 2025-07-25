@@ -11,7 +11,7 @@ const CaseTypePage = () => {
   const idParam = params?.id;
   const id = Array.isArray(idParam) ? idParam[0] : idParam;
   const [showTable, setShowTable] = useState(false);
-  if (!showTable) {
+  if ((id == 'supremecourt' || id == 'highcourt' || id == 'districtcourts') && !showTable) {
     return (
       <DashboardLayout>
         <div className="content ">
