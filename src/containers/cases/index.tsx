@@ -20,7 +20,7 @@ import dayjs from "dayjs";
 
 import React from 'react';
 
-const CasesContainer = ({ dashboardLayout = false, caseType = "" }: { dashboardLayout?: boolean, caseType?: string }) => {
+const CasesContainer = ({ pageName = "", dashboardLayout = false, caseType = "" }: { pageName?: string, dashboardLayout?: boolean, caseType?: string }) => {
   const [permissions, setPermissions] = useState<any[]>(["Edit"]);
   const [casesData, setCasesData] = useState<any[]>([]);
   const [totalData, setTotalData] = useState<number>();
@@ -313,7 +313,7 @@ const CasesContainer = ({ dashboardLayout = false, caseType = "" }: { dashboardL
   return (
     <div className="cases-page">
       <div className="page-title mb-3">
-        <h1 className="mb-0">Cases</h1>
+        <h1 className="mb-0">{pageName || "Cases"}</h1>
       </div>
       <div className="content">
         <DataTable

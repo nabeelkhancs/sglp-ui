@@ -11,13 +11,17 @@ const CaseTypePage = () => {
   const idParam = params?.id;
   const id = Array.isArray(idParam) ? idParam[0] : idParam;
   const [showTable, setShowTable] = useState(false);
+  const [pageName, setPageName] = useState("");
   if ((id == 'supremecourt' || id == 'highcourt' || id == 'districtcourts') && !showTable) {
     return (
       <DashboardLayout>
         <div className="content ">
           <div className="row ">
             {id && courtData[id].map((court: any, idx: any) => (
-              <div className="col-md-6 mb-3" key={court.courtName + idx} onClick={() => setShowTable(true)}>
+              <div className="col-md-6 mb-3" key={court.courtName + idx} onClick={() => {
+                setShowTable(true);
+                setPageName(court.courtName);
+              }}>
                 <div className="court-card cursor-pointer">
                   <CourtsCards
                     showbadgeCount={false}
@@ -34,7 +38,7 @@ const CaseTypePage = () => {
   }
   return (
     <DashboardLayout>
-      <CasesContainer caseType={id} />
+      <CasesContainer caseType={id} pageName={pageName} />
     </DashboardLayout>
   );
 }
