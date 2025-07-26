@@ -152,6 +152,7 @@ export const getCaseStatusData = (): DropdownOption[] => [
   { value: 'urgent', label: 'Mark as urgent' },
   { value: 'callToAttention', label: 'Mark call to attention' },
   { value: 'csCalledInPerson', label: 'CS Called in person' },
+  { value: 'direction', label: 'Direction' },
   { value: 'contempt', label: 'Is Contempt' },
   { value: 'showCause', label: 'Is Show Cause' },
 ];

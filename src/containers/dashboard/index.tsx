@@ -54,25 +54,29 @@ const DashboardContainer = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  // Helper functions to count cases by type/subject/court/region
-  const countByCourt = (court: string) => dashboardData.filter((item) => item.court === court).length;
-const countBySubject = (subject: string) => dashboardData.filter((item) => (item.subjectOfApplication || '').includes(subject)).length;
-
-  // Example court names from your sample data
+  
+  const countByCourt = (court: string) => dashboardData.filter((item) => item.court.includes(court)).length;
+  const countBySubject = (subject: string) => dashboardData.filter((item) => (item.subjectOfApplication || '').includes(subject)).length;
+  
+  const countByStatus = (status: string | string[]) => {
+    if (Array.isArray(status)) {
+      return dashboardData.filter((item) => status.includes(item.status)).length;
+    }
+    return dashboardData.filter((item) => item.status === status).length;
+  };
+  
   const supremeCourtCount = countByCourt("supremeCourtOfPakistan");
-  const highCourtCount = countByCourt("sindhHighCourtHyderabad");
+  const highCourtCount = countByCourt("HighCourt");
   const districtCourtCount = countByCourt("districtCourt");
-  const otherCourtsCount = countByCourt("otherCourt");
+  const otherCourtsCount = dashboardData.filter((item) => !item.court.includes("supremeCourtOfPakistan") && !item.court.includes("HighCourt") && !item.court.includes("districtCourt")).length;
 
-  // Example subject counts
   const totalCases = dashboardData.length;
-  const directionsCount = countBySubject("directions");
-  const callForAppearanceCount = countBySubject("callForAppearance");
+  const directionsCount = countByStatus("directions");
+  const callForAppearanceCount = countByStatus("csCalledInPerson");
   const committeesCount = countBySubject("committee");
-  const contemptsCount = countBySubject("contempt");
-  const complianceStatusCount = countBySubject("compliance");
+  const contemptsCount = countByStatus("contempt");
+  const complianceStatusCount = countByStatus("compliance");
 
-  // Prepare chart data for graphs
   const chartData = {
     labels: [
       "Directions",
@@ -211,7 +215,7 @@ const countBySubject = (subject: string) => dashboardData.filter((item) => (item
               title='Directions'
               caseCount={directionsCount}
               cardColor='linear-gradient(90deg, #FE0604 0%, #FF937E 100%)'
-              link={userType === "ADMIN" ? "/cases" : "/cases/submitted"}
+              link={userType === "ADMIN" ? "/cases/directions" : "/cases/submitted"}
             />
           </div>
           <div className="col-md-4">
@@ -259,11 +263,11 @@ const countBySubject = (subject: string) => dashboardData.filter((item) => (item
           <div className="col-md-4">
             <AnalyticsChart2 chartData={courtWiseChartData} />
           </div>
-           <div className="col-md-3 mx-auto" style={{width:'27%'}}>
+          <div className="col-md-3 mx-auto" style={{ width: '27%' }}>
             <div className="calender mt-4"  >
               <Calendar
-              next2Label={false}
-              prev2Label={false} 
+                next2Label={false}
+                prev2Label={false}
                 onChange={(val) => setValue(val as Date | null)}
                 value={value}
                 tileClassName={({ date, view }) => {

@@ -39,6 +39,7 @@ const AdminLoginContainer = () => {
       if (res?.data?.token) {
         Cookies.set("token", res?.data?.token);
         Cookies.set("userType", res?.data?.type || "ADMIN");
+        Cookies.set("userName", res?.data?.name || "Admin");
         toast.success("Login successful!");
         router.push(res?.data?.firstPageVisited);
       } else {
