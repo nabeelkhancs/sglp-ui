@@ -58,12 +58,7 @@ const DashboardContainer = () => {
   const countByCourt = (court: string) => dashboardData.filter((item) => item.court.includes(court)).length;
   const countBySubject = (subject: string) => dashboardData.filter((item) => (item.subjectOfApplication || '').includes(subject)).length;
   
-  const countByStatus = (status: string | string[]) => {
-    if (Array.isArray(status)) {
-      return dashboardData.filter((item) => status.includes(item.status)).length;
-    }
-    return dashboardData.filter((item) => item.status === status).length;
-  };
+  const countByStatus = (status: string | string[]) => dashboardData.filter((item) => {item.status.includes(status)}).length;
   
   const supremeCourtCount = countByCourt("supremeCourtOfPakistan");
   const highCourtCount = countByCourt("HighCourt");
