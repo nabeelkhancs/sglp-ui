@@ -58,11 +58,17 @@ const DashboardContainer = () => {
   const countByCourt = (court: string) => dashboardData.filter((item) => item.court.includes(court)).length;
   const countBySubject = (subject: string) => dashboardData.filter((item) => (item.subjectOfApplication || '').includes(subject)).length;
   
-  const countByStatus = (status: string | string[]) => dashboardData.filter((item) => {item.caseStatus.includes(status)}).length;
+  const countByStatus = (status: string) => dashboardData.filter((item) => {
+    console.log(item.caseStatus)
+    console.log(item.caseStatus.includes(status))
+    console.log(status)
+    item.caseStatus.includes(status)
+  }).length;
   
   const supremeCourtCount = countByCourt("supremeCourtOfPakistan");
   const highCourtCount = countByCourt("HighCourt");
   const districtCourtCount = countByCourt("districtCourt");
+  console.log("Dashboard Data:", dashboardData);
   const otherCourtsCount = dashboardData.filter((item) => !item.court.includes("supremeCourtOfPakistan") && !item.court.includes("HighCourt") && !item.court.includes("districtCourt")).length;
 
   const totalCases = dashboardData.length;
@@ -70,7 +76,7 @@ const DashboardContainer = () => {
   const callForAppearanceCount = countByStatus("csCalledInPerson");
   const committeesCount = countBySubject("committee");
   const contemptsCount = countByStatus("contempt");
-  const complianceStatusCount = countByStatus("compliance");
+  const complianceStatusCount = countByStatus("underCompliance");
 
   const chartData = {
     labels: [
