@@ -70,7 +70,7 @@ const DashboardContainer = () => {
   const directionsCount = countByStatus("directions");
   const callForAppearanceCount = countByStatus("csCalledInPerson");
   const committeesCount = countBySubject("committee");
-  const contemptsCount = countByStatus("contempt");
+  const contemptsCount = countBySubject("contemptApplication");
   const complianceStatusCount = countByStatus("underCompliance");
 
   const chartData = {
