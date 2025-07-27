@@ -36,6 +36,13 @@ const CaseTypePage = () => {
   useEffect(() => {
     if (id === "supremecourt" || id === "highcourt" || id === "districtcourts" || id === "othercourts") {
       getCaseCourts();
+    } else {
+      if(id === "directions") {
+        setOutsideParams({ caseStatus: "direction"  });
+      }
+      if(id == "compliance"){
+        setOutsideParams({ subjectOfApplication: "compliance" });
+      }
     }
   }, [id]);
 
