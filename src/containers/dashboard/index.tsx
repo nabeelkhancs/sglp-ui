@@ -220,7 +220,7 @@ const DashboardContainer = () => {
               title='Call for Appearance / Urgency'
               caseCount={callForAppearanceCount}
               cardColor='linear-gradient(90deg, #E08303 0%, #E3B94D 100%)'
-              link={userType === "ADMIN" ? "/cases" : "/cases/submitted"}
+              link={userType === "ADMIN" ? "/cases/csCalledInPerson" : "/cases/submitted"}
             />
           </div>
           <div className="col-md-4">
