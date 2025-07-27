@@ -49,6 +49,9 @@ const CaseTypePage = () => {
       if(id == "csCalledInPerson"){
         setOutsideParams({ caseStatus: "csCalledInPerson" });
       }
+      if(id == "showcause"){
+        setOutsideParams({ caseStatus: "showCause" });
+      }
     }
   }, [id]);
 
