@@ -46,6 +46,9 @@ const CaseTypePage = () => {
       if(id == "compliance"){
         setOutsideParams({ subjectOfApplication: "compliance" });
       }
+      if(id == "csCalledInPerson"){
+        setOutsideParams({ caseStatus: "csCalledInPerson" });
+      }
     }
   }, [id]);
 
