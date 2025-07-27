@@ -134,13 +134,13 @@ export const getSubjectData = (): DropdownOption[] => [
 ]
 
 export const getCaseTypeData = (): DropdownOption[] => [
-  { value: 'cp', label: 'CP' },
+  { value: 'constitutionPetition', label: 'Constitution Petition' },
   { value: 'civilSuite', label: 'Civil Suite' },
   { value: 'appeal', label: 'Appeal' },
   { value: 'criminalAppeal', label: 'Criminal Appeal' },
   { value: 'civilAppeal', label: 'Civil Appeal' },
   { value: 'CMA', label: 'CMA' },
-  { value: 'servicAppeal', label: 'Servic Appeal' },
+  { value: 'serviceAppeal', label: 'Service Appeal' },
 ];
 
 export const getCaseStatusData = (): DropdownOption[] => [

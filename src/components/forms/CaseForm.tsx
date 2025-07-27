@@ -33,7 +33,8 @@ const initialForm: CaseFormValues = {
   isCsCalledInPerson: false,
   isContempt: false,
   isShowCause: false,
-  committeeApprovalFile: ""
+  committeeApprovalFile: "",
+  registry: ""
 };
 
 const CaseForm: React.FC<CaseFormProps> = ({ id }) => {
@@ -52,8 +53,12 @@ const CaseForm: React.FC<CaseFormProps> = ({ id }) => {
     if (form.subjectOfApplication === "committee" && !committeeFile) {
       errors.committeeApprovalFile = "Committee approval file is required";
     }
+    // Registry validation for Supreme Court
+    if (form.court === "supremeCourtOfPakistan" && !form.registry) {
+      errors.registry = "Registry is required for Supreme Court";
+    }
     setErrors(errors);
-    return valid && (!form.subjectOfApplication || form.subjectOfApplication !== "committee" || !!committeeFile);
+    return valid && (!form.subjectOfApplication || form.subjectOfApplication !== "committee" || !!committeeFile) && (form.court !== "supremeCourtOfPakistan" || !!form.registry);
   };
 
   const handleChange = (field: keyof CaseFormValues, value: any) => {
@@ -296,12 +301,36 @@ const CaseForm: React.FC<CaseFormProps> = ({ id }) => {
                 placeholder="Select"
                 options={getCourtData()}
                 value={form.court || undefined}
-                onChange={val => handleChange("court", val)}
+                onChange={val => {
+                  handleChange("court", val);
+                  // Reset registry if not Supreme Court
+                  if (val !== "supremeCourtOfPakistan") handleChange("registry", "");
+                }}
                 status={errors.court ? "error" : undefined}
               />
               {errors.court && <div className="text-danger fs-12">{errors.court}</div>}
             </div>
           </div>
+          {form.court === "supremeCourtOfPakistan" && (
+            <div className="col-md-3">
+              <div className="form-group">
+                <label className="input-label">Registry</label>
+                <Select
+                  className="w-100"
+                  placeholder="Select Registry"
+                  options={[
+                    { label: "Main Registry – Islamabad", value: "Main Registry – Islamabad" },
+                    { label: "Karachi Registry", value: "Karachi Registry" },
+                    { label: "Other Branches Registry", value: "Other Branches Registry" },
+                  ]}
+                  value={form.registry || undefined}
+                  onChange={val => handleChange("registry", val)}
+                  status={errors.registry ? "error" : undefined}
+                />
+                {errors.registry && <div className="text-danger fs-12">{errors.registry}</div>}
+              </div>
+            </div>
+          )}
           <div className="col-md-3">
             <div className="form-group">
               <label className="input-label">Region / Districts</label>

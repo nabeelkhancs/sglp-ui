@@ -23,6 +23,7 @@ export interface CaseFormValues {
   isContempt?: boolean;
   isShowCause?: boolean;
   committeeApprovalFile: string;
+  registry: string;
 }
 
 export interface SignupPayload {
