@@ -34,7 +34,7 @@ const CaseTypePage = () => {
   };
 
   useEffect(() => {
-    if (id === "supremecourt" || id === "highcourt" || id === "districtcourts") {
+    if (id === "supremecourt" || id === "highcourt" || id === "districtcourts" || id === "othercourts") {
       getCaseCourts();
     }
   }, [id]);
@@ -44,7 +44,7 @@ const CaseTypePage = () => {
 
   useEffect(() => {
     if (id === 'supremecourt') {
-      
+
       const countsMap: Record<string, number> = {};
       courtCounts.forEach((item: any) => {
         if (item.registry) {
@@ -84,7 +84,23 @@ const CaseTypePage = () => {
           countsMap[regKey] = Number(item.count);
         }
       });
-
+      const courts = (courtData[id] || []).map((court: any) => {
+        return {
+          ...court,
+          count: countsMap[court.key] || 0
+        };
+      });
+      setMappedCourts(courts);
+    } else if (id === 'othercourts') {
+      const countsMap: Record<string, number> = {};
+      console.log("Court Counts:", courtCounts);
+      courtCounts.forEach((item: any) => {
+        if (item.court) {
+          const regKey = item.court;
+          countsMap[regKey] = Number(item.count);
+        }
+      });
+      console.log("Counts Map:", countsMap);
       const courts = (courtData[id] || []).map((court: any) => {
         return {
           ...court,
@@ -97,7 +113,7 @@ const CaseTypePage = () => {
     }
   }, [courtCounts, id]);
 
-  if ((id == 'supremecourt' || id == 'highcourt' || id == 'districtcourts') && !showTable) {
+  if ((id == 'supremecourt' || id == 'highcourt' || id == 'districtcourts' || id == 'othercourts') && !showTable) {
     const courts = mappedCourts;
     return (
       <DashboardLayout>
@@ -109,8 +125,10 @@ const CaseTypePage = () => {
                 setPageName(court.courtName);
                 if (id === 'supremecourt') {
                   setOutsideParams({ court: 'supremeCourtOfPakistan', registry: court.courtName });
+                } else if (id === 'districtcourts') {
+                  setOutsideParams({ court: 'districtCourts', region: court.key });
                 } else {
-                  setOutsideParams({ court: court.key || court.courtName });
+                  setOutsideParams({ court: court.key });
                 }
               }}>
                 <div className="court-card cursor-pointer">

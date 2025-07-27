@@ -200,7 +200,7 @@ const DashboardContainer = () => {
             </Link>
           </div>
           <div className="col-md-3">
-            <Link href="/cases" style={{ textDecoration: 'none', color: 'inherit' }}>
+            <Link href="/cases/othercourts" style={{ textDecoration: 'none', color: 'inherit' }}>
               <div className="court-card">
                 <CourtsCards
                   badgeCount={otherCourtsCount}
