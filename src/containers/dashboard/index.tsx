@@ -67,7 +67,7 @@ const DashboardContainer = () => {
   const otherCourtsCount = dashboardData.filter((item) => !item.court.includes("supremeCourtOfPakistan") && !item.court.includes("HighCourt") && !item.court.includes("districtCourt")).length;
 
   const totalCases = dashboardData.length;
-  const directionsCount = countByStatus("directions");
+  const directionsCount = countByStatus("direction");
   const callForAppearanceCount = countByStatus("csCalledInPerson");
   const committeesCount = countBySubject("committee");
   const contemptsCount = countBySubject("contemptApplication");
