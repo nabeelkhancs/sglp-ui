@@ -20,7 +20,7 @@ import dayjs from "dayjs";
 
 import React from 'react';
 
-const CasesContainer = ({ pageName = "", dashboardLayout = false, caseType = "" }: { pageName?: string, dashboardLayout?: boolean, caseType?: string }) => {
+const CasesContainer = ({ pageName = "", dashboardLayout = false, caseType = "", outsideParams= {} }: { pageName?: string, dashboardLayout?: boolean, caseType?: string, outsideParams?: any }) => {
   const [permissions, setPermissions] = useState<any[]>(["Edit"]);
   const [casesData, setCasesData] = useState<any[]>([]);
   const [totalData, setTotalData] = useState<number>();
@@ -156,21 +156,21 @@ const CasesContainer = ({ pageName = "", dashboardLayout = false, caseType = "" 
       // Pagination params
       params.pageNumber = currentPage;
       params.pageSize = pageSize;
-      if (caseType && caseType.includes("court")) {
-        params.courts = caseType;
-      } else if (caseType) {
-        params.subjectOfApplication = caseType;
-      }
-      if (dateReceived) params.dateReceived = dayjs(dateReceived).format("YYYY-MM-DD");
-      if (caseStatus) params.caseStatus = caseStatus;
-      if (court) params.court = court;
-      if (region) params.region = region;
-      if (relativeDepartment) params.relativeDepartment = relativeDepartment;
-      if (partyName) params.partyName = partyName;
-      if (buttonType) params.buttonType = buttonType;
-      if (secretaryCalled) params.secretaryCalled = secretaryCalled;
-      if (courtFilter) params.courtFilter = courtFilter;
-      const res = await HTTPMethods.get(cases, params);
+      // if (caseType && caseType.includes("court")) {
+      //   params.court = caseType;
+      // } else if (caseType) {
+      //   params.subjectOfApplication = caseType;
+      // }
+      // if (dateReceived) params.dateReceived = dayjs(dateReceived).format("YYYY-MM-DD");
+      // if (caseStatus) params.caseStatus = caseStatus;
+      // if (court) params.court = court;
+      // if (region) params.region = region;
+      // if (relativeDepartment) params.relativeDepartment = relativeDepartment;
+      // if (partyName) params.partyName = partyName;
+      // if (buttonType) params.buttonType = buttonType;
+      // if (secretaryCalled) params.secretaryCalled = secretaryCalled;
+      // if (courtFilter) params.courtFilter = courtFilter;
+      const res = await HTTPMethods.get(cases, {...params, ...outsideParams});
       setCasesData(res?.data?.result?.rows.map((caseItem: any) => {
         return {
           ...caseItem,

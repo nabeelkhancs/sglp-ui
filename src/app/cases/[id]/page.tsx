@@ -22,6 +22,7 @@ const CaseTypePage = () => {
 
 
   const [courtCounts, setCourtCounts] = useState<any[]>([]);
+  const [outsideParams, setOutsideParams] = useState<any>();
 
   const getCaseCourts = async () => {
     try {
@@ -43,6 +44,7 @@ const CaseTypePage = () => {
 
   useEffect(() => {
     if (id === 'supremecourt') {
+      
       const countsMap: Record<string, number> = {};
       courtCounts.forEach((item: any) => {
         if (item.registry) {
@@ -105,6 +107,11 @@ const CaseTypePage = () => {
               <div className="col-md-6 mb-3" key={court.courtName + idx} onClick={() => {
                 setShowTable(true);
                 setPageName(court.courtName);
+                if (id === 'supremecourt') {
+                  setOutsideParams({ court: 'supremeCourtOfPakistan', registry: court.courtName });
+                } else {
+                  setOutsideParams({ court: court.key || court.courtName });
+                }
               }}>
                 <div className="court-card cursor-pointer">
                   <CourtsCards
@@ -127,7 +134,7 @@ const CaseTypePage = () => {
           <Button onClick={handleBack} className="bg-transparent p-0 border-0 w-auto d-flex align-items-center gap-1  text-dark fw-medium">
             <span><img src="/icons/chevron-left-black.svg" alt="Back" /></span>Back</Button>
         </div>}
-      <CasesContainer caseType={id} pageName={pageName} />
+      <CasesContainer caseType={id} pageName={pageName} outsideParams={outsideParams} />
     </DashboardLayout>
   );
 }
