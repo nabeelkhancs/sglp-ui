@@ -52,7 +52,7 @@ const DashboardContainer = () => {
       setLabelDate();
     }
   }, [value]);
-  const [dashboardData, setDashboardData] = useState<any[]>([]);
+  const [dashboardData, setDashboardData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const userType = Cookies.get("userType");
@@ -61,7 +61,8 @@ const DashboardContainer = () => {
     setLoading(true);
     APICalls.getDashboardData()
       .then((data) => {
-        setDashboardData(Array.isArray(data) ? data : []);
+        console.log("Fetched Dashboard Data:", data);
+        setDashboardData(data);
         setError(null);
       })
       .catch(() => {
@@ -72,21 +73,21 @@ const DashboardContainer = () => {
   }, []);
 
   
-  const countByCourt = (court: string) => dashboardData.filter((item) => item.court.includes(court)).length;
-  const countBySubject = (subject: string) => dashboardData.filter((item) => (item.subjectOfApplication || '').includes(subject)).length;
+  const countByCourt = (court: string) => dashboardData?.cases?.filter((item: any) => item.court.includes(court)).length;
+  const countBySubject = (subject: string) => dashboardData?.cases?.filter((item: any) => (item.subjectOfApplication || '').includes(subject)).length;
   
-  const countByStatus = (status: string) => dashboardData.filter((item) => Array.isArray(item.caseStatus) && item.caseStatus.includes(status)).length;
+  const countByStatus = (status: string) => dashboardData?.cases?.filter((item: any) => Array.isArray(item.caseStatus) && item.caseStatus.includes(status)).length;
   
   const supremeCourtCount = countByCourt("supremeCourtOfPakistan");
   const highCourtCount = countByCourt("HighCourt");
   const districtCourtCount = countByCourt("districtCourt");
   console.log("Dashboard Data:", dashboardData);
-  const otherCourtsCount = dashboardData.filter((item) => !item.court.includes("supremeCourtOfPakistan") && !item.court.includes("HighCourt") && !item.court.includes("districtCourt")).length;
+  const otherCourtsCount = dashboardData?.cases?.filter((item: any) => !item.court.includes("supremeCourtOfPakistan") && !item.court.includes("HighCourt") && !item.court.includes("districtCourt")).length;
 
-  const totalCases = dashboardData.length;
+  const totalCases = dashboardData?.cases?.length;
   const directionsCount = countByStatus("direction");
   const callForAppearanceCount = countByStatus("csCalledInPerson");
-  const committeesCount = countBySubject("committee");
+  const committeesCount = dashboardData?.committees?.length || 0;
   const contemptsCount = countBySubject("contemptApplication");
   const complianceStatusCount = countByStatus("underCompliance");
 

@@ -4,8 +4,9 @@ import CourtsCards from "@/components/CourtsCard";
 import { courtData } from "@/utils/courtData";
 import CasesContainer from "@/containers/cases";
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "antd";
+import { APICalls } from "@/api/api-calls";
 
 const CaseTypePage = () => {
 
@@ -19,12 +20,88 @@ const CaseTypePage = () => {
     setShowTable(false);
   };
 
+
+  const [courtCounts, setCourtCounts] = useState<any[]>([]);
+
+  const getCaseCourts = async () => {
+    try {
+      const res = await APICalls.getCaseCourts(id == "supremecourt" ? "registry" : id);
+      setCourtCounts(res || []);
+    } catch (err) {
+      setCourtCounts([]);
+    }
+  };
+
+  useEffect(() => {
+    if (id === "supremecourt" || id === "highcourt" || id === "districtcourts") {
+      getCaseCourts();
+    }
+  }, [id]);
+
+
+  const [mappedCourts, setMappedCourts] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (id === 'supremecourt') {
+      const countsMap: Record<string, number> = {};
+      courtCounts.forEach((item: any) => {
+        if (item.registry) {
+          const regKey = item.registry;
+          countsMap[regKey] = Number(item.count);
+        }
+      });
+      const courts = (courtData[id] || []).map((court: any) => {
+
+        return {
+          ...court,
+          count: countsMap[court.courtName] || 0
+        };
+      });
+      setMappedCourts(courts);
+    } else if (id === 'highcourt') {
+      const countsMap: Record<string, number> = {};
+      courtCounts.forEach((item: any) => {
+        if (item.court) {
+          const regKey = item.court;
+          countsMap[regKey] = Number(item.count);
+        }
+      });
+
+      const courts = (courtData[id] || []).map((court: any) => {
+        return {
+          ...court,
+          count: countsMap[court.key] || 0
+        };
+      });
+      setMappedCourts(courts);
+    } else if (id === 'districtcourts') {
+      const countsMap: Record<string, number> = {};
+      courtCounts.forEach((item: any) => {
+        if (item.region) {
+          const regKey = item.region;
+          countsMap[regKey] = Number(item.count);
+        }
+      });
+
+      const courts = (courtData[id] || []).map((court: any) => {
+        return {
+          ...court,
+          count: countsMap[court.key] || 0
+        };
+      });
+      setMappedCourts(courts);
+    } else {
+      setMappedCourts(courtCounts);
+    }
+  }, [courtCounts, id]);
+
   if ((id == 'supremecourt' || id == 'highcourt' || id == 'districtcourts') && !showTable) {
+    const courts = mappedCourts;
     return (
       <DashboardLayout>
         <div className="content ">
           <div className="row ">
-            {id && courtData[id].map((court: any, idx: any) => (
+            {courts.map((court: any, idx: any) => (
               <div className="col-md-6 mb-3" key={court.courtName + idx} onClick={() => {
                 setShowTable(true);
                 setPageName(court.courtName);
@@ -33,7 +110,7 @@ const CaseTypePage = () => {
                   <CourtsCards
                     showbadgeCount={false}
                     courtName={court.courtName}
-                    courtNumber={0}
+                    courtNumber={court.count}
                   />
                 </div>
               </div>
@@ -41,7 +118,7 @@ const CaseTypePage = () => {
           </div>
         </div>
       </DashboardLayout>
-    )
+    );
   }
   return (
     <DashboardLayout>

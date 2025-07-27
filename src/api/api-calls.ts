@@ -1,4 +1,4 @@
-import { cases, permissions, users, verifyEmail, committees, dashboard } from "./communications";
+import { cases, permissions, users, verifyEmail, committees, dashboard, casesCourts } from "./communications";
 import HTTPMethods from "./index";
 
 export class APICalls {
@@ -119,6 +119,15 @@ export class APICalls {
     try {
       const result = await HTTPMethods.get(dashboard);
       return result?.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async getCaseCourts(courtType?: string) {
+    try {
+      const result = await HTTPMethods.get(`${casesCourts}?court=${courtType}`);
+      return result?.data || [];
     } catch (error) {
       throw error;
     }
