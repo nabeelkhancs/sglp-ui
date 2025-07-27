@@ -629,6 +629,7 @@ header .user-dropdown .user-wrapper {
   width: 100% !important;
   border-radius: 15px !important;
   font-family: var(--font-family-base) !important;
+  height: 19.6rem !important;
 }
 
 .react-calendar abbr[title],

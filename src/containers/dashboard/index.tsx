@@ -6,6 +6,7 @@ import UsersContainer from "../users";
 import Cookies from "js-cookie";
 import DataTable2 from "@/components/tables/datatable";
 import Calendar from 'react-calendar';
+import { useRef } from 'react';
 import 'react-calendar/dist/Calendar.css';
 import { useState, useEffect } from "react";
 import CasesContainer from "../cases";
@@ -35,6 +36,22 @@ function isSameDay(a: Date, b: Date) {
 
 const DashboardContainer = () => {
   const [value, setValue] = useState<Date | null>(new Date());
+  useEffect(() => {
+    if (value) {
+      const formatted = value.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
+      let attempts = 0;
+      const setLabelDate = () => {
+        const label = document.querySelector('.react-calendar__navigation__label__labelText--from');
+        if (label) {
+          label.setAttribute('data-date', formatted);
+        } else if (attempts < 10) {
+          attempts++;
+          setTimeout(setLabelDate, 100);
+        }
+      };
+      setLabelDate();
+    }
+  }, [value]);
   const [dashboardData, setDashboardData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -259,22 +276,22 @@ const DashboardContainer = () => {
           <div className="col-md-4">
             <AnalyticsChart2 chartData={courtWiseChartData} />
           </div>
-          <div className="col-md-3 mx-auto" style={{ width: '27%' }}>
-            <div className="calender mt-4"  >
-              <Calendar
-                next2Label={false}
-                prev2Label={false}
-                onChange={(val) => setValue(val as Date | null)}
-                value={value}
-                tileClassName={({ date, view }) => {
-                  if (view === 'month') {
-                    if (redDates.some(d => isSameDay(d, date))) return 'calendar-red';
-                    if (yellowDates.some(d => isSameDay(d, date))) return 'calendar-yellow';
-                    if (greenDates.some(d => isSameDay(d, date))) return 'calendar-green';
-                  }
-                  return '';
-                }}
-              />
+          <div className="col-md-3" style={{ width: '33%' }}>
+            <div className="calendar"  >
+            <Calendar
+              next2Label={false}
+              prev2Label={false}
+              onChange={(val) => setValue(val as Date | null)}
+              value={value}
+              tileClassName={({ date, view }) => {
+                if (view === 'month') {
+                  if (redDates.some(d => isSameDay(d, date))) return 'calendar-red';
+                  if (yellowDates.some(d => isSameDay(d, date))) return 'calendar-yellow';
+                  if (greenDates.some(d => isSameDay(d, date))) return 'calendar-green';
+                }
+                return '';
+              }}
+            />
             </div>
           </div>
         </div>

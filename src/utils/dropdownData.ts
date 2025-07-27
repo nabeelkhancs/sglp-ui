@@ -84,7 +84,6 @@ export const getCourtData = (): DropdownOption[] => [
   { value: 'federalServiceTribunal', label: 'Federal Service Tribunal' },
   { value: 'intellectualPropertyTribunal', label: 'Intellectual Property Tribunal' },
   { value: 'appellateTribunalLocalCouncilsSindh', label: 'Appellate Tribunal Local Councils Sindh' },
-  { value: 'consumerCourt', label: 'Consumer' },
   { value: 'consumerProtectionCourt', label: 'Consumer Protection Court' },
   { value: 'commercialCourtsMagistrate', label: 'Commercial Courts (Magistrate)' },
   { value: 'gasTheftCourt', label: 'Gas Theft' },
