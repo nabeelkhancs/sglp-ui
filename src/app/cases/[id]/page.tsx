@@ -25,7 +25,7 @@ const CaseTypePage = () => {
 
   const getCaseCourts = async () => {
     try {
-      const res = await APICalls.getCaseCourts(id == "supremecourt" ? "registry" : id);
+      const res = await APICalls.getCaseCourts(id == "supremecourt" ? "registry" : id == "districtcourts" ? "districtcourt" : id);
       setCourtCounts(res || []);
     } catch (err) {
       setCourtCounts([]);
