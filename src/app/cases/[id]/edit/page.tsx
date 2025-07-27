@@ -7,7 +7,6 @@ const EditCase = () => {
     const params = useParams();
     const idParam = params?.id;
     const id = Array.isArray(idParam) ? idParam[0] : idParam;
-    console.log("Edit Case ID:", id);
     return (
         <DashboardLayout>
           <NewCaseContainer id={id} />

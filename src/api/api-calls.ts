@@ -33,7 +33,6 @@ export class APICalls {
   static async getAllUsers(filter?: string) {
     try {
       const result = await HTTPMethods.get(`${users}?status=${filter || ''}`);
-      console.log("API Call Result:", result);
       return result?.data;
     } catch (error) {
       throw error;

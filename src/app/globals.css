@@ -713,18 +713,21 @@ button.react-calendar__navigation__label {
    background: linear-gradient(180deg, #D14D4D 0%, #CA6969 100%) !important;
   color: #fff !important;
   border-radius: 4px !important; 
+  margin: 2px !important;
 }
 
 .calendar-yellow {
 background: linear-gradient(180deg, #E2B459 0%, #F8CE7A 100%) !important; 
   color: #fff !important;
   border-radius: 4px !important; 
+  margin: 2px !important;
 }
 
 .calendar-green {
   background: linear-gradient(180deg, #3E9069 0%, #35B476 100%) !important;
   color: #fff !important;
-  border-radius: 4px !important; 
+  border-radius: 4px !important;
+  margin: 2px !important; 
 }
 .react-calendar__tile {
   border-radius: 4px;

@@ -106,14 +106,12 @@ const CaseTypePage = () => {
       setMappedCourts(courts);
     } else if (id === 'othercourts') {
       const countsMap: Record<string, number> = {};
-      console.log("Court Counts:", courtCounts);
       courtCounts.forEach((item: any) => {
         if (item.court) {
           const regKey = item.court;
           countsMap[regKey] = Number(item.count);
         }
       });
-      console.log("Counts Map:", countsMap);
       const courts = (courtData[id] || []).map((court: any) => {
         return {
           ...court,

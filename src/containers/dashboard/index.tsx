@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { use } from 'react';
 import Link from 'next/link';
 import { Divider } from "antd";
 import CountCards from "../../components/CountCard";
@@ -17,18 +17,7 @@ import AnalyticsChart2 from '@/components/charts/AnalyticChart2';
 import { APICalls } from "@/api/api-calls";
 import { Spin, Alert } from "antd";
 
-// Highlighted dates
-const redDates = [
-  new Date(2025, 5, 24), // June 24, 2025
-];
-const yellowDates = [
-  new Date(2025, 6, 1), // July 1, 2025
-  new Date(2025, 5, 1), // July 1, 2025
-];
-const greenDates = [
-  new Date(2025, 6, 7), // July 7, 2025
-  new Date(2025, 5, 7), // July 7, 2025
-];
+
 
 function isSameDay(a: Date, b: Date) {
   return a.getDate() === b.getDate() && a.getMonth() === b.getMonth() && a.getFullYear() === b.getFullYear();
@@ -57,11 +46,37 @@ const DashboardContainer = () => {
   const [error, setError] = useState<string | null>(null);
   const userType = Cookies.get("userType");
 
+  const [redDates, setRedDates] = useState<Date[]>([]);
+  const [yellowDates, setYellowDates] = useState<Date[]>([]);
+  const [greenDates, setGreenDates] = useState<Date[]>([]);
+
+  useEffect(() => {
+    const reds: Date[] = [];
+    const yellows: Date[] = [];
+    const greens: Date[] = [];
+    if (dashboardData?.cases) {
+      dashboardData.cases.forEach((item: any) => {
+        if (item.dateOfHearing) {
+          const hearingDate = new Date(item.dateOfHearing);
+          if (Array.isArray(item.caseStatus) && item.caseStatus.includes('urgent')) {
+            reds.push(hearingDate);
+          } else if (Array.isArray(item.caseStatus) && item.caseStatus.includes('direction')) {
+            yellows.push(hearingDate);
+          } else if (Array.isArray(item.caseStatus) && item.caseStatus.includes('csCalledInPerson')) {
+            greens.push(hearingDate);
+          }
+        }
+      });
+    }
+    setRedDates(reds);
+    setYellowDates(yellows);
+    setGreenDates(greens);
+  }, [dashboardData]);
+
   useEffect(() => {
     setLoading(true);
     APICalls.getDashboardData()
       .then((data) => {
-        console.log("Fetched Dashboard Data:", data);
         setDashboardData(data);
         setError(null);
       })
@@ -72,16 +87,15 @@ const DashboardContainer = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  
+
   const countByCourt = (court: string) => dashboardData?.cases?.filter((item: any) => item.court.includes(court)).length;
   const countBySubject = (subject: string) => dashboardData?.cases?.filter((item: any) => (item.subjectOfApplication || '').includes(subject)).length;
-  
+
   const countByStatus = (status: string) => dashboardData?.cases?.filter((item: any) => Array.isArray(item.caseStatus) && item.caseStatus.includes(status)).length;
-  
+
   const supremeCourtCount = countByCourt("supremeCourtOfPakistan");
   const highCourtCount = countByCourt("HighCourt");
   const districtCourtCount = countByCourt("districtCourt");
-  console.log("Dashboard Data:", dashboardData);
   const otherCourtsCount = dashboardData?.cases?.filter((item: any) => !item.court.includes("supremeCourtOfPakistan") && !item.court.includes("HighCourt") && !item.court.includes("districtCourt")).length;
 
   const totalCases = dashboardData?.cases?.length;
@@ -279,20 +293,21 @@ const DashboardContainer = () => {
           </div>
           <div className="col-md-3" style={{ width: '33%' }}>
             <div className="calendar"  >
-            <Calendar
-              next2Label={false}
-              prev2Label={false}
-              onChange={(val) => setValue(val as Date | null)}
-              value={value}
-              tileClassName={({ date, view }) => {
-                if (view === 'month') {
-                  if (redDates.some(d => isSameDay(d, date))) return 'calendar-red';
-                  if (yellowDates.some(d => isSameDay(d, date))) return 'calendar-yellow';
-                  if (greenDates.some(d => isSameDay(d, date))) return 'calendar-green';
-                }
-                return '';
-              }}
-            />
+              <Calendar
+                next2Label={false}
+                prev2Label={false}
+                onChange={(val) => setValue(val as Date | null)}
+                value={value}
+                tileClassName={({ date, view }) => {
+                  console.log("redDates", redDates,"yellowDates", yellowDates, "greenDates", greenDates);
+                  if (view === 'month') {
+                    if (yellowDates.some(d => isSameDay(d, date))) return 'calendar-yellow';
+                    if (greenDates.some(d => isSameDay(d, date))) return 'calendar-green';
+                    if (redDates.some(d => isSameDay(d, date))) return 'calendar-red';
+                  }
+                  return '';
+                }}
+              />
             </div>
           </div>
         </div>
