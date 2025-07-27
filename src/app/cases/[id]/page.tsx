@@ -40,6 +40,9 @@ const CaseTypePage = () => {
       if(id === "directions") {
         setOutsideParams({ caseStatus: "direction"  });
       }
+      if(id === "contemptApplication") {
+        setOutsideParams({ subjectOfApplication: "contemptApplication"  });
+      }
       if(id == "compliance"){
         setOutsideParams({ subjectOfApplication: "compliance" });
       }
