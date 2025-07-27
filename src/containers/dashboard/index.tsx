@@ -89,7 +89,7 @@ const DashboardContainer = () => {
   const callForAppearanceCount = countByStatus("csCalledInPerson");
   const committeesCount = dashboardData?.committees?.length || 0;
   const contemptsCount = countBySubject("contemptApplication");
-  const complianceStatusCount = countByStatus("underCompliance");
+  const complianceStatusCount = countBySubject("compliance");
 
   const chartData = {
     labels: [
