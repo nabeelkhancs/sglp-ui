@@ -1,13 +1,13 @@
 "use client";
 import DashboardLayout from "@/app/layouts/DashboardLayout";
 import SubmittedCaseContainer from "@/containers/submitted-case/indesx";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { courtData } from "@/utils/courtData";
 import { APICalls } from "@/api/api-calls";
 import CourtsCards from "@/components/CourtsCard";
 
-const SubmittedCase = () => {
+function SubmittedCaseInner() {
   const [outsideParams, setOutsideParams] = useState<any>();
   const [courtCounts, setCourtCounts] = useState<any[]>([]);
   const [showTable, setShowTable] = useState(false);
@@ -168,4 +168,10 @@ return (
 );
 }
 
-export default SubmittedCase;
+export default function SubmittedCase() {
+  return (
+    <Suspense>
+      <SubmittedCaseInner />
+    </Suspense>
+  );
+}
