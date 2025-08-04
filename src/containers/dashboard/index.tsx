@@ -181,40 +181,40 @@ const DashboardContainer = () => {
 
         <div className="row mb-34">
           <div className="col-md-3">
-            <Link href="/cases/supremecourt" style={{ textDecoration: 'none', color: 'inherit' }}>
+            <Link href={`${userType == "ADMIN" ? "/cases/supremecourt" : "/cases/submitted?court=supremecourt"}`} style={{ textDecoration: 'none', color: 'inherit' }}>
               <div className="court-card">
                 <CourtsCards
                   badgeCount={supremeCourtCount}
-                  courtName="Supreme Court"
+                  courtName="Supreme Courts"
                   courtNumber={supremeCourtCount}
                 />
               </div>
             </Link>
           </div>
           <div className="col-md-3">
-            <Link href="/cases/highcourt" style={{ textDecoration: 'none', color: 'inherit' }}>
+            <Link href={`${userType == "ADMIN" ? "/cases/highcourt" : "/cases/submitted?court=highcourt"}`} style={{ textDecoration: 'none', color: 'inherit' }}>
               <div className="court-card">
                 <CourtsCards
                   badgeCount={highCourtCount}
-                  courtName="High Court"
+                  courtName="High Courts"
                   courtNumber={highCourtCount}
                 />
               </div>
             </Link>
           </div>
           <div className="col-md-3">
-            <Link href="/cases/districtcourts" style={{ textDecoration: 'none', color: 'inherit' }}>
+            <Link href={`${userType == "ADMIN" ? "/cases/districtcourts" : "/cases/submitted?court=districtcourts"}`} style={{ textDecoration: 'none', color: 'inherit' }}>
               <div className="court-card">
                 <CourtsCards
                   badgeCount={districtCourtCount}
-                  courtName="District Court"
+                  courtName="District Courts"
                   courtNumber={districtCourtCount}
                 />
               </div>
             </Link>
           </div>
           <div className="col-md-3">
-            <Link href="/cases/othercourts" style={{ textDecoration: 'none', color: 'inherit' }}>
+            <Link href={`${userType == "ADMIN" ? "/cases/othercourts" : "/cases/submitted?court=othercourts"}`} style={{ textDecoration: 'none', color: 'inherit' }}>
               <div className="court-card">
                 <CourtsCards
                   badgeCount={otherCourtsCount}
@@ -243,7 +243,7 @@ const DashboardContainer = () => {
               title='Directions'
               caseCount={directionsCount}
               cardColor='linear-gradient(90deg, #FE0604 0%, #FF937E 100%)'
-              link={userType === "ADMIN" ? "/cases/directions" : "/cases/submitted"}
+              link={userType === "ADMIN" ? "/cases/directions" : "/cases/submitted?caseStatus=directions"}
             />
           </div>
           <div className="col-md-4">
@@ -252,7 +252,7 @@ const DashboardContainer = () => {
               title='Call for Appearance / Urgency'
               caseCount={callForAppearanceCount}
               cardColor='linear-gradient(90deg, #E08303 0%, #E3B94D 100%)'
-              link={userType === "ADMIN" ? "/cases/csCalledInPerson" : "/cases/submitted"}
+              link={userType === "ADMIN" ? "/cases/csCalledInPerson" : "/cases/submitted?caseStatus=csCalledInPerson"}
             />
           </div>
           <div className="col-md-4">
@@ -261,7 +261,7 @@ const DashboardContainer = () => {
               title='Committees / Inquiries'
               caseCount={committeesCount}
               cardColor='linear-gradient(90deg, #3E9069 0%, #35B476 100%)'
-              link={userType === "ADMIN" ? "/committee" : "/cases/submitted"}
+              link={userType === "ADMIN" ? "/committee" : "/committee"}
             />
           </div>
           <div className="col-md-4">
@@ -270,7 +270,7 @@ const DashboardContainer = () => {
               title='Contempts'
               caseCount={contemptsCount}
               cardColor='linear-gradient(270deg, #B89DE0 0%, #9659F3 100%)'
-              link={userType === "ADMIN" ? "/cases/contemptApplication" : "/cases/submitted"}
+              link={userType === "ADMIN" ? "/cases/contemptApplication" : "/cases/submitted?subjectOfApplication=contemptApplication"}
             />
           </div>
           <div className="col-md-4">
@@ -279,7 +279,7 @@ const DashboardContainer = () => {
               title='Compliance Status'
               caseCount={complianceStatusCount}
               cardColor='linear-gradient(90deg, #00B69E 0%, #5ED5CA 56.5%)'
-              link={userType === "ADMIN" ? "/cases/compliance" : "/cases/submitted"}
+              link={userType === "ADMIN" ? "/cases/compliance" : "/cases/submitted?subjectOfApplication=compliance"}
             />
           </div>
         </div>
