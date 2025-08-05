@@ -1,7 +1,15 @@
-import { cases, permissions, users, verifyEmail, committees, dashboard, casesCourts } from "./communications";
+import { cases, permissions, users, verifyEmail, committees, dashboard, casesCourts, notifications } from "./communications";
 import HTTPMethods from "./index";
 
 export class APICalls {
+  static async getNotifications() {
+    try {
+      const result = await HTTPMethods.get(`${notifications}`);
+      return result?.data;
+    } catch (error) {
+      throw error;
+    }
+  }
   static async downloadFile(filename: string) {
     try {
       const url = `/v1/download?filename=${encodeURIComponent(filename)}`;

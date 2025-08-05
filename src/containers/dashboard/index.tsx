@@ -299,7 +299,7 @@ const DashboardContainer = () => {
                 onChange={(val) => setValue(val as Date | null)}
                 value={value}
                 tileClassName={({ date, view }) => {
-                  console.log("redDates", redDates,"yellowDates", yellowDates, "greenDates", greenDates);
+                  // console.log("redDates", redDates,"yellowDates", yellowDates, "greenDates", greenDates);
                   if (view === 'month') {
                     if (yellowDates.some(d => isSameDay(d, date))) return 'calendar-yellow';
                     if (greenDates.some(d => isSameDay(d, date))) return 'calendar-green';

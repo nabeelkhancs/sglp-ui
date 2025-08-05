@@ -24,3 +24,6 @@ export const cases = `${commonAdminEP}cases`;
 export const casesCourts = `${commonAdminEP}cases/courts`;
 export const committees = `${commonAdminEP}committees`;
 export const dashboard = `${commonAdminEP}dashboard`;
+
+//notifications
+export const notifications = `${commonAdminEP}notifications`;
