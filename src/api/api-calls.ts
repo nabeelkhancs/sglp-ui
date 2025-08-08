@@ -10,6 +10,33 @@ export class APICalls {
       throw error;
     }
   }
+
+  static async markNotificationAsRead(notificationId: number) {
+    try {
+      const result = await HTTPMethods.patch(`${notifications}/${notificationId}/read`);
+      return result?.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async markAllNotificationsAsRead() {
+    try {
+      const result = await HTTPMethods.patch(`${notifications}/all/read`);
+      return result?.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async markMultipleNotificationsAsRead(notificationIds: number[]) {
+    try {
+      const result = await HTTPMethods.patch(`${notifications}/multiple/read`, { notificationIds });
+      return result?.data;
+    } catch (error) {
+      throw error;
+    }
+  }
   static async downloadFile(filename: string) {
     try {
       const url = `/v1/download?filename=${encodeURIComponent(filename)}`;
