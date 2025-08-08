@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
   },
   tableHeader: {
     flexDirection: 'row',
-    backgroundColor: '#3498db',
+    backgroundColor: '#00331a',
     padding: 8,
     marginBottom: 1,
   },
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     paddingHorizontal: 3,
   },
-  caseNumber: {
+  cpNumber: {
     width: '15%',
   },
   caseTitle: {
@@ -132,7 +132,6 @@ interface ReportData {
   };
   cases: Array<{
     id: number;
-    caseNumber: string;
     caseTitle: string;
     court: string;
     region: string;
@@ -188,7 +187,7 @@ const ReportPDF: React.FC<{ data: ReportData }> = ({ data }) => {
         <View style={styles.header}>
           <Image src="/logo-green.png" style={styles.logo} />
           <View style={styles.headerText}>
-            <Text style={styles.title}>Case Management Report</Text>
+            <Text style={styles.title}>SGA&CD Legal Wing</Text>
             <Text style={styles.subtitle}>Government of Sindh</Text>
             <Text style={styles.date}>Generated on: {new Date().toLocaleDateString()}</Text>
           </View>
@@ -235,7 +234,7 @@ const ReportPDF: React.FC<{ data: ReportData }> = ({ data }) => {
           <View style={styles.table}>
             {/* Table Header */}
             <View style={styles.tableHeader}>
-              <Text style={[styles.tableHeaderCell, styles.caseNumber]}>Case Number</Text>
+              <Text style={[styles.tableHeaderCell, styles.cpNumber]}>Case Number</Text>
               <Text style={[styles.tableHeaderCell, styles.caseTitle]}>Case Title</Text>
               <Text style={[styles.tableHeaderCell, styles.court]}>Court</Text>
               <Text style={[styles.tableHeaderCell, styles.caseType]}>Type</Text>
@@ -246,8 +245,8 @@ const ReportPDF: React.FC<{ data: ReportData }> = ({ data }) => {
             {/* Table Rows */}
             {data.cases.map((caseItem, index) => (
               <View key={caseItem.id} style={styles.tableRow}>
-                <Text style={[styles.tableCell, styles.caseNumber]}>
-                  {caseItem.caseNumber}
+                <Text style={[styles.tableCell, styles.cpNumber]}>
+                  {caseItem.cpNumber}
                 </Text>
                 <Text style={[styles.tableCell, styles.caseTitle]}>
                   {caseItem.caseTitle || 'N/A'}
