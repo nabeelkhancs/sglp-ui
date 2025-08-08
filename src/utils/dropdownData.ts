@@ -156,4 +156,12 @@ export const getCaseStatusData = (): DropdownOption[] => [
   { value: 'showCause', label: 'Show Cause' },
 ];
 
+export const getYearData = (): DropdownOption[] => {
+  const years = [];
+  for (let year = 2001; year <= 2050; year++) {
+    years.push({ value: year.toString(), label: year.toString() });
+  }
+  return years;
+};
+
 

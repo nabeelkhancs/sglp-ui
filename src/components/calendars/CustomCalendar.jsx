@@ -9,23 +9,36 @@ const months = [
   'September', 'October', 'November', 'December'
 ];
 
-const CustomMonthSelector = () => {
+const generateYears = () => {
+  const years = [];
+  for (let year = 2001; year <= 2050; year++) {
+    years.push(year);
+  }
+  return years;
+};
+
+const CustomMonthSelector = ({ onMonthsChange, onYearChange }) => {
   const currentYear = new Date().getFullYear();
   const [selectedYear, setSelectedYear] = useState(currentYear);
-  const [selectedMonth, setSelectedMonth] = useState(null);
+  const [selectedMonths, setSelectedMonths] = useState([]);
+
+  const handleYearChange = (value) => {
+    setSelectedYear(value);
+    if (onYearChange) {
+      onYearChange(value);
+    }
+  };
 
   return (
     <div className='month-selector p-3 pb-0' >
       <div className='d-flex align-items-center justify-content-between mb-2'  >
-        <div style={{ color: '#888', fontWeight: 500 }}>Select Month</div>
+        <div style={{ color: '#888', fontWeight: 500 }}>Select Year</div>
         <Select
-          defaultValue={currentYear}
-          style={{ width: 75, border:'none'  }}
-          suffixIcon={<img src='/icons/Dropdown.svg' />}
-          onChange={value => setSelectedYear(value)}
-          
+          style={{ width: 75, border: 'none' }}
+          value={selectedYear}
+          onChange={handleYearChange}
         >
-          {[2024, 2025, 2026].map(year => (
+          {generateYears().map(year => (
             <Option style={{ fontWeight: 500}} key={year} value={year}>{year}</Option>
           ))}
         </Select>
@@ -37,11 +50,22 @@ const CustomMonthSelector = () => {
             <Button
             className='fw-medium'
               block
-              onClick={() => setSelectedMonth(month)}
+              onClick={() => {
+                let newSelectedMonths;
+                if (selectedMonths.includes(month)) {
+                  newSelectedMonths = selectedMonths.filter(m => m !== month);
+                } else {
+                  newSelectedMonths = [...selectedMonths, month];
+                }
+                setSelectedMonths(newSelectedMonths);
+                if (onMonthsChange) {
+                  onMonthsChange(newSelectedMonths);
+                }
+              }}
               style={{
-                borderColor: selectedMonth === month ? '#018243' : 'transparent',
-                backgroundColor: selectedMonth === month ? '#0182431A' : '#F2F2F2',
-                color: selectedMonth === month ? '#018243' : '#000',
+                borderColor: selectedMonths.includes(month) ? '#018243' : 'transparent',
+                backgroundColor: selectedMonths.includes(month) ? '#0182431A' : '#F2F2F2',
+                color: selectedMonths.includes(month) ? '#018243' : '#000',
                 height: '40px'
               }}
             >

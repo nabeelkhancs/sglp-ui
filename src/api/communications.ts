@@ -27,3 +27,6 @@ export const dashboard = `${commonAdminEP}dashboard`;
 
 //notifications
 export const notifications = `${commonAdminEP}notifications`;
+
+//reports
+export const reports = `${commonAdminEP}reports/generate`;
