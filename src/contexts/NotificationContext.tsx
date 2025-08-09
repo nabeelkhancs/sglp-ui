@@ -19,6 +19,7 @@ interface NotificationContextType {
   notifications: Notification[];
   loading: boolean;
   refreshNotifications: () => Promise<void>;
+  getDashboardNotifications: () => Promise<any>;
   markAsRead: (notificationId: number) => Promise<void>;
   markAllAsRead: () => Promise<void>;
   markMultipleAsRead: (notificationIds: number[]) => Promise<void>;
@@ -47,6 +48,17 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
       setNotifications([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const getDashboardNotifications = async () => {
+    try {
+      const data = await APICalls.getDashboardNotifications();
+      console.log("Dashboard notifications:", data);
+      return data;
+    } catch (error) {
+      console.error("Failed to fetch dashboard notifications:", error);
+      throw error;
     }
   };
 
@@ -113,6 +125,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     notifications,
     loading,
     refreshNotifications,
+    getDashboardNotifications,
     markAsRead,
     markAllAsRead,
     markMultipleAsRead,

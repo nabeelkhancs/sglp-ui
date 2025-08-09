@@ -9,13 +9,15 @@ interface CountCardsProps {
   link?: string,
 }
 
-const CountCards: FC<CountCardsProps> = ({ badgeCount, title, cardColor, caseCount, link }) => {
+const CountCards: FC<CountCardsProps> = ({ badgeCount = 0, title, cardColor, caseCount, link }) => {
   const cardContent = (
     <div 
       className="box d-flex justify-content-between align-items-center position-relative" 
       style={{ background: `${cardColor}`, cursor: link ? 'pointer' : 'default' }}
     >
-      <span className="position-absolute badge rounded-pill bg-danger" style={{ top: '12px' }}>{badgeCount}</span>
+      {badgeCount > 0 && 
+        <span className="position-absolute badge rounded-pill bg-danger" style={{ top: '12px' }}>{badgeCount}</span>
+      }
       <span className="fs-4 text-white fw-semibold">{title}</span>
       <h3 className="mt-2 text-white fs-1 fw-semibold" >
         {caseCount}

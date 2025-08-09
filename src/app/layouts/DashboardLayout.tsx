@@ -7,6 +7,7 @@ import Cookies from "js-cookie";
 import { useRouter, usePathname } from "next/navigation";
 import { APICalls } from "@/api/api-calls";
 import Image from "next/image";
+import { useNotifications } from "@/contexts/NotificationContext";
 
 const { Sider, Content } = Layout;
 
@@ -24,6 +25,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   const [permissions, setPermissions] = useState<Permission[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { getDashboardNotifications } = useNotifications();
   const userType = Cookies.get("userType")
   const router = useRouter();
   const pathname = usePathname();
@@ -47,6 +49,22 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
       })
       .finally(() => setLoading(false));
   }, [router]);
+
+  useEffect(() => {
+    // Call dashboard notifications API and console log
+    const fetchDashboardNotifications = async () => {
+      try {
+        const dashboardNotificationsData = await getDashboardNotifications();
+        console.log("Dashboard Layout - Dashboard Notifications:", dashboardNotificationsData);
+      } catch (error) {
+        console.error("Dashboard Layout - Failed to fetch dashboard notifications:", error);
+      }
+    };
+
+    if (!loading && permissions) {
+      fetchDashboardNotifications();
+    }
+  }, [loading, permissions, getDashboardNotifications]);
 
   const menuItems = useMemo(
     () =>

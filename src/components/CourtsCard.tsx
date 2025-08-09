@@ -7,13 +7,13 @@ interface CourtsCardsProps {
     showbadgeCount?: boolean;
 }
 
-const CourtsCards: FC<CourtsCardsProps> = ({ showbadgeCount = true, badgeCount, courtName, courtNumber = 0 }) => {
+const CourtsCards: FC<CourtsCardsProps> = ({ showbadgeCount = true, badgeCount = 0, courtName, courtNumber = 0 }) => {
     return (
         <div
             className="content-wrapper position-relative"
             style={!showbadgeCount ? { height: '9rem' } : undefined}
         >
-            {showbadgeCount &&
+            {showbadgeCount && badgeCount > 0 &&
                 <span className="position-absolute badge rounded-pill bg-danger" >{badgeCount}</span>
             }
             <img src={showbadgeCount ? "/icons/court-icon.svg" : "/icons/court-single.svg"} alt="" />

@@ -25,7 +25,7 @@ function isSameDay(a: Date, b: Date) {
 }
 
 const DashboardContainer = () => {
-  const { notifications, unreadCount, loading: notificationLoading } = useNotifications();
+  const { notifications, unreadCount, loading: notificationLoading, getDashboardNotifications } = useNotifications();
   
   const [value, setValue] = useState<Date | null>(new Date());
   useEffect(() => {
@@ -47,6 +47,7 @@ const DashboardContainer = () => {
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [dashboardNotificationsCount, setDashboardNotificationsCount] = useState<any>(null);
   const userType = Cookies.get("userType");
 
   const [redDates, setRedDates] = useState<Date[]>([]);
@@ -58,6 +59,21 @@ const DashboardContainer = () => {
     console.log("Unread Count:", unreadCount);
     console.log("Notification Loading:", notificationLoading);
   }, [notifications, unreadCount, notificationLoading]);
+
+  useEffect(() => {
+    // Call dashboard notifications count API
+    const fetchDashboardNotificationsCount = async () => {
+      try {
+        const dashboardNotificationsData = await getDashboardNotifications();
+        console.log("Dashboard Container - Dashboard Notifications Count:", dashboardNotificationsData);
+        setDashboardNotificationsCount(dashboardNotificationsData);
+      } catch (error) {
+        console.error("Dashboard Container - Failed to fetch dashboard notifications:", error);
+      }
+    };
+
+    fetchDashboardNotificationsCount();
+  }, [getDashboardNotifications]);
 
   useEffect(() => {
     const reds: Date[] = [];
@@ -181,6 +197,7 @@ const DashboardContainer = () => {
     return <div style={{ minHeight: "60vh", display: "flex", alignItems: "center", justifyContent: "center" }}><Alert message={error} type="error" showIcon /></div>;
   }
 
+  console.log("dashboardNotificationsCount",dashboardNotificationsCount)
   return (
     <div className="manager dashboard-page">
       {/* <div className="page-title mb-3">
@@ -193,7 +210,7 @@ const DashboardContainer = () => {
             <Link href={`${userType == "ADMIN" ? "/cases/supremecourt" : "/cases/submitted?court=supremecourt"}`} style={{ textDecoration: 'none', color: 'inherit' }}>
               <div className="court-card">
                 <CourtsCards
-                  badgeCount={supremeCourtCount}
+                  badgeCount={dashboardNotificationsCount?.supremeCourtCount || 0}
                   courtName="Supreme Courts"
                   courtNumber={supremeCourtCount}
                 />
@@ -204,7 +221,7 @@ const DashboardContainer = () => {
             <Link href={`${userType == "ADMIN" ? "/cases/highcourt" : "/cases/submitted?court=highcourt"}`} style={{ textDecoration: 'none', color: 'inherit' }}>
               <div className="court-card">
                 <CourtsCards
-                  badgeCount={highCourtCount}
+                  badgeCount={dashboardNotificationsCount?.highCourtCount || 0}
                   courtName="High Courts"
                   courtNumber={highCourtCount}
                 />
@@ -215,7 +232,7 @@ const DashboardContainer = () => {
             <Link href={`${userType == "ADMIN" ? "/cases/districtcourts" : "/cases/submitted?court=districtcourts"}`} style={{ textDecoration: 'none', color: 'inherit' }}>
               <div className="court-card">
                 <CourtsCards
-                  badgeCount={districtCourtCount}
+                  badgeCount={dashboardNotificationsCount?.districtCourtCount || 0}
                   courtName="District Courts"
                   courtNumber={districtCourtCount}
                 />
@@ -226,7 +243,7 @@ const DashboardContainer = () => {
             <Link href={`${userType == "ADMIN" ? "/cases/othercourts" : "/cases/submitted?court=othercourts"}`} style={{ textDecoration: 'none', color: 'inherit' }}>
               <div className="court-card">
                 <CourtsCards
-                  badgeCount={otherCourtsCount}
+                  badgeCount={dashboardNotificationsCount?.otherCourtsCount || 0}
                   courtName="Other Courts/Tribunals"
                   courtNumber={otherCourtsCount}
                 />
@@ -238,7 +255,7 @@ const DashboardContainer = () => {
         <div className="row mb-34 count-cards g-4">
           <div className="col-md-4">
             <CountCards
-              badgeCount={totalCases}
+              badgeCount={dashboardNotificationsCount?.totalUnread || 0}
               title='Total Cases of CS'
               // title='TOTAL CASES OF CS'
               caseCount={totalCases}
@@ -248,7 +265,7 @@ const DashboardContainer = () => {
           </div>
           <div className="col-md-4">
             <CountCards
-              badgeCount={directionsCount}
+              badgeCount={dashboardNotificationsCount?.categories?.direction?.unreadCount || 0}
               title='Directions'
               caseCount={directionsCount}
               cardColor='linear-gradient(90deg, #FE0604 0%, #FF937E 100%)'
@@ -257,7 +274,7 @@ const DashboardContainer = () => {
           </div>
           <div className="col-md-4">
             <CountCards
-              badgeCount={callForAppearanceCount}
+              badgeCount={dashboardNotificationsCount?.categories?.csCalledInPerson?.unreadCount || 0}
               title='Call for Appearance / Urgency'
               caseCount={callForAppearanceCount}
               cardColor='linear-gradient(90deg, #E08303 0%, #E3B94D 100%)'
@@ -266,7 +283,7 @@ const DashboardContainer = () => {
           </div>
           <div className="col-md-4">
             <CountCards
-              badgeCount={committeesCount}
+              badgeCount={0}
               title='Committees / Inquiries'
               caseCount={committeesCount}
               cardColor='linear-gradient(90deg, #3E9069 0%, #35B476 100%)'
@@ -275,7 +292,7 @@ const DashboardContainer = () => {
           </div>
           <div className="col-md-4">
             <CountCards
-              badgeCount={contemptsCount}
+              badgeCount={dashboardNotificationsCount?.categories?.contempt?.unreadCount || 0}
               title='Contempts'
               caseCount={contemptsCount}
               cardColor='linear-gradient(270deg, #B89DE0 0%, #9659F3 100%)'
@@ -284,7 +301,7 @@ const DashboardContainer = () => {
           </div>
           <div className="col-md-4">
             <CountCards
-              badgeCount={complianceStatusCount}
+              badgeCount={dashboardNotificationsCount?.categories?.underCompliance?.unreadCount || 0}
               title='Compliance Status'
               caseCount={complianceStatusCount}
               cardColor='linear-gradient(90deg, #00B69E 0%, #5ED5CA 56.5%)'

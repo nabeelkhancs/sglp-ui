@@ -14,6 +14,47 @@ const UserView: FC = () => {
   const { id } = useParams();
   const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [actionLoading, setActionLoading] = useState<boolean>(false);
+
+  const handleApprove = async () => {
+    setActionLoading(true);
+    
+    try {
+      await APICalls.updateUser(Number(id), { status: "Approved" });
+      console.log('User approved successfully');
+      // Refresh user data by calling the API again
+      refreshUserData();
+    } catch (error) {
+      console.error('Failed to approve user:', error);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleReject = async () => {
+    setActionLoading(true);
+    
+    try {
+      await APICalls.updateUser(Number(id), { status: "Rejected" });
+      console.log('User rejected successfully');
+      // Refresh user data by calling the API again
+      refreshUserData();
+    } catch (error) {
+      console.error('Failed to reject user:', error);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const refreshUserData = async () => {
+    try {
+      const updatedData = await APICalls.getUserById(Number(id));
+      setUserData(updatedData);
+      console.log('User data refreshed:', updatedData);
+    } catch (error) {
+      console.error('Failed to refresh user data:', error);
+    }
+  };
 
   const formatCreatedAt = (createdAt: string) => {
     const date = new Date(createdAt);
@@ -88,8 +129,24 @@ const UserView: FC = () => {
           </div>
           {userData?.status !== "Approved" && (
             <div className="actions d-flex gap-2">
-              <Button className="approve btn-action" icon={<img src="/icons/approve.svg" alt="approve" />}>Approve</Button>
-              <Button className="reject btn-action" icon={<img src="/icons/reject-icon.svg" alt="reject" />}>Reject</Button>
+              <Button 
+                className="approve btn-action" 
+                icon={<img src="/icons/approve.svg" alt="approve" />}
+                onClick={handleApprove}
+                loading={actionLoading}
+                disabled={actionLoading}
+              >
+                Approve
+              </Button>
+              <Button 
+                className="reject btn-action" 
+                icon={<img src="/icons/reject-icon.svg" alt="reject" />}
+                onClick={handleReject}
+                loading={actionLoading}
+                disabled={actionLoading}
+              >
+                Reject
+              </Button>
             </div>
           )}
         </div>

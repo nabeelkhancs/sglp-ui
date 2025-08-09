@@ -11,6 +11,15 @@ export class APICalls {
     }
   }
 
+  static async getDashboardNotifications() {
+    try {
+      const result = await HTTPMethods.get(`${notifications}/dashboard`);
+      return result?.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   static async markNotificationAsRead(notificationId: number) {
     try {
       const result = await HTTPMethods.patch(`${notifications}/${notificationId}/read`);
