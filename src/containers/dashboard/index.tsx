@@ -16,6 +16,7 @@ import DonutChart from '@/components/charts/AnalyticChart2';
 import AnalyticsChart2 from '@/components/charts/AnalyticChart2';
 import { APICalls } from "@/api/api-calls";
 import { Spin, Alert } from "antd";
+import { useNotifications } from "@/contexts/NotificationContext";
 
 
 
@@ -24,6 +25,8 @@ function isSameDay(a: Date, b: Date) {
 }
 
 const DashboardContainer = () => {
+  const { notifications, unreadCount, loading: notificationLoading } = useNotifications();
+  
   const [value, setValue] = useState<Date | null>(new Date());
   useEffect(() => {
     if (value) {
@@ -49,6 +52,12 @@ const DashboardContainer = () => {
   const [redDates, setRedDates] = useState<Date[]>([]);
   const [yellowDates, setYellowDates] = useState<Date[]>([]);
   const [greenDates, setGreenDates] = useState<Date[]>([]);
+
+  useEffect(() => {
+    console.log("Dashboard Notifications:", notifications);
+    console.log("Unread Count:", unreadCount);
+    console.log("Notification Loading:", notificationLoading);
+  }, [notifications, unreadCount, notificationLoading]);
 
   useEffect(() => {
     const reds: Date[] = [];

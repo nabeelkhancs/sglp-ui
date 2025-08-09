@@ -74,6 +74,24 @@ export class APICalls {
     }
   }
 
+  static async getUserById(userId: any) {
+    try {
+      const result = await HTTPMethods.get(`${users}/${userId}`);
+      return result?.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async updateUser(userId: number, userData: any) {
+    try {
+      const result = await HTTPMethods.put(users, { id: userId, data: userData });
+      return result?.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   static async verifyEmail(token: string) {
     try {
       const result = await HTTPMethods.post(`${verifyEmail}?token=${token}`);

@@ -2,6 +2,7 @@
 import { Button, Table } from 'antd';
 import TablePagination from './TablePagination';
 import { FC } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface DataTableProps {
   filters?: boolean;
@@ -13,6 +14,7 @@ interface DataTableProps {
   totalCases?: number;
   currentPage?: number;
   pageSize?: number;
+  userSelected?: boolean;
   onPageChange?: (page: number) => void;
   onPageSizeChange?: (size: number) => void;
   setSelectedCase?: (record: any) => void;
@@ -33,7 +35,10 @@ const DataTable: FC<DataTableProps> = ({
   onPageSizeChange = () => {},
   setSelectedCase,
   setViewModalOpen,
+  userSelected = false,
 }) => {
+  const router = useRouter();
+  
   const handleFilterClick = (filter: string) => {
     if (onFilterChange) onFilterChange(filter);
   } 
@@ -65,8 +70,12 @@ const DataTable: FC<DataTableProps> = ({
           loading={loading}
           onRow={record => ({
             onClick: () => {
-              if (setSelectedCase) setSelectedCase(record);
-              if (setViewModalOpen) setViewModalOpen(true);
+              if (userSelected) {
+                router.push(`/users/${record.id}/view`);
+              } else {
+                if (setSelectedCase) setSelectedCase(record);
+                if (setViewModalOpen) setViewModalOpen(true);
+              }
             },
             style: { cursor: 'pointer' },
           })}

@@ -1,95 +1,21 @@
 import { Dropdown, Button, Checkbox, Divider } from "antd";
 import { useEffect, useState } from "react";
-import { APICalls } from "@/api/api-calls";
+import { useNotifications } from "@/contexts/NotificationContext";
 
 
 
 const NotificationDropdown = () => {
-  const [notifications, setNotifications] = useState<any[]>([]);
+  const { 
+    notifications, 
+    loading, 
+    markAsRead, 
+    markAllAsRead, 
+    markMultipleAsRead,
+    refreshNotifications 
+  } = useNotifications();
+  
   const [items, setItems] = useState<any[]>([]);
   const [selectedNotifications, setSelectedNotifications] = useState<number[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  
-  // const markAsRead = (notificationId: number) => {
-  //   setNotifications(prev => 
-  //     prev.map(notif => 
-  //       notif.id === notificationId 
-  //         ? { ...notif, isRead: true }
-  //         : notif
-  //     )
-  //   );
-  //   // Update items
-  //   const updatedItems = items.map(item => {
-  //     if (item.key === notificationId) {
-  //       const notif = notifications.find(n => n.id === notificationId);
-  //       if (notif) {
-  //         return {
-  //           ...item,
-  //           label: createNotificationLabel({ ...notif, isRead: true })
-  //         };
-  //       }
-  //     }
-  //     return item;
-  //   });
-  //   setItems(updatedItems);
-  // };
-
-  const markAsRead = async (notificationId: number) => {
-    try {
-      await APICalls.markNotificationAsRead(notificationId);
-      // Update local state
-      setNotifications(prev => 
-        prev.map(notif => 
-          notif.id === notificationId 
-            ? { ...notif, isRead: true }
-            : notif
-        )
-      );
-      console.log("Notification marked as read:", notificationId);
-    } catch (error) {
-      console.error("Failed to mark notification as read:", error);
-    }
-  };
-
-  const markAllAsRead = async () => {
-    setLoading(true);
-    try {
-      await APICalls.markAllNotificationsAsRead();
-      // Update local state
-      setNotifications(prev => 
-        prev.map(notif => ({ ...notif, isRead: true }))
-      );
-      setSelectedNotifications([]);
-      console.log("All notifications marked as read");
-    } catch (error) {
-      console.error("Failed to mark all notifications as read:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const markSelectedAsRead = async () => {
-    if (selectedNotifications.length === 0) return;
-    
-    setLoading(true);
-    try {
-      await APICalls.markMultipleNotificationsAsRead(selectedNotifications);
-      // Update local state
-      setNotifications(prev => 
-        prev.map(notif => 
-          selectedNotifications.includes(notif.id)
-            ? { ...notif, isRead: true }
-            : notif
-        )
-      );
-      setSelectedNotifications([]);
-      console.log("Selected notifications marked as read:", selectedNotifications);
-    } catch (error) {
-      console.error("Failed to mark selected notifications as read:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleSelectNotification = (notificationId: number, checked: boolean) => {
     if (checked) {
@@ -106,6 +32,17 @@ const NotificationDropdown = () => {
     } else {
       setSelectedNotifications([]);
     }
+  };
+
+  const handleMarkSelectedAsRead = async () => {
+    if (selectedNotifications.length === 0) return;
+    await markMultipleAsRead(selectedNotifications);
+    setSelectedNotifications([]);
+  };
+
+  const handleMarkAllAsRead = async () => {
+    await markAllAsRead();
+    setSelectedNotifications([]);
   };
   const getNotificationTitle = (notif: any) => {
     switch (notif.type) {
@@ -191,16 +128,6 @@ const NotificationDropdown = () => {
   );
 
   useEffect(() => {
-    APICalls.getNotifications()
-      .then((data) => {
-        const records = data?.records || [];
-        setNotifications(records);
-        console.log("Notifications:", data);
-      })
-      .catch(() => setNotifications([]));
-  }, []);
-
-  useEffect(() => {
     // Regenerate items when notifications change
     const notificationItems = notifications.length > 0
       ? notifications.map((notif: any) => ({
@@ -238,7 +165,7 @@ const NotificationDropdown = () => {
                     size="small"
                     onClick={(e) => {
                       e.stopPropagation();
-                      markSelectedAsRead();
+                      handleMarkSelectedAsRead();
                     }}
                     loading={loading}
                     style={{ 
@@ -257,7 +184,7 @@ const NotificationDropdown = () => {
                     size="small"
                     onClick={(e) => {
                       e.stopPropagation();
-                      markAllAsRead();
+                      handleMarkAllAsRead();
                     }}
                     loading={loading}
                     style={{ 

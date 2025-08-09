@@ -80,6 +80,7 @@ const UsersContainer = () => {
                 createdAt: new Date(user.createdAt).toLocaleString(),
               }
             })}
+            // userSelected={true}
             columns={columns}
             filters={true}
             onFilterChange={handleFilterChange}
