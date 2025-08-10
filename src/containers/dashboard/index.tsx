@@ -308,11 +308,12 @@ const DashboardContainer = () => {
           </div>
           <div className="col-md-4">
             <CountCards
-              badgeCount={0}
+              badgeCount={dashboardNotificationsCount?.categories?.committee?.unreadCount || 0}
               title='Committees / Inquiries'
               caseCount={committeesCount}
               cardColor='linear-gradient(90deg, #3E9069 0%, #35B476 100%)'
               link={userType === "ADMIN" ? "/committee" : "/committee"}
+              onClick={() => handleCountCardClick('committee')}
             />
           </div>
           <div className="col-md-4">
