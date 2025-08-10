@@ -25,6 +25,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   const [permissions, setPermissions] = useState<Permission[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [dashboardNotificationsCount, setDashboardNotificationsCount] = useState<any>(null);
   const { getDashboardNotifications } = useNotifications();
   const userType = Cookies.get("userType")
   const router = useRouter();
@@ -56,6 +57,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
       try {
         const dashboardNotificationsData = await getDashboardNotifications();
         console.log("Dashboard Layout - Dashboard Notifications:", dashboardNotificationsData);
+        setDashboardNotificationsCount(dashboardNotificationsData);
       } catch (error) {
         console.error("Dashboard Layout - Failed to fetch dashboard notifications:", error);
       }
@@ -66,14 +68,55 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
     }
   }, [loading, permissions, getDashboardNotifications]);
 
+  const getBadgeCount = (link: string) => {
+    if (!dashboardNotificationsCount?.categories) return 0;
+    
+    // Map menu links to notification categories
+    switch (link) {
+      case '/cases':
+        return dashboardNotificationsCount.categories.allCases?.unreadCount || 0;
+      case '/cases/directions':
+        return dashboardNotificationsCount.categories.direction?.unreadCount || 0;
+      case '/cases/csCalledInPerson':
+        return dashboardNotificationsCount.categories.csCalledInPerson?.unreadCount || 0;
+      case '/cases/contemptApplication':
+        return dashboardNotificationsCount.categories.contempt?.unreadCount || 0;
+      case '/cases/compliance':
+        return dashboardNotificationsCount.categories.underCompliance?.unreadCount || 0;
+      default:
+        return 0;
+    }
+  };
+
   const menuItems = useMemo(
     () =>
-      (permissions || []).map((item) => ({
-        key: item.link,
-        icon: <Image src={`/icons/${item.icon}`} alt={item.label} width={24} height={24} />,
-        label: <Link href={item.link}>{item.label}</Link>,
-      })),
-    [permissions]
+      (permissions || []).map((item) => {
+        const badgeCount = getBadgeCount(item.link);
+        return {
+          key: item.link,
+          icon: <Image src={`/icons/${item.icon}`} alt={item.label} width={24} height={24} />,
+          label: (
+            <Link href={item.link} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+              <span>{item.label}</span>
+              {badgeCount > 0 && (
+                <span style={{
+                  backgroundColor: '#ff4d4f',
+                  color: 'white',
+                  borderRadius: '10px',
+                  padding: '2px 6px',
+                  fontSize: '12px',
+                  fontWeight: 'bold',
+                  minWidth: '18px',
+                  textAlign: 'center'
+                }}>
+                  {badgeCount}
+                </span>
+              )}
+            </Link>
+          ),
+        };
+      }),
+    [permissions, dashboardNotificationsCount]
   );
 
   const allowed = useMemo(() => {

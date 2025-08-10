@@ -25,7 +25,7 @@ function isSameDay(a: Date, b: Date) {
 }
 
 const DashboardContainer = () => {
-  const { notifications, unreadCount, loading: notificationLoading, getDashboardNotifications } = useNotifications();
+  const { notifications, unreadCount, loading: notificationLoading, getDashboardNotifications, markMultipleAsRead } = useNotifications();
   
   const [value, setValue] = useState<Date | null>(new Date());
   useEffect(() => {
@@ -198,6 +198,28 @@ const DashboardContainer = () => {
   }
 
   console.log("dashboardNotificationsCount",dashboardNotificationsCount)
+
+  // Function to handle marking notifications as read when count card is clicked
+  const handleCountCardClick = async (category: string) => {
+    if (!dashboardNotificationsCount?.categories?.[category]?.unreadIds?.length) {
+      return; // No unread notifications to mark
+    }
+
+    const unreadIds = dashboardNotificationsCount.categories[category].unreadIds;
+    console.log(`Marking ${category} notifications as read:`, unreadIds);
+    
+    try {
+      await markMultipleAsRead(unreadIds);
+      console.log(`Successfully marked ${category} notifications as read`);
+      
+      // Refresh dashboard notifications to update counts
+      const updatedData = await getDashboardNotifications();
+      setDashboardNotificationsCount(updatedData);
+    } catch (error) {
+      console.error(`Failed to mark ${category} notifications as read:`, error);
+    }
+  };
+
   return (
     <div className="manager dashboard-page">
       {/* <div className="page-title mb-3">
@@ -261,6 +283,7 @@ const DashboardContainer = () => {
               caseCount={totalCases}
               cardColor='linear-gradient(90deg, #0050FF 0%, #7FAEF6 100%)'
               link={userType === "ADMIN" ? "/cases" : "/cases/submitted"}
+              onClick={() => handleCountCardClick('allCases')}
             />
           </div>
           <div className="col-md-4">
@@ -270,6 +293,7 @@ const DashboardContainer = () => {
               caseCount={directionsCount}
               cardColor='linear-gradient(90deg, #FE0604 0%, #FF937E 100%)'
               link={userType === "ADMIN" ? "/cases/directions" : "/cases/submitted?caseStatus=directions"}
+              onClick={() => handleCountCardClick('direction')}
             />
           </div>
           <div className="col-md-4">
@@ -279,6 +303,7 @@ const DashboardContainer = () => {
               caseCount={callForAppearanceCount}
               cardColor='linear-gradient(90deg, #E08303 0%, #E3B94D 100%)'
               link={userType === "ADMIN" ? "/cases/csCalledInPerson" : "/cases/submitted?caseStatus=csCalledInPerson"}
+              onClick={() => handleCountCardClick('csCalledInPerson')}
             />
           </div>
           <div className="col-md-4">
@@ -297,6 +322,7 @@ const DashboardContainer = () => {
               caseCount={contemptsCount}
               cardColor='linear-gradient(270deg, #B89DE0 0%, #9659F3 100%)'
               link={userType === "ADMIN" ? "/cases/contemptApplication" : "/cases/submitted?subjectOfApplication=contemptApplication"}
+              onClick={() => handleCountCardClick('contempt')}
             />
           </div>
           <div className="col-md-4">
@@ -306,6 +332,7 @@ const DashboardContainer = () => {
               caseCount={complianceStatusCount}
               cardColor='linear-gradient(90deg, #00B69E 0%, #5ED5CA 56.5%)'
               link={userType === "ADMIN" ? "/cases/compliance" : "/cases/submitted?subjectOfApplication=compliance"}
+              onClick={() => handleCountCardClick('underCompliance')}
             />
           </div>
         </div>

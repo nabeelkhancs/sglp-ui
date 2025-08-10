@@ -7,13 +7,21 @@ interface CountCardsProps {
   caseCount: number,
   cardColor: string,
   link?: string,
+  onClick?: () => void,
 }
 
-const CountCards: FC<CountCardsProps> = ({ badgeCount = 0, title, cardColor, caseCount, link }) => {
+const CountCards: FC<CountCardsProps> = ({ badgeCount = 0, title, cardColor, caseCount, link, onClick }) => {
+  const handleClick = () => {
+    if (onClick) {
+      onClick();
+    }
+  };
+
   const cardContent = (
     <div 
       className="box d-flex justify-content-between align-items-center position-relative" 
       style={{ background: `${cardColor}`, cursor: link ? 'pointer' : 'default' }}
+      onClick={handleClick}
     >
       {badgeCount > 0 && 
         <span className="position-absolute badge rounded-pill bg-danger" style={{ top: '12px' }}>{badgeCount}</span>
