@@ -11,7 +11,8 @@ const NotificationDropdown = () => {
     markAsRead, 
     markAllAsRead, 
     markMultipleAsRead,
-    refreshNotifications 
+    refreshNotifications,
+    unreadCount
   } = useNotifications();
   
   const [items, setItems] = useState<any[]>([]);
@@ -211,9 +212,14 @@ const NotificationDropdown = () => {
   }, [notifications, selectedNotifications, loading]);
   return (
     <Dropdown menu={{ items }} trigger={['click']} placement="bottomLeft">
-      <a onClick={e => e.preventDefault()}>
+      <a onClick={e => e.preventDefault()} style={{ position: 'relative', display: 'inline-block' }}>
         <span>
           <img src="/icons/notification-icon.svg" alt="" />
+          {unreadCount > 0 && (
+            <span className="notification-icon-badge">
+              {unreadCount > 99 ? '99+' : unreadCount}
+            </span>
+          )}
         </span>
       </a>
     </Dropdown>
