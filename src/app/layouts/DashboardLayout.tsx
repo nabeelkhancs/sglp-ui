@@ -83,6 +83,8 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
         return dashboardNotificationsCount.categories.contempt?.unreadCount || 0;
       case '/cases/compliance':
         return dashboardNotificationsCount.categories.underCompliance?.unreadCount || 0;
+      case '/committee':
+        return dashboardNotificationsCount.categories.committee?.unreadCount || 0;
       default:
         return 0;
     }
@@ -99,16 +101,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
             <Link href={item.link} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
               <span>{item.label}</span>
               {badgeCount > 0 && (
-                <span style={{
-                  backgroundColor: '#ff4d4f',
-                  color: 'white',
-                  borderRadius: '10px',
-                  padding: '2px 6px',
-                  fontSize: '12px',
-                  fontWeight: 'bold',
-                  minWidth: '18px',
-                  textAlign: 'center'
-                }}>
+                <span className="sidebar-menu-badge">
                   {badgeCount}
                 </span>
               )}
