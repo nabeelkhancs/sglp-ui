@@ -26,7 +26,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [dashboardNotificationsCount, setDashboardNotificationsCount] = useState<any>(null);
-  const { getDashboardNotifications } = useNotifications();
+  const { getDashboardNotifications, refreshNotifications, initialized } = useNotifications();
   const userType = Cookies.get("userType")
   const router = useRouter();
   const pathname = usePathname();
@@ -52,21 +52,27 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   }, [router]);
 
   useEffect(() => {
-    // Call dashboard notifications API and console log
-    const fetchDashboardNotifications = async () => {
+    // Initialize notifications and fetch dashboard notifications after permissions are loaded
+    const fetchNotifications = async () => {
       try {
+        // Initialize notifications if not already done
+        if (!initialized) {
+          await refreshNotifications();
+        }
+        
+        // Fetch dashboard notifications
         const dashboardNotificationsData = await getDashboardNotifications();
         console.log("Dashboard Layout - Dashboard Notifications:", dashboardNotificationsData);
         setDashboardNotificationsCount(dashboardNotificationsData);
       } catch (error) {
-        console.error("Dashboard Layout - Failed to fetch dashboard notifications:", error);
+        console.error("Dashboard Layout - Failed to fetch notifications:", error);
       }
     };
 
     if (!loading && permissions) {
-      fetchDashboardNotifications();
+      fetchNotifications();
     }
-  }, [loading, permissions, getDashboardNotifications]);
+  }, [loading, permissions, getDashboardNotifications, refreshNotifications, initialized]);
 
   const getBadgeCount = (link: string) => {
     if (!dashboardNotificationsCount?.categories) return 0;

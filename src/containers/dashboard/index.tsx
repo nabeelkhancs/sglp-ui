@@ -233,7 +233,7 @@ const DashboardContainer = () => {
               <div className="court-card">
                 <CourtsCards
                   badgeCount={dashboardNotificationsCount?.supremeCourtCount || 0}
-                  courtName="Supreme Courts"
+                  courtName="Supreme Court"
                   courtNumber={supremeCourtCount}
                 />
               </div>

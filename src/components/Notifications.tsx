@@ -8,6 +8,7 @@ const NotificationDropdown = () => {
   const { 
     notifications, 
     loading, 
+    initialized,
     markAsRead, 
     markAllAsRead, 
     markMultipleAsRead,
@@ -17,6 +18,22 @@ const NotificationDropdown = () => {
   
   const [items, setItems] = useState<any[]>([]);
   const [selectedNotifications, setSelectedNotifications] = useState<number[]>([]);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  // Initialize notifications when component mounts or when dropdown is opened
+  useEffect(() => {
+    if (!initialized) {
+      refreshNotifications();
+    }
+  }, [initialized, refreshNotifications]);
+
+  // Refresh notifications when dropdown is opened for the first time
+  const handleDropdownVisibleChange = async (visible: boolean) => {
+    setDropdownOpen(visible);
+    if (visible && !initialized) {
+      await refreshNotifications();
+    }
+  };
 
   const handleSelectNotification = (notificationId: number, checked: boolean) => {
     if (checked) {
@@ -129,6 +146,12 @@ const NotificationDropdown = () => {
   );
 
   useEffect(() => {
+    // Show loading state if not initialized or currently loading
+    if (!initialized && loading) {
+      setItems([{ label: 'Loading notifications...', key: 'loading' }]);
+      return;
+    }
+
     // Regenerate items when notifications change
     const notificationItems = notifications.length > 0
       ? notifications.map((notif: any) => ({
@@ -139,7 +162,7 @@ const NotificationDropdown = () => {
 
     // Add footer with controls if there are notifications
     if (notifications.length > 0) {
-      const unreadCount = notifications.filter(notif => !notif.isRead).length;
+      const unreadNotificationsCount = notifications.filter(notif => !notif.isRead).length;
       const footerItem = {
         label: (
           <div 
@@ -148,8 +171,8 @@ const NotificationDropdown = () => {
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
               <Checkbox
-                checked={selectedNotifications.length === unreadCount && unreadCount > 0}
-                indeterminate={selectedNotifications.length > 0 && selectedNotifications.length < unreadCount}
+                checked={selectedNotifications.length === unreadNotificationsCount && unreadNotificationsCount > 0}
+                indeterminate={selectedNotifications.length > 0 && selectedNotifications.length < unreadNotificationsCount}
                 onChange={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -209,9 +232,16 @@ const NotificationDropdown = () => {
     }
 
     setItems(notificationItems);
-  }, [notifications, selectedNotifications, loading]);
+  }, [notifications, selectedNotifications, loading, initialized]);
   return (
-    <Dropdown menu={{ items }} trigger={['click']} placement="bottomLeft">
+    <Dropdown 
+      menu={{ items }} 
+      trigger={['click']} 
+      placement="bottomLeft"
+      onOpenChange={handleDropdownVisibleChange}
+      open={dropdownOpen}
+      overlayClassName="notification-dropdown"
+    >
       <a onClick={e => e.preventDefault()} style={{ position: 'relative', display: 'inline-block' }}>
         <span>
           <img src="/icons/notification-icon.svg" alt="" />

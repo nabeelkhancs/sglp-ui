@@ -18,6 +18,7 @@ interface Notification {
 interface NotificationContextType {
   notifications: Notification[];
   loading: boolean;
+  initialized: boolean;
   refreshNotifications: () => Promise<void>;
   getDashboardNotifications: () => Promise<any>;
   markAsRead: (notificationId: number) => Promise<void>;
@@ -35,17 +36,22 @@ interface NotificationProviderProps {
 export const NotificationProvider: React.FC<NotificationProviderProps> = ({ children }) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [initialized, setInitialized] = useState<boolean>(false);
+  const [unreadCount, setUnreadCount] = useState<number>(0);
 
   const refreshNotifications = async () => {
     try {
       setLoading(true);
       const data = await APICalls.getNotifications();
       const records = data?.records || [];
+      setUnreadCount(data?.totalUnreadCount);
       setNotifications(records);
+      setInitialized(true);
       console.log("Notifications refreshed:", data);
     } catch (error) {
       console.error("Failed to fetch notifications:", error);
       setNotifications([]);
+      setInitialized(true);
     } finally {
       setLoading(false);
     }
@@ -66,9 +72,9 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     try {
       await APICalls.markNotificationAsRead(notificationId);
       // Update local state
-      setNotifications(prev => 
-        prev.map(notif => 
-          notif.id === notificationId 
+      setNotifications(prev =>
+        prev.map(notif =>
+          notif.id === notificationId
             ? { ...notif, isRead: true }
             : notif
         )
@@ -84,7 +90,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
       setLoading(true);
       await APICalls.markAllNotificationsAsRead();
       // Update local state
-      setNotifications(prev => 
+      setNotifications(prev =>
         prev.map(notif => ({ ...notif, isRead: true }))
       );
       console.log("All notifications marked as read");
@@ -100,8 +106,8 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
       setLoading(true);
       await APICalls.markMultipleNotificationsAsRead(notificationIds);
       // Update local state
-      setNotifications(prev => 
-        prev.map(notif => 
+      setNotifications(prev =>
+        prev.map(notif =>
           notificationIds.includes(notif.id)
             ? { ...notif, isRead: true }
             : notif
@@ -114,16 +120,12 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
       setLoading(false);
     }
   };
-
-  const unreadCount = notifications.filter(notif => !notif.isRead).length;
-
-  useEffect(() => {
-    refreshNotifications();
-  }, []);
+  // Remove automatic refresh on mount - let components control when to initialize
 
   const value: NotificationContextType = {
     notifications,
     loading,
+    initialized,
     refreshNotifications,
     getDashboardNotifications,
     markAsRead,
