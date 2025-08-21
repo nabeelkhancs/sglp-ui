@@ -30,6 +30,11 @@ interface CommitteeReportFormValues {
   uploadedFiles: string[];
 }
 
+interface CommitteeReportFormProps {
+  committeeId?: string | number;
+  onSuccess?: () => void;
+}
+
 const initialForm: CommitteeReportFormValues = {
   id: undefined,
   cpNumber: "",
@@ -41,11 +46,15 @@ const initialForm: CommitteeReportFormValues = {
   uploadedFiles: [],
 };
 
-const CommitteeReportForm: React.FC = () => {
+const CommitteeReportForm: React.FC<CommitteeReportFormProps> = ({ 
+  committeeId, 
+  onSuccess 
+}) => {
   const router = useRouter();
   const [form, setForm] = useState<CommitteeReportFormValues>(initialForm);
   const [errors, setErrors] = useState<Partial<Record<keyof CommitteeReportFormValues, string>>>({});
   const [loading, setLoading] = useState(false);
+  const [dataLoading, setDataLoading] = useState(false);
   const [files, setFiles] = useState<UploadFile[]>([]);
   const [committeeCases, setCommitteeCases] = useState([]);
   const [uploading, setUploading] = useState(false);
@@ -148,7 +157,13 @@ const CommitteeReportForm: React.FC = () => {
       
       setForm(initialForm);
       setFiles([]);
-      router.push("/committee");
+      
+      // Call onSuccess callback if provided
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        router.push("/committee");
+      }
     } catch (error: any) {
       toast.error(error?.message || "Submission failed");
     } finally {
@@ -169,18 +184,71 @@ const CommitteeReportForm: React.FC = () => {
     getComCases();
   }, []);
 
+  // Fetch committee data when editing (if committeeId is provided)
+  useEffect(() => {
+    const fetchCommitteeData = async () => {
+      if (!committeeId) return;
+      
+      try {
+        setDataLoading(true);
+        const response = await APICalls.getCommitteeReport(Number(committeeId));
+        if (response?.data) {
+          const committeeData = response.data;
+          setForm({
+            id: committeeData.id,
+            cpNumber: committeeData.cpNumber || "",
+            court: committeeData.court || "",
+            compositionHeadedBy: committeeData.compositionHeadedBy || "",
+            tors: committeeData.tors || "",
+            report: committeeData.report || "",
+            status: committeeData.status || "",
+            uploadedFiles: committeeData.uploadedFiles || [],
+          });
+          
+          // Set existing files for display
+          if (committeeData.uploadedFiles?.length) {
+            const existingFiles = committeeData.uploadedFiles.map((filename: string, index: number) => ({
+              uid: `existing-${index}`,
+              name: filename,
+              status: 'done' as const,
+              url: `${process.env.NEXT_PUBLIC_API_BASE_URL}v1/download?filename=${encodeURIComponent(filename)}`,
+            }));
+            setFiles(existingFiles);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching committee data:", error);
+        toast.error("Failed to load committee data");
+      } finally {
+        setDataLoading(false);
+      }
+    };
+
+    fetchCommitteeData();
+  }, [committeeId]);
+
   return (
     <div className="row g-2">
+      {dataLoading && (
+        <div className="col-12 text-center mb-3">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading committee data...</span>
+          </div>
+          <p className="mt-2 text-muted">Loading committee data...</p>
+        </div>
+      )}
+      
       <div className="col-md-4">
         <div className="form-group">
-          <label className="input-label">CP Number</label>
+          <label className="input-label">Case Number</label>
           <Select
             className="w-100"
-            placeholder="Select CP Number"
+            placeholder="Select Case Number"
             options={committeeCases || []}
             value={form.cpNumber}
             onChange={(val) => handleChange("cpNumber", val)}
             status={errors.cpNumber ? "error" : undefined}
+            disabled={dataLoading}
           />
           {errors.cpNumber && <div className="text-danger fs-12">{errors.cpNumber}</div>}
         </div>

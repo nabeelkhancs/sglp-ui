@@ -103,7 +103,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
   const getDashboardNotifications = async () => {
     try {
       const data = await APICalls.getDashboardNotifications();
-      console.log("Dashboard notifications:", data);
+      // console.log("Dashboard notifications:", data);
       return data;
     } catch (error) {
       console.error("Failed to fetch dashboard notifications:", error);

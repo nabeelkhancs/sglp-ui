@@ -55,9 +55,9 @@ const DashboardContainer = () => {
   const [greenDates, setGreenDates] = useState<Date[]>([]);
 
   useEffect(() => {
-    console.log("Dashboard Notifications:", notifications);
-    console.log("Unread Count:", unreadCount);
-    console.log("Notification Loading:", notificationLoading);
+    // console.log("Dashboard Notifications:", notifications);
+    // console.log("Unread Count:", unreadCount);
+    // console.log("Notification Loading:", notificationLoading);
   }, [notifications, unreadCount, notificationLoading]);
 
   useEffect(() => {

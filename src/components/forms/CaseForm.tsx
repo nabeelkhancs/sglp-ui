@@ -253,7 +253,7 @@ const CaseForm: React.FC<CaseFormProps> = ({ id }) => {
             <div className="form-group">
               <label className="input-label">Case Number</label>
               <Input
-                placeholder="CP Number"
+                placeholder="Case Number"
                 value={form.cpNumber}
                 onChange={e => handleChange("cpNumber", e.target.value)}
                 status={errors.cpNumber ? "error" : undefined}

@@ -5,11 +5,16 @@ import { getCourtData } from "@/utils/dropdownData";
 import DataTable from "@/components/DataTable";
 import HTTPMethods from "@/api";
 import { committees } from "@/api/communications";
+import CommitteeViewModal from "@/components/modal/CommitteeViewModal";
+import { APICalls } from "@/api/api-calls";
 
 const CommitteeContainer = () => {
   const [committeeData, setCommitteeData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [totalData, setTotalData] = useState<number>(0);
+  const [viewModalOpen, setViewModalOpen] = useState(false);
+  const [selectedCommittee, setSelectedCommittee] = useState<any>(null);
+  const [loadingCommittee, setLoadingCommittee] = useState(false);
 
   const getLabel = (key: string, value: any) => {
     // Format date fields
@@ -38,6 +43,27 @@ const CommitteeContainer = () => {
     }
   };
 
+  const handleViewCommittee = async (record: any) => {
+    try {
+      setLoadingCommittee(true);
+      const response = await APICalls.getCommitteeReport(record.id);
+      if (response?.data) {
+        setSelectedCommittee(response.data);
+        setViewModalOpen(true);
+      }
+    } catch (error) {
+      console.error("Error fetching committee details:", error);
+      alert('Failed to load committee details');
+    } finally {
+      setLoadingCommittee(false);
+    }
+  };
+
+  const handleCloseViewModal = () => {
+    setViewModalOpen(false);
+    setSelectedCommittee(null);
+  };
+
   const columns = [
     { title: "Case #", dataIndex: "cpNumber" },
     { title: "Court", dataIndex: "court", render: (_: any, record: any) => getLabel('court', record.court) },
@@ -61,10 +87,7 @@ const CommitteeContainer = () => {
             <span
               className='table-action d-flex align-items-center gap-1 text-dark text-decoration-none'
               style={{ cursor: 'pointer' }}
-              onClick={() => {
-                // Implement view modal logic here if needed
-                alert('View committee details');
-              }}
+              onClick={() => handleViewCommittee(record)}
             >
               <img src="/icons/view-icon.svg" width={18} height={18} alt="View" />
             </span>
@@ -100,6 +123,12 @@ const CommitteeContainer = () => {
         data={committeeData}
         loading={loading}
         totalCases={totalData}
+      />
+      
+      <CommitteeViewModal
+        open={viewModalOpen}
+        onClose={handleCloseViewModal}
+        committeeData={selectedCommittee}
       />
     </div>
   );

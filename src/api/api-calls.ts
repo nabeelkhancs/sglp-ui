@@ -161,7 +161,7 @@ export class APICalls {
   static async getCommitteeReport(id: number) {
     try {
       const result = await HTTPMethods.get(`${committees}/${id}`);
-      return result?.data;
+      return result;
     } catch (error) {
       throw error;
     }

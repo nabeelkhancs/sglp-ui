@@ -62,7 +62,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
         
         // Fetch dashboard notifications
         const dashboardNotificationsData = await getDashboardNotifications();
-        console.log("Dashboard Layout - Dashboard Notifications:", dashboardNotificationsData);
+        // console.log("Dashboard Layout - Dashboard Notifications:", dashboardNotificationsData);
         setDashboardNotificationsCount(dashboardNotificationsData);
       } catch (error) {
         console.error("Dashboard Layout - Failed to fetch notifications:", error);
