@@ -948,7 +948,7 @@ textarea.ant-input.ant-input-outlined {
 .sidebar-menu-badge {
   background-color: #ff4d4f !important;
   color: white !important;
-  border-radius: 50% !important;
+  border-radius: 10px !important;
   padding: 2px 6px !important;
   font-size: 12px !important;
   font-weight: bold !important;
@@ -959,6 +959,7 @@ textarea.ant-input.ant-input-outlined {
   align-items: center !important;
   justify-content: center !important;
   line-height: 1 !important;
+  box-sizing: border-box !important;
 }
 
 /* Notification Icon Badge Styles */
@@ -969,7 +970,7 @@ textarea.ant-input.ant-input-outlined {
   transform: none !important;
   background-color: #ff4d4f !important;
   color: white !important;
-  border-radius: 50% !important;
+  border-radius: 10px !important;
   padding: 2px 6px !important;
   font-size: 12px !important;
   font-weight: bold !important;
@@ -980,29 +981,30 @@ textarea.ant-input.ant-input-outlined {
   align-items: center !important;
   justify-content: center !important;
   line-height: 1 !important;
+  box-sizing: border-box !important;
 }
 
 /* Notification Dropdown Styles */
 
 .notification-dropdown .ant-dropdown-menu {
-  max-height: 400px !important;
-  overflow-y: auto !important;
-  padding: 8px 12px !important;
-  min-width: 360px !important;
-  /* Enable smooth scrolling */
-  scroll-behavior: smooth !important;
+  max-height: 500px !important;
+  overflow: visible !important;
+  padding: 0 !important;
+  min-width: 380px !important;
+  border-radius: 8px !important;
 }
 
 .notification-dropdown .ant-dropdown-menu-item {
-  padding: 8px 0 !important;
+  padding: 0 !important;
   white-space: normal !important;
   height: auto !important;
   margin: 0 !important;
-  border-radius: 4px !important;
+  border-radius: 0 !important;
+  line-height: normal !important;
 }
 
 .notification-dropdown .ant-dropdown-menu-item:hover {
-  background-color: #f5f5f5 !important;
+  background-color: transparent !important;
 }
 
 .color-green-dashboard-selected {

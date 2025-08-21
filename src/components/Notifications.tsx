@@ -10,6 +10,7 @@ const NotificationDropdown = () => {
     loading, 
     initialized,
     hasMore,
+    totalCount,
     currentPage,
     markAsRead, 
     markAllAsRead, 
@@ -37,33 +38,6 @@ const NotificationDropdown = () => {
       await refreshNotifications();
     }
   };
-
-  // Attach scroll event listener to dropdown menu when it opens
-  useEffect(() => {
-    if (dropdownOpen) {
-      const addScrollListener = () => {
-        const dropdownMenu = document.querySelector('.notification-dropdown .ant-dropdown-menu');
-        if (dropdownMenu) {
-          const handleScroll = (e: Event) => {
-            const element = e.target as HTMLDivElement;
-            const { scrollTop, scrollHeight, clientHeight } = element;
-            
-            // Load more when scrolled to 80% of the content
-            if (scrollTop + clientHeight >= scrollHeight * 0.8 && hasMore && !loading) {
-              loadMoreNotifications();
-            }
-          };
-          
-          dropdownMenu.addEventListener('scroll', handleScroll);
-          return () => dropdownMenu.removeEventListener('scroll', handleScroll);
-        }
-      };
-
-      // Small delay to ensure dropdown is rendered
-      const timeoutId = setTimeout(addScrollListener, 100);
-      return () => clearTimeout(timeoutId);
-    }
-  }, [dropdownOpen, hasMore, loading, loadMoreNotifications]);
 
   const handleSelectNotification = (notificationId: number, checked: boolean) => {
     if (checked) {
@@ -178,126 +152,170 @@ const NotificationDropdown = () => {
   useEffect(() => {
     // Show loading state if not initialized or currently loading first page
     if (!initialized && loading) {
-      setItems([{ label: 'Loading notifications...', key: 'loading' }]);
+      setItems([{ 
+        label: (
+          <div style={{ padding: '16px', textAlign: 'center' }}>
+            Loading notifications...
+          </div>
+        ), 
+        key: 'loading' 
+      }]);
       return;
     }
 
-    // Create scrollable container for notifications
-    const notificationItems = notifications.length > 0
-      ? notifications.map((notif: any) => ({
-          label: createNotificationLabel(notif),
-          key: notif.id,
-        }))
-      : [{ label: 'No notifications', key: 'none' }];
-
-    // Add loading indicator for pagination
-    if (loading && notifications.length > 0) {
-      notificationItems.push({
+    // If no notifications
+    if (notifications.length === 0) {
+      setItems([{ 
         label: (
-          <div style={{ 
-            padding: '8px 0', 
-            textAlign: 'center', 
-            color: '#666',
-            fontSize: '12px'
-          }}>
-            Loading more...
+          <div style={{ padding: '16px', textAlign: 'center', color: '#999' }}>
+            No notifications
           </div>
-        ) as any,
-        key: 'loading-more',
-      });
+        ), 
+        key: 'none' 
+      }]);
+      return;
     }
 
-    // Add "No more notifications" indicator
-    if (!hasMore && notifications.length > 0 && currentPage > 1) {
-      notificationItems.push({
-        label: (
+    // Create scrollable container with notifications, show more button, and footer controls
+    const scrollableContent = (
+      <div style={{ width: '100%' }}>
+        {/* Scrollable notifications area */}
+        <div 
+          style={{ 
+            maxHeight: '300px', 
+            overflowY: 'auto',
+            padding: '4px 8px'
+          }}
+        >
+          {notifications.map((notif: any) => (
+            <div key={notif.id} style={{ marginBottom: '8px' }}>
+              {createNotificationLabel(notif)}
+            </div>
+          ))}
+        </div>
+
+        {/* Show More section - outside scrollable area */}
+        {notifications.length < totalCount && (
+          <div 
+            style={{ 
+              padding: '8px 12px', 
+              textAlign: 'right',
+              borderTop: '1px solid #f0f0f0',
+              backgroundColor: '#fafafa'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <span
+              onClick={(e) => {
+                e.stopPropagation();
+                if (!loading) {
+                  loadMoreNotifications();
+                }
+              }}
+              style={{ 
+                fontSize: '12px',
+                color: loading ? '#999' : '#1890ff',
+                cursor: loading ? 'default' : 'pointer',
+                textDecoration: 'none',
+                transition: 'text-decoration 0.2s ease'
+              }}
+              onMouseEnter={(e) => {
+                if (!loading) {
+                  (e.target as HTMLElement).style.textDecoration = 'underline';
+                }
+              }}
+              onMouseLeave={(e) => {
+                (e.target as HTMLElement).style.textDecoration = 'none';
+              }}
+            >
+              {loading ? 'Loading...' : `Show More (${notifications.length}/${totalCount})`}
+            </span>
+          </div>
+        )}
+
+        {/* All notifications loaded indicator */}
+        {notifications.length >= totalCount && (
           <div style={{ 
-            padding: '8px 0', 
+            padding: '8px 12px', 
             textAlign: 'center', 
             color: '#999',
             fontSize: '11px',
-            borderTop: '1px solid #f0f0f0'
+            borderTop: '1px solid #f0f0f0',
+            backgroundColor: '#fafafa'
           }}>
-            No more notifications
+            All notifications loaded ({totalCount})
           </div>
-        ) as any,
-        key: 'no-more',
-      });
-    }
+        )}
 
-    // Add footer with controls if there are notifications
-    if (notifications.length > 0) {
-      const unreadNotificationsCount = notifications.filter(notif => !notif.isRead).length;
-      const footerItem = {
-        label: (
-          <div 
-            style={{ padding: '8px 0', borderTop: '1px solid #f0f0f0', marginTop: '8px' }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
-              <Checkbox
-                checked={selectedNotifications.length === unreadNotificationsCount && unreadNotificationsCount > 0}
-                indeterminate={selectedNotifications.length > 0 && selectedNotifications.length < unreadNotificationsCount}
-                onChange={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handleSelectAll(e.target.checked);
-                }}
-                style={{ fontSize: '12px' }}
-              >
-                Select All
-              </Checkbox>
-              <div style={{ display: 'flex', gap: '4px' }}>
-                {selectedNotifications.length > 0 ? (
-                  <Button
-                    type="text"
-                    size="small"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleMarkSelectedAsRead();
-                    }}
-                    loading={loading}
-                    style={{ 
-                      fontSize: '10px',
-                      padding: '4px 8px',
-                      height: 'auto',
-                      backgroundColor: '#52c41a',
-                      color: 'white'
-                    }}
-                  >
-                    Mark Selected as Read
-                  </Button>
-                ) : (
-                  <Button
-                    type="text"
-                    size="small"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleMarkAllAsRead();
-                    }}
-                    loading={loading}
-                    style={{ 
-                      fontSize: '10px',
-                      padding: '4px 8px',
-                      height: 'auto',
-                      backgroundColor: '#1890ff',
-                      color: 'white'
-                    }}
-                  >
-                    Mark All as Read
-                  </Button>
-                )}
-              </div>
+        {/* Footer controls - outside scrollable area */}
+        <div 
+          style={{ 
+            padding: '12px', 
+            borderTop: '2px solid #e8e8e8', 
+            backgroundColor: '#f8f9fa'
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
+            <Checkbox
+              checked={selectedNotifications.length === notifications.filter(notif => !notif.isRead).length && notifications.filter(notif => !notif.isRead).length > 0}
+              indeterminate={selectedNotifications.length > 0 && selectedNotifications.length < notifications.filter(notif => !notif.isRead).length}
+              onChange={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleSelectAll(e.target.checked);
+              }}
+              style={{ fontSize: '12px' }}
+            >
+              Select All Unread
+            </Checkbox>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              {selectedNotifications.length > 0 ? (
+                <Button
+                  type="primary"
+                  size="small"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleMarkSelectedAsRead();
+                  }}
+                  loading={loading}
+                  style={{ 
+                    fontSize: '11px',
+                    padding: '4px 12px',
+                    height: 'auto'
+                  }}
+                >
+                  Mark Selected as Read ({selectedNotifications.length})
+                </Button>
+              ) : (
+                <Button
+                  type="default"
+                  size="small"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleMarkAllAsRead();
+                  }}
+                  loading={loading}
+                  style={{ 
+                    fontSize: '11px',
+                    padding: '4px 12px',
+                    height: 'auto'
+                  }}
+                >
+                  Mark All as Read
+                </Button>
+              )}
             </div>
           </div>
-        ) as any,
-        key: 'footer',
-      };
-      notificationItems.push(footerItem);
-    }
+        </div>
+      </div>
+    );
 
-    setItems(notificationItems);
-  }, [notifications, selectedNotifications, loading, initialized, hasMore, currentPage]);
+    setItems([{
+      label: scrollableContent,
+      key: 'notifications-container',
+    }]);
+  }, [notifications, selectedNotifications, loading, initialized, totalCount, loadMoreNotifications]);
   return (
     <Dropdown 
       menu={{ items }} 

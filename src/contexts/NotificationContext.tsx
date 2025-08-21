@@ -20,6 +20,7 @@ interface NotificationContextType {
   loading: boolean;
   initialized: boolean;
   hasMore: boolean;
+  totalCount: number;
   currentPage: number;
   refreshNotifications: () => Promise<void>;
   loadMoreNotifications: () => Promise<void>;
@@ -42,6 +43,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
   const [initialized, setInitialized] = useState<boolean>(false);
   const [unreadCount, setUnreadCount] = useState<number>(0);
   const [hasMore, setHasMore] = useState<boolean>(true);
+  const [totalCount, setTotalCount] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const pageSize = 10;
 
@@ -55,6 +57,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
       const data = await APICalls.getNotificationsPaginated(1, pageSize);
       const records = data?.records || [];
       setUnreadCount(data?.totalUnreadCount || 0);
+      setTotalCount(data?.totalRecords || 0);
       setNotifications(records);
       setHasMore(data?.hasMore || false);
       setInitialized(true);
@@ -69,7 +72,10 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
   };
 
   const loadMoreNotifications = async () => {
-    if (loading || !hasMore) return;
+    // Check if we already have all notifications loaded
+    if (loading || notifications.length >= totalCount) {
+      return;
+    }
     
     try {
       setLoading(true);
@@ -79,8 +85,14 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
       
       setNotifications(prev => [...prev, ...newRecords]);
       setCurrentPage(nextPage);
-      setHasMore(data?.hasMore || false);
-      console.log("More notifications loaded:", data);
+      
+      // Update totalCount if it comes from API response
+      if (data?.totalCount) {
+        setTotalCount(data.totalCount);
+      }
+      
+      // Update hasMore based on if we have all notifications
+      setHasMore(notifications.length + newRecords.length < totalCount);
     } catch (error) {
       console.error("Failed to load more notifications:", error);
     } finally {
@@ -168,6 +180,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     loading,
     initialized,
     hasMore,
+    totalCount,
     currentPage,
     refreshNotifications,
     loadMoreNotifications,
