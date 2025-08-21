@@ -6,7 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 interface CommitteeEditPageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 const CommitteeEditPage = ({ params }: CommitteeEditPageProps) => {
@@ -14,11 +14,16 @@ const CommitteeEditPage = ({ params }: CommitteeEditPageProps) => {
   const router = useRouter();
   
   useEffect(() => {
-    // Get the committee ID from URL parameters
-    if (params?.id) {
-      setCommitteeId(params.id);
-      console.log('Committee ID:', params.id);
-    }
+    // Handle async params
+    const getParams = async () => {
+      const resolvedParams = await params;
+      if (resolvedParams?.id) {
+        setCommitteeId(resolvedParams.id);
+        console.log('Committee ID:', resolvedParams.id);
+      }
+    };
+    
+    getParams();
   }, [params]);
 
   const handleSuccess = () => {

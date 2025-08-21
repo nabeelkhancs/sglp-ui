@@ -85,23 +85,18 @@ const CommitteeViewModal: React.FC<CommitteeViewModalProps> = ({ open, onClose, 
             <hr />
             <div className="row g-3">
                 {(() => {
-                    // Define the field order: cpNumber first (as Case Number), court second, then rest
                     const fieldOrder = ['cpNumber', 'court'];
                     const allEntries = Object.entries(committeeData).filter(([key]) => !excludeFields.includes(key));
                     
-                    // Get ordered fields first
                     const orderedFields = fieldOrder
                         .filter(fieldKey => committeeData.hasOwnProperty(fieldKey))
                         .map(fieldKey => [fieldKey, committeeData[fieldKey]]);
                     
-                    // Get remaining fields (excluding the ordered ones)
                     const remainingFields = allEntries.filter(([key]) => !fieldOrder.includes(key));
                     
-                    // Combine ordered fields with remaining fields
                     const finalFieldOrder = [...orderedFields, ...remainingFields];
                     
                     return finalFieldOrder.map(([key, value]) => {
-                        // Special handling for field names
                         let displayKey = key;
                         if (key === 'cpNumber') {
                             displayKey = 'Case Number';
