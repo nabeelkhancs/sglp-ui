@@ -9,10 +9,13 @@ const NotificationDropdown = () => {
     notifications, 
     loading, 
     initialized,
+    hasMore,
+    currentPage,
     markAsRead, 
     markAllAsRead, 
     markMultipleAsRead,
     refreshNotifications,
+    loadMoreNotifications,
     unreadCount
   } = useNotifications();
   
@@ -34,6 +37,33 @@ const NotificationDropdown = () => {
       await refreshNotifications();
     }
   };
+
+  // Attach scroll event listener to dropdown menu when it opens
+  useEffect(() => {
+    if (dropdownOpen) {
+      const addScrollListener = () => {
+        const dropdownMenu = document.querySelector('.notification-dropdown .ant-dropdown-menu');
+        if (dropdownMenu) {
+          const handleScroll = (e: Event) => {
+            const element = e.target as HTMLDivElement;
+            const { scrollTop, scrollHeight, clientHeight } = element;
+            
+            // Load more when scrolled to 80% of the content
+            if (scrollTop + clientHeight >= scrollHeight * 0.8 && hasMore && !loading) {
+              loadMoreNotifications();
+            }
+          };
+          
+          dropdownMenu.addEventListener('scroll', handleScroll);
+          return () => dropdownMenu.removeEventListener('scroll', handleScroll);
+        }
+      };
+
+      // Small delay to ensure dropdown is rendered
+      const timeoutId = setTimeout(addScrollListener, 100);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [dropdownOpen, hasMore, loading, loadMoreNotifications]);
 
   const handleSelectNotification = (notificationId: number, checked: boolean) => {
     if (checked) {
@@ -146,19 +176,54 @@ const NotificationDropdown = () => {
   );
 
   useEffect(() => {
-    // Show loading state if not initialized or currently loading
+    // Show loading state if not initialized or currently loading first page
     if (!initialized && loading) {
       setItems([{ label: 'Loading notifications...', key: 'loading' }]);
       return;
     }
 
-    // Regenerate items when notifications change
+    // Create scrollable container for notifications
     const notificationItems = notifications.length > 0
       ? notifications.map((notif: any) => ({
           label: createNotificationLabel(notif),
           key: notif.id,
         }))
       : [{ label: 'No notifications', key: 'none' }];
+
+    // Add loading indicator for pagination
+    if (loading && notifications.length > 0) {
+      notificationItems.push({
+        label: (
+          <div style={{ 
+            padding: '8px 0', 
+            textAlign: 'center', 
+            color: '#666',
+            fontSize: '12px'
+          }}>
+            Loading more...
+          </div>
+        ) as any,
+        key: 'loading-more',
+      });
+    }
+
+    // Add "No more notifications" indicator
+    if (!hasMore && notifications.length > 0 && currentPage > 1) {
+      notificationItems.push({
+        label: (
+          <div style={{ 
+            padding: '8px 0', 
+            textAlign: 'center', 
+            color: '#999',
+            fontSize: '11px',
+            borderTop: '1px solid #f0f0f0'
+          }}>
+            No more notifications
+          </div>
+        ) as any,
+        key: 'no-more',
+      });
+    }
 
     // Add footer with controls if there are notifications
     if (notifications.length > 0) {
@@ -232,7 +297,7 @@ const NotificationDropdown = () => {
     }
 
     setItems(notificationItems);
-  }, [notifications, selectedNotifications, loading, initialized]);
+  }, [notifications, selectedNotifications, loading, initialized, hasMore, currentPage]);
   return (
     <Dropdown 
       menu={{ items }} 

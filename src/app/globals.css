@@ -989,6 +989,8 @@ textarea.ant-input.ant-input-outlined {
   overflow-y: auto !important;
   padding: 8px 12px !important;
   min-width: 360px !important;
+  /* Enable smooth scrolling */
+  scroll-behavior: smooth !important;
 }
 
 .notification-dropdown .ant-dropdown-menu-item {

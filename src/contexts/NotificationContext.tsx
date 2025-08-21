@@ -19,7 +19,10 @@ interface NotificationContextType {
   notifications: Notification[];
   loading: boolean;
   initialized: boolean;
+  hasMore: boolean;
+  currentPage: number;
   refreshNotifications: () => Promise<void>;
+  loadMoreNotifications: () => Promise<void>;
   getDashboardNotifications: () => Promise<any>;
   markAsRead: (notificationId: number) => Promise<void>;
   markAllAsRead: () => Promise<void>;
@@ -38,20 +41,48 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
   const [loading, setLoading] = useState<boolean>(false);
   const [initialized, setInitialized] = useState<boolean>(false);
   const [unreadCount, setUnreadCount] = useState<number>(0);
+  const [hasMore, setHasMore] = useState<boolean>(true);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const pageSize = 10;
 
   const refreshNotifications = async () => {
     try {
       setLoading(true);
-      const data = await APICalls.getNotifications();
+      // Reset pagination when refreshing
+      setCurrentPage(1);
+      setHasMore(true);
+      
+      const data = await APICalls.getNotificationsPaginated(1, pageSize);
       const records = data?.records || [];
-      setUnreadCount(data?.totalUnreadCount);
+      setUnreadCount(data?.totalUnreadCount || 0);
       setNotifications(records);
+      setHasMore(data?.hasMore || false);
       setInitialized(true);
       console.log("Notifications refreshed:", data);
     } catch (error) {
       console.error("Failed to fetch notifications:", error);
       setNotifications([]);
       setInitialized(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadMoreNotifications = async () => {
+    if (loading || !hasMore) return;
+    
+    try {
+      setLoading(true);
+      const nextPage = currentPage + 1;
+      const data = await APICalls.getNotificationsPaginated(nextPage, pageSize);
+      const newRecords = data?.records || [];
+      
+      setNotifications(prev => [...prev, ...newRecords]);
+      setCurrentPage(nextPage);
+      setHasMore(data?.hasMore || false);
+      console.log("More notifications loaded:", data);
+    } catch (error) {
+      console.error("Failed to load more notifications:", error);
     } finally {
       setLoading(false);
     }
@@ -79,6 +110,8 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
             : notif
         )
       );
+      // Decrease unread count
+      setUnreadCount(prev => Math.max(0, prev - 1));
       console.log("Notification marked as read:", notificationId);
     } catch (error) {
       console.error("Failed to mark notification as read:", error);
@@ -93,6 +126,8 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
       setNotifications(prev =>
         prev.map(notif => ({ ...notif, isRead: true }))
       );
+      // Reset unread count
+      setUnreadCount(0);
       console.log("All notifications marked as read");
     } catch (error) {
       console.error("Failed to mark all notifications as read:", error);
@@ -106,6 +141,10 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
       setLoading(true);
       await APICalls.markMultipleNotificationsAsRead(notificationIds);
       // Update local state
+      const unreadNotificationsBeingMarked = notifications.filter(notif => 
+        notificationIds.includes(notif.id) && !notif.isRead
+      ).length;
+      
       setNotifications(prev =>
         prev.map(notif =>
           notificationIds.includes(notif.id)
@@ -113,6 +152,8 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
             : notif
         )
       );
+      // Decrease unread count by the number of unread notifications being marked
+      setUnreadCount(prev => Math.max(0, prev - unreadNotificationsBeingMarked));
       console.log("Selected notifications marked as read:", notificationIds);
     } catch (error) {
       console.error("Failed to mark selected notifications as read:", error);
@@ -126,7 +167,10 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     notifications,
     loading,
     initialized,
+    hasMore,
+    currentPage,
     refreshNotifications,
+    loadMoreNotifications,
     getDashboardNotifications,
     markAsRead,
     markAllAsRead,

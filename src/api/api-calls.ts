@@ -11,6 +11,15 @@ export class APICalls {
     }
   }
 
+  static async getNotificationsPaginated(page: number = 1, limit: number = 10) {
+    try {
+      const result = await HTTPMethods.get(`${notifications}?page=${page}&limit=${limit}`);
+      return result?.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   static async getDashboardNotifications() {
     try {
       const result = await HTTPMethods.get(`${notifications}/dashboard`);
