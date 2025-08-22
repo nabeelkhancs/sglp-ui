@@ -13,7 +13,7 @@ const Header = () => {
                     </div>
                     <div className="col-md-6">
                         <div className="d-flex gap-4 align-items-center justify-content-end pe-5">
-                            {/* <Input placeholder="Search Cases" variant="filled" suffix={<img src="/icons/search-icon.svg" />} /> */}
+                            <Input placeholder="Search.." variant="filled" suffix={<img src="/icons/search-icon.svg" />} />
                             <div className="notification-dropdown">
                                 <NotificationDropdown />
                             </div>
