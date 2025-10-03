@@ -41,7 +41,7 @@ const UploadedFilesTable: React.FC<UploadedFilesTableProps> = ({ files }) => {
       APICalls.getUploadsDetails(ids).then((data) => {
 
         setUploadDetails(data);
-      }).catch(() => setUploadDetails({}));
+      }).catch(() => setUploadDetails([]));
     }
   }, [files]);
 
@@ -61,7 +61,8 @@ const UploadedFilesTable: React.FC<UploadedFilesTableProps> = ({ files }) => {
           {files.map((file, idx) => {
             const { filename, uploadedOn, fileHash } = parseFileInfo(file);
             let formattedUploadedOn = moment((Number(uploadedOn))).format("DD/MM/YYYY hh:mm A");
-            const uploadedBy = uploadDetails.find((ud: any) => ud.fileHash === fileHash)?.uploadedbyname || '';
+            console.log("uploadedDetails", uploadDetails,);
+            const uploadedBy = uploadDetails.length && uploadDetails.find((ud: any) => ud.fileHash === fileHash)?.uploadedbyname || '';
             
             return (
               <tr key={file + idx}>
