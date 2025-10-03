@@ -76,7 +76,7 @@ const CaseViewModal: React.FC<CaseViewModalProps> = ({ open, onClose, caseData }
                         </div>
                     </div>
                 ))}
-                {allFiles.length > 2 && !showAllFiles && (
+                {/* {allFiles.length > 2 && !showAllFiles && ( */}
                     <button
                         type="button"
                         style={{ marginLeft: 12, background: 'none', border: '1px solid #1677ff', color: '#1677ff', borderRadius: 4, padding: '2px 10px', cursor: 'pointer', fontSize: 13 }}
@@ -84,7 +84,7 @@ const CaseViewModal: React.FC<CaseViewModalProps> = ({ open, onClose, caseData }
                     >
                         View All
                     </button>
-                )}
+                {/* )} */}
             </div>
         );
     };
@@ -118,7 +118,7 @@ const CaseViewModal: React.FC<CaseViewModalProps> = ({ open, onClose, caseData }
             case 'caseStatus':
                 options = getCaseStatusData();
                 break;
-            case 'subject':
+            case 'subjectOfApplication':
                 options = getSubjectData();
                 break;
             default:
