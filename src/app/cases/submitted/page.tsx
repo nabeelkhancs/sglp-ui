@@ -18,6 +18,7 @@ function SubmittedCaseInner() {
   const court = searchParams.get("court");
   const caseStatus = searchParams.get("caseStatus");
   const subjectOfApplication = searchParams.get("subjectOfApplication");
+  const cpNumber = searchParams.get("cpNumber");
 
 
   const getCaseCourts = async () => {
@@ -40,6 +41,10 @@ function SubmittedCaseInner() {
   useEffect(() => {
     if (court === "supremecourt" || court === "highcourt" || court === "districtcourts" || court === "othercourts") {
       getCaseCourts();
+    }
+
+    if (cpNumber) {
+      setOutsideParams({ cpNumber });
     }
     
     if (caseStatus === "directions") {

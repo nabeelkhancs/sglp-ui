@@ -594,6 +594,12 @@ header .user-dropdown .user-wrapper {
   color: #fff !important;
 }
 
+/* Search input color override for Header only */
+:where(.css-dev-only-do-not-override-5uvb3z).ant-input-affix-wrapper.header-search-input > input.ant-input,
+:where(.css-dev-only-do-not-override-5uvb3z).ant-input-affix-wrapper.header-search-input > textarea.ant-input {
+    color: #000 !important;
+}
+
 .ant-menu-title-content a {
   text-decoration: none;
 }
@@ -1013,4 +1019,43 @@ textarea.ant-input.ant-input-outlined {
 
 .cursor-pointer {
   cursor: pointer;
+}
+
+/* Search dropdown styles for Header */
+.search-dropdown {
+  min-width: 320px;
+  max-width: 480px;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  background: #fff;
+  border: 1px solid #eee;
+  z-index: 1000;
+}
+.search-dropdown-list {
+  width: 100%;
+  max-height: 300px;
+  overflow-y: auto;
+}
+.search-dropdown-item {
+  padding: 12px 18px;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  transition: background 0.2s;
+}
+.search-dropdown-item:last-child {
+  border-bottom: none;
+}
+.search-dropdown-item:hover {
+  background: #f5faff;
+}
+.search-dropdown-title {
+  font-weight: 500;
+}
+.search-dropdown-number,
+.search-dropdown-date {
+  font-size: 13px;
+  color: #888;
 }

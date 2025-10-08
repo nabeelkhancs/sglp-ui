@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import HTTPMethods from "@/api";
 import { cases } from "@/api/communications";
 import { Helpers } from "@/utils/helpers";
-import Link from "next/link";
 import Image from 'next/image';
 import { DatePicker, Select, Input, Button } from "antd";
 import {
@@ -19,6 +18,7 @@ import {
 import dayjs from "dayjs";
 
 import React from 'react';
+import { useSearchParams } from "next/navigation";
 
 const CasesContainer = ({ pageName = "", dashboardLayout = false, caseType = "", outsideParams= {} }: { pageName?: string, dashboardLayout?: boolean, caseType?: string, outsideParams?: any }) => {
   const [permissions, setPermissions] = useState<any[]>(["Edit"]);
@@ -40,6 +40,8 @@ const CasesContainer = ({ pageName = "", dashboardLayout = false, caseType = "",
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
+  const searchParams = useSearchParams();
+  console.log("searchParams:", searchParams.toString());
   // Helper to get label for dropdown value
   const getLabel = (key: string, value: any) => {
     // Format date fields
@@ -156,6 +158,7 @@ const CasesContainer = ({ pageName = "", dashboardLayout = false, caseType = "",
       // Pagination params
       params.pageNumber = currentPage;
       params.pageSize = pageSize;
+      params.cpNumber = searchParams.get('cpNumber') || undefined;
       // if (caseType && caseType.includes("court")) {
       //   params.court = caseType;
       // } else if (caseType) {

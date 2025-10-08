@@ -21,6 +21,7 @@ export const users = `${commonAdminEP}users`;
 
 //cases
 export const cases = `${commonAdminEP}cases`;
+export const casesSearch = `${commonAdminEP}cases/search`;
 export const casesCourts = `${commonAdminEP}cases/courts`;
 export const committees = `${commonAdminEP}committees`;
 export const dashboard = `${commonAdminEP}dashboard`;
