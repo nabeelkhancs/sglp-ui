@@ -74,9 +74,9 @@ const CaseViewContainer = () => {
             <span className="fw-medium text-dark">Fri, Nov 15, 10:15 AM (5 Days ago)</span>
           </div>
 
-          <div className="actions d-flex gap-2">
+          {/* <div className="actions d-flex gap-2">
             <Button onClick={showModal} className="reject btn-action" icon={<Image src="/icons/reminder-icon.svg" width={18} height={18} alt="Reminder" />}>Reminder</Button>
-          </div>
+          </div> */}
         </div>
 
         <div className="p-4 justify-content-between bg-white">
