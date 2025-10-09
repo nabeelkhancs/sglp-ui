@@ -1,4 +1,4 @@
-import { cases, permissions, users, verifyEmail, committees, dashboard, casesCourts, notifications, reports, uploadsDetails, casesSearch } from "./communications";
+import { cases, permissions, users, verifyEmail, committees, dashboard, casesCourts, notifications, reports, uploadsDetails, casesSearch, casesLogs } from "./communications";
 import HTTPMethods from "./index";
 
 export class APICalls {
@@ -226,6 +226,15 @@ export class APICalls {
       console.log('API Call - searchCases with params:', queryParams);
       const result = await HTTPMethods.get(`${casesSearch}?query=${queryParams}`);
       return result?.data?.rows;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async getCaseLogs(cpNumber: string) {
+    try {
+      const result = await HTTPMethods.get(`${casesLogs}?cpNumber=${encodeURIComponent(cpNumber)}`);
+      return result?.data?.rows || [];
     } catch (error) {
       throw error;
     }

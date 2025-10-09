@@ -9,6 +9,7 @@ import {
   getSubjectData
 } from '@/utils/dropdownData';
 import dayjs from 'dayjs';
+import { useRouter } from 'next/navigation';
 
 import UploadedFilesTable from '../tables/UploadedFilesTable';
 
@@ -30,7 +31,8 @@ interface CaseViewModalProps {
 }
 
 const CaseViewModal: React.FC<CaseViewModalProps> = ({ open, onClose, caseData }) => {
-
+  
+  const router = useRouter();
   const [showAllFiles, setShowAllFiles] = React.useState(false);
   const [showFullRemarks, setShowFullRemarks] = React.useState(false);
 
@@ -45,7 +47,7 @@ const CaseViewModal: React.FC<CaseViewModalProps> = ({ open, onClose, caseData }
     const isImage = (file: string) => /\.(jpg|jpeg|png|gif)$/i.test(file);
     const isPdf = (file: string) => /\.(pdf)$/i.test(file);
     return (
-      <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+      <div className="caseview-file-preview-row">
         {fileList.map((file, idx) => (
           <div key={file + idx}>
             <div
@@ -53,22 +55,22 @@ const CaseViewModal: React.FC<CaseViewModalProps> = ({ open, onClose, caseData }
                 e.preventDefault();
                 await downloadFile(file);
               }}
-              style={{ display: 'inline-block', cursor: 'pointer' }}
+              className="caseview-file-preview-thumb"
               title="Click to open preview in new tab"
             >
               {isImage(file) && (
                 <img
                   src={getFileUrl(file)}
                   alt={file}
-                  style={{ maxWidth: 60, maxHeight: 60, borderRadius: 4, border: '1px solid #eee', objectFit: 'cover' }}
+                  className="caseview-file-preview-img"
                 />
               )}
               {isPdf(file) && (
-                <div style={{ width: 60, height: 60, border: '1px solid #eee', borderRadius: 4, background: '#fafafa', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div className="caseview-file-preview-pdf">
                   <iframe
                     src={getFileUrl(file) + '#toolbar=0&navpanes=0&scrollbar=0&page=1'}
                     title={file}
-                    style={{ width: 60, height: 60, border: 'none', background: '#fafafa', pointerEvents: 'none' }}
+                    className="caseview-file-preview-iframe"
                     loading="lazy"
                   />
                 </div>
@@ -76,15 +78,13 @@ const CaseViewModal: React.FC<CaseViewModalProps> = ({ open, onClose, caseData }
             </div>
           </div>
         ))}
-        {/* {allFiles.length > 2 && !showAllFiles && ( */}
         <button
           type="button"
-          style={{ marginLeft: 12, background: 'none', border: '1px solid #1677ff', color: '#1677ff', borderRadius: 4, padding: '2px 10px', cursor: 'pointer', fontSize: 13 }}
+          className="caseview-file-preview-viewall"
           onClick={() => setShowAllFiles(true)}
         >
           View All
         </button>
-        {/* )} */}
       </div>
     );
   };
@@ -147,13 +147,34 @@ const CaseViewModal: React.FC<CaseViewModalProps> = ({ open, onClose, caseData }
 
   // Only show the uploaded files table if showAllFiles is true
   return (
-    <Modal open={open} onCancel={onClose} footer={null} title={<b>Case Details</b>} width={700}>
+    <Modal
+      open={open}
+      onCancel={onClose}
+      footer={null}
+      width={700}
+      title={
+        <div className="caseview-modal-header-abs">
+          <b>Case Details</b>
+          <button
+            type="button"
+            className="caseview-file-preview-viewall caseview-details-btn-abs"
+            onClick={() => {
+              if (caseData?.cpNumber && router) {
+                router.push(`/cases/view?cpNumber=${encodeURIComponent(caseData.cpNumber)}`);
+              }
+            }}
+          >
+            View Details
+          </button>
+        </div>
+      }
+    >
       <hr />
       {showAllFiles ? (
         <>
           <button
             type="button"
-            style={{ marginBottom: 16, background: 'none', border: '1px solid #1677ff', color: '#1677ff', borderRadius: 4, padding: '4px 14px', cursor: 'pointer', fontSize: 14 }}
+            className="caseview-back-btn"
             onClick={() => setShowAllFiles(false)}
           >
             Back to details
@@ -176,7 +197,7 @@ const CaseViewModal: React.FC<CaseViewModalProps> = ({ open, onClose, caseData }
               return (
                 <div className="col-md-6" key={key}>
                   <div className="mb-2">
-                    <span style={{ fontWeight: 'bold' }}>{displayKey}:</span>
+                    <span className="caseview-label-bold">{displayKey}:</span>
                     <span className="ms-2">{renderFileLinks(value as string | string[])}</span>
                   </div>
                 </div>
@@ -188,20 +209,12 @@ const CaseViewModal: React.FC<CaseViewModalProps> = ({ open, onClose, caseData }
               return (
                 <div className="col-md-6" key={key}>
                   <div className="mb-2">
-                    <span style={{ fontWeight: 'bold' }}>{displayKey}:</span>
+                    <span className="caseview-label-bold">{displayKey}:</span>
                     <span className="ms-2">
                       {showFullRemarks ? value : value.slice(0, 100) + '..'}
                       <button
                         type="button"
-                        style={{
-                          background: 'none',
-                          border: 'none',
-                          color: '#1677ff',
-                          textDecoration: 'underline',
-                          cursor: 'pointer',
-                          marginLeft: 8,
-                          fontSize: 13
-                        }}
+                        className="caseview-remarks-btn"
                         onClick={() => setShowFullRemarks(v => !v)}
                       >
                         {showFullRemarks ? 'Show less' : 'Show more'}
@@ -215,7 +228,7 @@ const CaseViewModal: React.FC<CaseViewModalProps> = ({ open, onClose, caseData }
             return (
               <div className="col-md-6" key={key}>
                 <div className="mb-2">
-                  <span style={{ fontWeight: 'bold' }}>{displayKey}:</span>
+                  <span className="caseview-label-bold">{displayKey}:</span>
                   <span className="ms-2">{getLabel(key, value)}</span>
                 </div>
               </div>

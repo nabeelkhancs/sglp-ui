@@ -120,6 +120,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
 
   const allowed = useMemo(() => {
     if (!permissions) return false;
+    console.log("permissions, pathname", permissions, pathname);
     if (permissions.some((item) => item.link === pathname)) return true;
     if (pathname.includes("edit")) {
       return permissions.some((item) =>

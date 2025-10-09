@@ -61,7 +61,6 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
       setNotifications(records);
       setHasMore(data?.hasMore || false);
       setInitialized(true);
-      console.log("Notifications refreshed:", data);
     } catch (error) {
       console.error("Failed to fetch notifications:", error);
       setNotifications([]);

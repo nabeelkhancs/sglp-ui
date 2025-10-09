@@ -1,11 +1,28 @@
+
 "use client";
+import React, { useState, useEffect } from "react";
 import ReminderModal from "@/components/modal/ReminderModal";
 import { Button, Divider } from "antd";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
+import { APICalls } from "@/api/api-calls";
 
 const CaseViewContainer = () => {
+  
+  const searchParams = useSearchParams();
+  const cpNumber = searchParams.get('cpNumber') || '';
+  useEffect(() => {
+    if (!cpNumber) return;
+    const fetchLogs = async () => {
+      try {
+        const logs = await APICalls.getCaseLogs(cpNumber);
+        console.log('Case Logs:', logs);
+      } catch (err) {
+        console.error('Error fetching case logs:', err);
+      }
+    };
+    fetchLogs();
+  }, [cpNumber]);
   const router = useRouter();
 
   const handleBack = () => {
@@ -13,33 +30,26 @@ const CaseViewContainer = () => {
   };
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-
   const showModal = () => setIsModalOpen(true);
   const handleOk = () => setIsModalOpen(false);
   const handleCancel = () => setIsModalOpen(false);
 
+  // Case logs state
+  const [caseLogs, setCaseLogs] = useState<any[]>([]);
 
-  // SAMPLE
-  const changeHistory = [
-    {
-      changedBy: "Maryum Mehmood",
-      governmentId: "37405-775557-8",
-      date: "13 May, 2025",
-      changedDetails: {
-        value: "Marked as urgent",
-        className: "tag tag-red"
+  useEffect(() => {
+    if (!cpNumber) return;
+    const fetchLogs = async () => {
+      try {
+        const logs = await APICalls.getCaseLogs(cpNumber);
+        setCaseLogs(logs);
+        console.log('Case Logs:', logs);
+      } catch (err) {
+        console.error('Error fetching case logs:', err);
       }
-    },
-    {
-      changedBy: "Fareeha Akram",
-      governmentId: "37405-889991-9",
-      date: "12 May, 2025",
-      changedDetails: {
-        value: "Uploaded the file",
-        className: "tag tag-blue"
-      }
-    }
-  ];
+    };
+    fetchLogs();
+  }, [cpNumber]);
 
 
 
@@ -55,7 +65,7 @@ const CaseViewContainer = () => {
           </span>Back</Button>
       </div>
       <div className="page-title ">
-        <h1 className="mb-0">Case #01</h1>
+        <h1 className="mb-0">Case #{cpNumber}</h1>
       </div>
       <div className="content">
         <div className="d-flex justify-content-between align-items-center mb-2">
@@ -69,31 +79,30 @@ const CaseViewContainer = () => {
           </div>
         </div>
 
-        <div className=" p-4 justify-content-between bg-white">
-
-          {changeHistory.map((item, index) => (
-            <div className="row" key={index}>
-              <div className="case-card col-md-4">
-                <div className="row mb-3">
-                  <span className="col-md-5 labels">Changed By:</span>
-                  <span className="col-md-7 value fw-medium">{item.changedBy}</span>
+        <div className="p-4 justify-content-between bg-white">
+          {caseLogs.length === 0 ? (
+            <div>No case logs found.</div>
+          ) : (
+            caseLogs.map((log, index) => (
+              <div className="row" key={log.id || index}>
+                <div className="case-card col-md-4">
+                  <div className="row mb-3">
+                    <span className="col-md-5 labels">Action:</span>
+                    <span className="col-md-7 value fw-medium">{log.action}</span>
+                  </div>
+                  <div className="row mb-3">
+                    <span className="col-md-5 labels">Name:</span>
+                    <span className="col-md-7 value fw-medium">{log.user?.name || log.userName || '-'}</span>
+                  </div>
+                  <div className="row mb-3">
+                    <span className="col-md-5 labels">Govt ID:</span>
+                    <span className="col-md-7 value fw-medium">{log.user?.govtID || log.userGovtID || '-'}</span>
+                  </div>
                 </div>
-                <div className="row mb-3">
-                  <span className="col-md-5 labels">Government ID:</span>
-                  <span className="col-md-7 value fw-medium">{item.governmentId}</span>
-                </div>
-                <div className="row mb-3">
-                  <span className="col-md-5 labels">Date:</span>
-                  <span className="col-md-7 value fw-medium">{item.date}</span>
-                </div>
-                <div className="row mb-3 align-items-centerz">
-                  <span className="col-md-5 labels">Changed Details:</span>
-                  <span className={`col-md-7 value fw-medium ${item.changedDetails.className}`}>{item.changedDetails.value}</span>
-                </div>
+                <Divider />
               </div>
-              <Divider />
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
       <ReminderModal
@@ -101,7 +110,6 @@ const CaseViewContainer = () => {
         onOk={handleOk}
         onCancel={handleCancel}
       />
-
     </div>
   );
 }
