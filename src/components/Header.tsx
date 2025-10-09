@@ -13,8 +13,13 @@ const Header = () => {
   const [debouncedValue, setDebouncedValue] = React.useState("");
   const [searchResults, setSearchResults] = React.useState<any[]>([]);
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
+  const [userType, setUserType] = React.useState<string | undefined>(undefined);
   const router = useRouter();
-  const userType = Cookies.get("userType");
+
+  // Read cookie only on client
+  React.useEffect(() => {
+    setUserType(Cookies.get("userType"));
+  }, []);
 
   // Debounce typing
   React.useEffect(() => {
@@ -52,49 +57,58 @@ const Header = () => {
   };
 
   const handleDropdownSelect = (caseItem: any) => {
-    setDropdownOpen(false);
-    setSearchValue("");
+    console.log("Selected case:", caseItem);
+    setDropdownOpen(true);
+    // setSearchValue("");
 
     console.log("Selected case:", caseItem);
   };
 
   // Custom dropdown content
-  const items = [
-    {
-      label: (
-        <div className="search-dropdown-list">
-          {searchResults.map((item: any, idx: number) => (
-            <div
-              key={item.id || idx}
-              className="search-dropdown-item"
-              onClick={() => {
-                setDropdownOpen(true);
-                if (item?.cpNumber) {
-                  userType == "ADMIN" ? router.push(`/cases?cpNumber=${encodeURIComponent(item.cpNumber)}`) : router.push(`/cases/submitted?cpNumber=${encodeURIComponent(item.cpNumber)}`);
+  const renderDropdown = () => {
+    if (!dropdownOpen || searchResults.length === 0) return null;
+    return (
+      <div className="search-dropdown-list custom-search-dropdown" style={{ position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 1000 }}>
+        {searchResults.map((item: any, idx: number) => (
+          <div
+            key={item.id || idx}
+            className="search-dropdown-item"
+            onMouseDown={e => {
+              e.preventDefault();
+              setDropdownOpen(false);
+              if (item?.cpNumber && userType) {
+                if (userType === "ADMIN") {
+                  window.location.href  = `/cases?cpNumber=${encodeURIComponent(item?.cpNumber)}`;
+                } else {
+                  window.location.href  = `/cases/submitted?cpNumber=${encodeURIComponent(item?.cpNumber)}`;
                 }
-              }}
-              role="button"
-              tabIndex={0}
-              style={{ outline: 'none' }}
-              onKeyPress={e => {
-                if (e.key === 'Enter') {
-                  setDropdownOpen(true);
-                  if (item?.cpNumber) {
-                    userType == "ADMIN" ? router.push(`/cases?cpNumber=${encodeURIComponent(item.cpNumber)}`) : router.push(`/cases/submitted?cpNumber=${encodeURIComponent(item.cpNumber)}`);
+              }
+            }}
+            role="button"
+            tabIndex={0}
+            style={{ outline: 'none' }}
+            onKeyDown={e => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setDropdownOpen(false);
+                if (item?.cpNumber && userType) {
+                  if (userType === "ADMIN") {
+                    router.push(`/cases?cpNumber=${encodeURIComponent(item?.cpNumber)}`);
+                  } else {
+                    router.push(`/cases/submitted?cpNumber=${encodeURIComponent(item?.cpNumber)}`);
                   }
                 }
-              }}
-            >
-              <div className="search-dropdown-title">{item.caseTitle || 'No Title'}</div>
-              <div className="search-dropdown-number">Case #: {item.caseNumber || '-'}</div>
-              <div className="search-dropdown-date">Date of Hearing: {item.dateOfHearing ? item.dateOfHearing : '-'}</div>
-            </div>
-          ))}
-        </div>
-      ),
-      key: "search-results",
-    },
-  ];
+              }
+            }}
+          >
+            <div className="search-dropdown-title">{item.caseTitle || 'No Title'}</div>
+            <div className="search-dropdown-number">Case #: {item.cpNumber || '-'}</div>
+            <div className="search-dropdown-date">Date of Hearing: {item.dateOfHearing ? item.dateOfHearing : '-'}</div>
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   return (
     <header className="header bg-white">
@@ -108,14 +122,7 @@ const Header = () => {
               className="d-flex gap-4 align-items-center justify-content-end pe-5"
               style={{ position: "relative" }}
             >
-              <Dropdown
-                menu={{ items }}
-                trigger={["click"]}
-                placement="bottomLeft"
-                open={dropdownOpen && items.length > 0}
-                onOpenChange={(visible) => setDropdownOpen(visible)}
-                overlayClassName="search-dropdown"
-              >
+              <div style={{ position: 'relative', width: '100%' }}>
                 <Input
                   placeholder="Search..."
                   value={searchValue}
@@ -132,7 +139,8 @@ const Header = () => {
                   }
                   onBlur={() => setTimeout(() => setDropdownOpen(false), 200)}
                 />
-              </Dropdown>
+                {renderDropdown()}
+              </div>
               <div className="notification-dropdown">
                 <NotificationDropdown />
               </div>

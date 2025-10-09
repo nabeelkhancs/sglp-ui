@@ -1059,3 +1059,42 @@ textarea.ant-input.ant-input-outlined {
   font-size: 13px;
   color: #888;
 }
+
+/* Custom search dropdown styles */
+.custom-search-dropdown {
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  border-radius: 8px;
+  margin-top: 4px;
+  padding: 8px 0;
+  max-height: 320px;
+  overflow-y: auto;
+  width: 100%;
+  z-index: 1000;
+}
+
+.custom-search-dropdown .search-dropdown-item {
+  padding: 12px 20px;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.custom-search-dropdown .search-dropdown-item:hover,
+.custom-search-dropdown .search-dropdown-item:focus {
+  background: #f5f5f5;
+}
+
+.custom-search-dropdown .search-dropdown-title {
+  font-weight: 500;
+  font-size: 15px;
+  color: #222;
+}
+.custom-search-dropdown .search-dropdown-number,
+.custom-search-dropdown .search-dropdown-date {
+  font-size: 13px;
+  color: #666;
+}
