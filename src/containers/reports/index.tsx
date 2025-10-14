@@ -207,12 +207,25 @@ const ReportsContainer: React.FC = () => {
                   cases: [
                     {
                       id: 1,
-                      cpNumber: 'TEST001',
                       caseTitle: 'Test Case',
                       court: 'Test Court',
-                      caseType: 'Test Type',
+                      region: 'Test Region',
+                      relativeDepartment: ['Test Department'],
+                      subjectOfApplication: 'Test Subject',
                       dateReceived: new Date().toISOString(),
-                      caseStatus: ['Active']
+                      dateOfHearing: null,
+                      caseStatus: ['Active'],
+                      applicant: 'Test Applicant',
+                      respondent: 'Test Respondent',
+                      remarks: 'Test Remarks',
+                      createdAt: new Date().toISOString(),
+                      updatedAt: new Date().toISOString(),
+                      caseType: 'Test Type',
+                      cpNumber: 'TEST001',
+                      caseRemarks: 'Test Case Remarks',
+                      isUrgent: false,
+                      isCallToAttention: false,
+                      isCsCalledInPerson: false
                     }
                   ]
                 };
