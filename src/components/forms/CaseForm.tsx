@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, Checkbox, DatePicker, Input, Select, message } from "antd";
+import { Button, Checkbox, DatePicker, Input, Select, message, Upload } from "antd";
 const { TextArea } = Input;
 import { getCourtData, getDepartmentData, getRegionData, getSubjectData, getCaseTypeData, getCaseStatusData } from "@/utils/dropdownData";
 import HTTPMethods from "@/api";
@@ -40,11 +40,14 @@ const initialForm: CaseFormValues = {
 const CaseForm: React.FC<CaseFormProps> = ({ id }) => {
   const router = useRouter();
   const [form, setForm] = useState<CaseFormValues>(initialForm);
+  const [originalForm, setOriginalForm] = useState<CaseFormValues>(initialForm); // Track original values
+  const [updatedFields, setUpdatedFields] = useState<Set<keyof CaseFormValues>>(new Set()); // Track updated fields
   const [errors, setErrors] = useState<Partial<Record<keyof CaseFormValues, string>>>({});
   const [loading, setLoading] = useState(false);
   const [docFiles, setDocFiles] = useState<UploadFile[]>([]);
   const [committeeFile, setCommitteeFile] = useState<UploadFile | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [newlyUploadedFiles, setNewlyUploadedFiles] = useState<string[]>([]); // Track newly uploaded files
 
   const userType = Cookies.get("userType");
 
@@ -53,7 +56,7 @@ const CaseForm: React.FC<CaseFormProps> = ({ id }) => {
     if (form.subjectOfApplication === "committee" && !committeeFile) {
       errors.committeeApprovalFile = "Committee approval file is required";
     }
-    // Registry validation for Supreme Court
+    
     if (form.court === "supremeCourtOfPakistan" && !form.registry) {
       errors.registry = "Registry is required for Supreme Court";
     }
@@ -64,6 +67,11 @@ const CaseForm: React.FC<CaseFormProps> = ({ id }) => {
   const handleChange = (field: keyof CaseFormValues, value: any) => {
     setForm(prev => ({ ...prev, [field]: value }));
     setErrors(prev => ({ ...prev, [field]: undefined }));
+    
+    
+    if (id) {
+      setUpdatedFields(prev => new Set(prev).add(field));
+    }
   };
 
   const validateFileType = (file: RcFile): boolean => {
@@ -78,22 +86,28 @@ const CaseForm: React.FC<CaseFormProps> = ({ id }) => {
   const handleFileChange = async (info: any) => {
     const { fileList } = info;
     
-    // Filter out audio/video files
-    const validFileList = fileList.filter((file: UploadFile) => {
-      if (file.originFileObj && !validateFileType(file.originFileObj as RcFile)) {
-        return false;
-      }
-      return true;
-    });
+    // Files are already validated in beforeUpload, so we can use fileList directly
+    const validFileList = fileList;
     
     setDocFiles(validFileList);
     
-    // Find new files that need to be uploaded
     const newFiles = validFileList.filter((file: UploadFile) => 
-      file.originFileObj && file.status !== 'done' && file.status !== 'error'
+      file.originFileObj && 
+      file.status !== 'done' && 
+      file.status !== 'error' && 
+      file.status !== 'uploading' // Prevent re-uploading files that are already uploading
     );
     
     if (!newFiles.length) return;
+    
+    // Mark files as uploading to prevent duplicate uploads
+    const uploadingFileList = validFileList.map((file: UploadFile) => {
+      if (newFiles.some((newFile: UploadFile) => newFile.uid === file.uid)) {
+        return { ...file, status: 'uploading' as const };
+      }
+      return file;
+    });
+    setDocFiles(uploadingFileList);
     
     setUploading(true);
     const formData = new FormData();
@@ -111,7 +125,6 @@ const CaseForm: React.FC<CaseFormProps> = ({ id }) => {
       
       const uploadedFilenames = uploadRes?.files?.map((f: any) => f.filename) || [];
       if (uploadedFilenames.length) {
-        // Update file status to done
         const updatedFileList = fileList.map((file: UploadFile) => {
           if (newFiles.some((newFile: UploadFile) => newFile.uid === file.uid)) {
             return { ...file, status: 'done' };
@@ -120,19 +133,24 @@ const CaseForm: React.FC<CaseFormProps> = ({ id }) => {
         });
         setDocFiles(updatedFileList);
         
-        // Update form with uploaded filenames
         const existingFiles = form.uploadedFiles || [];
         setForm((prev) => ({ 
           ...prev, 
           uploadedFiles: [...existingFiles, ...uploadedFilenames] 
         }));
+        
+        // Track newly uploaded files (only for edit mode)
+        if (id) {
+          setNewlyUploadedFiles(prev => [...prev, ...uploadedFilenames]);
+          setUpdatedFields(prev => new Set(prev).add('uploadedFiles'));
+        }
+        
         toast.success("Files uploaded successfully");
       } else {
         toast.error("No files uploaded");
       }
     } catch (e) {
       toast.error("Document upload failed");
-      // Update file status to error
       const updatedFileList = fileList.map((file: UploadFile) => {
         if (newFiles.some((newFile: UploadFile) => newFile.uid === file.uid)) {
           return { ...file, status: 'error' };
@@ -154,11 +172,7 @@ const CaseForm: React.FC<CaseFormProps> = ({ id }) => {
       return;
     }
     
-    // Validate file type for committee file
-    if (!validateFileType(file.originFileObj as RcFile)) {
-      setCommitteeFile(null);
-      return;
-    }
+    // File type already validated in beforeUpload
     
     setCommitteeFile(file);
     setUploading(true);
@@ -174,6 +188,11 @@ const CaseForm: React.FC<CaseFormProps> = ({ id }) => {
       if (uploadedFilename) {
         setCommitteeFile({ ...file, status: 'done' });
         setForm((prev) => ({ ...prev, committeeApprovalFile: uploadedFilename }));
+        
+        if (id) {
+          setUpdatedFields(prev => new Set(prev).add('committeeApprovalFile'));
+        }
+        
         toast.success("Committee approval file uploaded successfully");
       } else {
         toast.error("Committee file upload failed");
@@ -192,24 +211,49 @@ const CaseForm: React.FC<CaseFormProps> = ({ id }) => {
     if (!validate()) return;
     setLoading(true);
     
-    const payload = {
-      ...form,
-      dateReceived: form.dateReceived ? form.dateReceived.toISOString() : null,
-      dateOfHearing: form.dateOfHearing ? form.dateOfHearing.toISOString() : null,
-    };
+    let payload: any;
+    
+    if (form.id) {
+      payload = { id: form.id } as any;
+      
+      updatedFields.forEach(field => {
+        if (field === 'dateReceived') {
+          payload[field] = form.dateReceived ? form.dateReceived.toISOString() : null;
+        } else if (field === 'dateOfHearing') {
+          payload[field] = form.dateOfHearing ? form.dateOfHearing.toISOString() : null;
+        } else if (field === 'uploadedFiles') {
+          // Only send newly uploaded files, not all files
+          payload[field] = newlyUploadedFiles;
+        } else {
+          payload[field] = form[field];
+        }
+      });
+      
+      console.log('Update payload (only changed fields):', payload);
+      console.log('Updated fields:', Array.from(updatedFields));
+      console.log('Newly uploaded files:', newlyUploadedFiles);
+    } else {
+      payload = {
+        ...form,
+        dateReceived: form.dateReceived ? form.dateReceived.toISOString() : null,
+        dateOfHearing: form.dateOfHearing ? form.dateOfHearing.toISOString() : null,
+      };
+      console.log('Create payload (all fields):', payload);
+    }
     
     try {
       if (form.id) {
-        // Update existing case
         await HTTPMethods.put(`${cases}/${form.id}`, payload);
         toast.success("Case updated successfully");
       } else {
-        // Create new case
         await HTTPMethods.post(cases, payload);
         toast.success("Case added successfully");
       }
       
       setForm(initialForm);
+      setOriginalForm(initialForm);
+      setUpdatedFields(new Set());
+      setNewlyUploadedFiles([]); // Reset newly uploaded files
       setDocFiles([]);
       setCommitteeFile(null);
       
@@ -233,14 +277,19 @@ const CaseForm: React.FC<CaseFormProps> = ({ id }) => {
         .then((res) => {
           if (res && res.data) {
             const data = res.data;
-            setForm({
+            const formData = {
               ...initialForm,
               ...data,
               dateReceived: data.dateReceived ? dayjs(data.dateReceived) : null,
               dateOfHearing: data.dateOfHearing ? dayjs(data.dateOfHearing) : null,
-            });
+            };
             
-            // Set existing uploaded files
+            setForm(formData);
+            setOriginalForm(formData);
+            setUpdatedFields(new Set());
+            // Reset newly uploaded files when loading existing case
+            setNewlyUploadedFiles([]);
+            
             if (data.uploadedFiles && data.uploadedFiles.length > 0) {
               const existingFiles = data.uploadedFiles.map((filename: string, index: number) => ({
                 uid: `existing-${index}`,
@@ -251,7 +300,6 @@ const CaseForm: React.FC<CaseFormProps> = ({ id }) => {
               setDocFiles(existingFiles);
             }
             
-            // Set existing committee file
             if (data.committeeApprovalFile) {
               setCommitteeFile({
                 uid: 'committee-file',
@@ -327,8 +375,9 @@ const CaseForm: React.FC<CaseFormProps> = ({ id }) => {
                 value={form.court || undefined}
                 onChange={val => {
                   handleChange("court", val);
-                  // Reset registry if not Supreme Court
-                  if (val !== "supremeCourtOfPakistan") handleChange("registry", "");
+                  if (val !== "supremeCourtOfPakistan") {
+                    handleChange("registry", "");
+                  }
                 }}
                 status={errors.court ? "error" : undefined}
               />
@@ -569,18 +618,18 @@ const CaseForm: React.FC<CaseFormProps> = ({ id }) => {
                     // showDownloadIcon: true,
                   }}
                   beforeUpload={(file) => {
-                    return validateFileType(file);
+                    // Validate file type - if invalid, prevent adding to file list
+                    const isValid = validateFileType(file);
+                    return isValid ? false : Upload.LIST_IGNORE; // false = add to list but don't auto-upload, LIST_IGNORE = don't add to list
                   }}
                   onChange={handleCommitteeFileChange}
                   fileList={committeeFile ? [committeeFile] : []}
                   disabled={uploading}
                   accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.bmp,.tiff"
                   onPreview={(file) => {
-                    // This will be replaced with your download API
                     window.open(`/api/downloads/${file.name}`, '_blank');
                   }}
                   onDownload={(file) => {
-                    // This will be replaced with your download API
                     window.open(`/api/downloads/${file.name}`, '_blank');
                   }}
                 >
@@ -604,18 +653,18 @@ const CaseForm: React.FC<CaseFormProps> = ({ id }) => {
                   showDownloadIcon: true,
                 }}
                 beforeUpload={(file) => {
-                  return validateFileType(file);
+                  // Validate file type - if invalid, prevent adding to file list
+                  const isValid = validateFileType(file);
+                  return isValid ? false : Upload.LIST_IGNORE; // false = add to list but don't auto-upload, LIST_IGNORE = don't add to list
                 }}
                 onChange={handleFileChange}
                 fileList={docFiles}
                 disabled={uploading}
                 accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.bmp,.tiff"
                 onPreview={(file) => {
-                  // This will be replaced with your download API
                   window.open(`/api/downloads/${file.name}`, '_blank');
                 }}
                 onDownload={(file) => {
-                  // This will be replaced with your download API
                   window.open(`/api/downloads/${file.name}`, '_blank');
                 }}
               >

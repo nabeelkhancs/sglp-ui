@@ -6,9 +6,10 @@ import { Button, Divider } from "antd";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { APICalls } from "@/api/api-calls";
+import UploadedFilesTable from "@/components/tables/UploadedFilesTable";
 
 const CaseViewContainer = () => {
-  
+
   const searchParams = useSearchParams();
   const cpNumber = searchParams.get('cpNumber') || '';
   useEffect(() => {
@@ -34,8 +35,99 @@ const CaseViewContainer = () => {
   const handleOk = () => setIsModalOpen(false);
   const handleCancel = () => setIsModalOpen(false);
 
-  // Case logs state
   const [caseLogs, setCaseLogs] = useState<any[]>([]);
+  const [createdDate, setCreatedDate] = useState<string>('');
+  // const [showAllFiles, setShowAllFiles] = useState<{ [key: string]: boolean }>({});
+
+  // File download function
+  const downloadFile = async (filename: string) => {
+    if (!filename) return;
+    try {
+      const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}v1/download?filename=${encodeURIComponent(filename)}`;
+      window.open(url, '_blank');
+    } catch (err) {
+      alert('File could not be loaded.');
+    }
+  };
+
+  const renderFileLinks = (files: string[] | string, logIndex: number) => {
+    if (!files) return null;
+    const allFiles = Array.isArray(files) ? files : [files];
+    let fileList = allFiles;
+    if (allFiles.length > 2) {
+      fileList = allFiles.slice(-2);
+    }
+    const getFileUrl = (file: string) => `${process.env.NEXT_PUBLIC_API_BASE_URL}v1/download?filename=${encodeURIComponent(file)}`;
+    const isImage = (file: string) => /\.(jpg|jpeg|png|gif)$/i.test(file);
+    const isPdf = (file: string) => /\.(pdf)$/i.test(file);
+    
+    return (
+      <div className="caseview-file-preview-row">
+        {fileList.map((file, idx) => (
+          <div key={file + idx}>
+            <div
+              onClick={async e => {
+                e.preventDefault();
+                await downloadFile(file);
+              }}
+              className="caseview-file-preview-thumb"
+              title="Click to open preview in new tab"
+            >
+              {isImage(file) && (
+                <img
+                  src={getFileUrl(file)}
+                  alt={file}
+                  className="caseview-file-preview-img"
+                />
+              )}
+              {isPdf(file) && (
+                <div className="caseview-file-preview-pdf">
+                  <iframe
+                    src={getFileUrl(file) + '#toolbar=0&navpanes=0&scrollbar=0&page=1'}
+                    title={file}
+                    className="caseview-file-preview-iframe"
+                    loading="lazy"
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  const formatCreatedDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+
+    const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const nowOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const diffTime = nowOnly.getTime() - dateOnly.getTime();
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+    const options: Intl.DateTimeFormatOptions = {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    };
+
+    const formattedDate = date.toLocaleDateString('en-US', options);
+
+    let daysAgoText;
+    if (diffDays === 0) {
+      daysAgoText = 'Today';
+    } else if (diffDays === 1) {
+      daysAgoText = 'Yesterday';
+    } else {
+      daysAgoText = `${diffDays} Days ago`;
+    }
+
+    return `${formattedDate} (${daysAgoText})`;
+  };
 
   useEffect(() => {
     if (!cpNumber) return;
@@ -43,6 +135,13 @@ const CaseViewContainer = () => {
       try {
         const logs = await APICalls.getCaseLogs(cpNumber);
         setCaseLogs(logs);
+
+        // Find CREATE_CASE action and extract createdAt
+        const createLog = logs.find((log: any) => log.action === 'CREATE_CASE');
+        if (createLog && createLog.createdAt) {
+          setCreatedDate(formatCreatedDate(createLog.createdAt));
+        }
+
         console.log('Case Logs:', logs);
       } catch (err) {
         console.error('Error fetching case logs:', err);
@@ -71,7 +170,7 @@ const CaseViewContainer = () => {
         <div className="d-flex justify-content-between align-items-center mb-2">
           <div>
             <span className="me-2 fw-medium ">Created on:</span>
-            <span className="fw-medium text-dark">Fri, Nov 15, 10:15 AM (5 Days ago)</span>
+            <span className="fw-medium text-dark">{createdDate || 'Loading...'}</span>
           </div>
 
           {/* <div className="actions d-flex gap-2">
@@ -83,25 +182,116 @@ const CaseViewContainer = () => {
           {caseLogs.length === 0 ? (
             <div>No case logs found.</div>
           ) : (
-            caseLogs.map((log, index) => (
-              <div className="row" key={log.id || index}>
-                <div className="case-card col-md-4">
-                  <div className="row mb-3">
-                    <span className="col-md-5 labels">Action:</span>
-                    <span className="col-md-7 value fw-medium">{log.action}</span>
+            caseLogs.map((log, index) => {
+              const getActionText = (action: string) => {
+                switch (action) {
+                  case 'CREATE_CASE':
+                    return 'Case Entered';
+                  case 'UPDATE_CASE':
+                    return 'Case Updated';
+                  default:
+                    return action;
+                }
+              };
+
+              const getPayloadFields = (payload: string) => {
+                try {
+                  const data = JSON.parse(payload);
+
+                  return Object.entries(data)
+                    .filter(([key, value]) => {
+                      if (key.startsWith('is')) return false;
+                      if (key === 'id') return false;
+                      if (value === '' || value === null || value === undefined) return false;
+                      if (Array.isArray(value) && value.length === 0) return false;
+                      return true;
+                    })
+                    .map(([key, value]) => {
+                      // Format date fields
+                      let formattedValue = value;
+                      if ((key === 'dateReceived' || key === 'dateOfHearing') && value) {
+                        try {
+                          const date = new Date(value as string);
+                          if (!isNaN(date.getTime())) {
+                            // Format as DD/MM/YYYY HH:MM A
+                            const day = date.getDate().toString().padStart(2, '0');
+                            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                            const year = date.getFullYear();
+                            formattedValue = `${day}/${month}/${year}`;
+                          }
+                        } catch (e) {
+                          // Keep original value if parsing fails
+                        }
+                      }
+
+                      return {
+                        label: key === 'cpNumber' ? 'Case Number' : 
+                               key.replace(/([A-Z])/g, ' $1') 
+                                 .replace(/^./, str => str.toUpperCase()), 
+                        value: Array.isArray(formattedValue) ? formattedValue.join(', ') : String(formattedValue),
+                        isFile: key === 'uploadedFiles' || key === 'committeeApprovalFile',
+                        originalValue: value
+                      };
+                    });
+                } catch (e) {
+                  console.error('Error parsing payload:', e);
+                  return [];
+                }
+              };
+
+              return (
+                <div className="row" key={log.id || index}>
+                  <div className="case-card col-md-4">
+                    <div className="row mb-3">
+                      <span className="col-md-5 labels">Action:</span>
+                      <span className="col-md-7 value fw-medium">{getActionText(log.action)}</span>
+                    </div>
+                    <div className="row mb-3">
+                      <span className="col-md-5 labels">Time:</span>
+                      <span className="col-md-7 value fw-medium">
+                        {log.createdAt ? formatCreatedDate(log.createdAt) : '-'}
+                      </span>
+                    </div>
+                    <div className="row mb-3">
+                      <span className="col-md-5 labels">User Name:</span>
+                      <span className="col-md-7 value fw-medium">{log.user?.name || log.userName || '-'}</span>
+                    </div>
+                    <div className="row mb-3">
+                      <span className="col-md-5 labels">User Govt ID:</span>
+                      <span className="col-md-7 value fw-medium">{log.user?.govtID || log.userGovtID || '-'}</span>
+                    </div>
                   </div>
-                  <div className="row mb-3">
-                    <span className="col-md-5 labels">Name:</span>
-                    <span className="col-md-7 value fw-medium">{log.user?.name || log.userName || '-'}</span>
+                  <div className="col-md-3"></div>
+                  <div className="case-card col-md-5">
+                    {log.payload && getPayloadFields(log.payload).length > 0 && (
+                      <>
+                        <div className="row mb-2">
+                          <div className="col-md-12">
+                            <h6 className="fw-bold mb-2">Changes:</h6>
+                          </div>
+                        </div>
+                        {(getPayloadFields(log.payload).map((field, fieldIndex) => (
+                            <div className="row mb-2" key={fieldIndex}>
+                              <span className="col-md-5 labels">{field.label}:</span>
+                              <div className="col-md-7">
+                                {field.isFile ? (
+                                  renderFileLinks(field.originalValue as string | string[], index)
+                                ) : (
+                                  <span className="value fw-medium text-truncate" title={field.value}>
+                                    {field.value}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          ))
+                        )}
+                      </>
+                    )}
                   </div>
-                  <div className="row mb-3">
-                    <span className="col-md-5 labels">Govt ID:</span>
-                    <span className="col-md-7 value fw-medium">{log.user?.govtID || log.userGovtID || '-'}</span>
-                  </div>
+                  <Divider />
                 </div>
-                <Divider />
-              </div>
-            ))
+              );
+            })
           )}
         </div>
       </div>
