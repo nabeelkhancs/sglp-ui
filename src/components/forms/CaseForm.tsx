@@ -66,12 +66,30 @@ const CaseForm: React.FC<CaseFormProps> = ({ id }) => {
     setErrors(prev => ({ ...prev, [field]: undefined }));
   };
 
+  const validateFileType = (file: RcFile): boolean => {
+    const audioVideoRegex = /\.(mp3|wav|flac|aac|ogg|wma|m4a|mp4|avi|mkv|mov|wmv|flv|webm|m4v|3gp)$/i;
+    if (audioVideoRegex.test(file.name)) {
+      toast.error(`${file.name} - Audio and video files are not allowed`);
+      return false;
+    }
+    return true;
+  };
+
   const handleFileChange = async (info: any) => {
     const { fileList } = info;
-    setDocFiles(fileList);
+    
+    // Filter out audio/video files
+    const validFileList = fileList.filter((file: UploadFile) => {
+      if (file.originFileObj && !validateFileType(file.originFileObj as RcFile)) {
+        return false;
+      }
+      return true;
+    });
+    
+    setDocFiles(validFileList);
     
     // Find new files that need to be uploaded
-    const newFiles = fileList.filter((file: UploadFile) => 
+    const newFiles = validFileList.filter((file: UploadFile) => 
       file.originFileObj && file.status !== 'done' && file.status !== 'error'
     );
     
@@ -132,6 +150,12 @@ const CaseForm: React.FC<CaseFormProps> = ({ id }) => {
     const file = fileList[0];
     
     if (!file || !file.originFileObj) {
+      setCommitteeFile(null);
+      return;
+    }
+    
+    // Validate file type for committee file
+    if (!validateFileType(file.originFileObj as RcFile)) {
       setCommitteeFile(null);
       return;
     }
@@ -544,11 +568,13 @@ const CaseForm: React.FC<CaseFormProps> = ({ id }) => {
                     showRemoveIcon: true,
                     // showDownloadIcon: true,
                   }}
-                  beforeUpload={() => false}
+                  beforeUpload={(file) => {
+                    return validateFileType(file);
+                  }}
                   onChange={handleCommitteeFileChange}
                   fileList={committeeFile ? [committeeFile] : []}
                   disabled={uploading}
-                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.bmp,.tiff"
                   onPreview={(file) => {
                     // This will be replaced with your download API
                     window.open(`/api/downloads/${file.name}`, '_blank');
@@ -577,11 +603,13 @@ const CaseForm: React.FC<CaseFormProps> = ({ id }) => {
                   showRemoveIcon: true,
                   showDownloadIcon: true,
                 }}
-                beforeUpload={() => false}
+                beforeUpload={(file) => {
+                  return validateFileType(file);
+                }}
                 onChange={handleFileChange}
                 fileList={docFiles}
                 disabled={uploading}
-                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.bmp,.tiff"
                 onPreview={(file) => {
                   // This will be replaced with your download API
                   window.open(`/api/downloads/${file.name}`, '_blank');

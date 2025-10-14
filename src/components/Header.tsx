@@ -7,6 +7,7 @@ import { APICalls } from "@/api/api-calls";
 import React from "react";
 import { useRouter } from 'next/navigation';
 import Cookies from "js-cookie";
+import { toast } from 'react-toastify';
 
 const Header = () => {
   const [searchValue, setSearchValue] = React.useState("");
@@ -39,6 +40,16 @@ const Header = () => {
 
   const handleSearch = async (value: string) => {
     if (!value.trim()) return;
+    
+    // Check for special characters
+    const specialCharRegex = /[!@#$%^&*()_+=\[\]{};':"\\|,.<>?]/;
+    if (specialCharRegex.test(value)) {
+      toast.error("You cannot search through special characters");
+      setSearchResults([]);
+      setDropdownOpen(false);
+      return;
+    }
+
     try {
       const result = await APICalls.searchCases(value);
       if (Array.isArray(result) && result.length > 0) {

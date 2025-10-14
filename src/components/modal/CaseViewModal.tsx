@@ -90,8 +90,8 @@ const CaseViewModal: React.FC<CaseViewModalProps> = ({ open, onClose, caseData }
   };
   if (!caseData) return null;
   const excludeFields = [
-    'id', 'createdby', 'updatedby', 'isDeleted', 'UpdatedBy', 'DeletedAr', 'CreatedAt', 'UpdatedAt', 'createdAt', 'updatedAt', 'deletedAt', 'createdBy', 'updatedBy', 'deletedBy',
-    'isUrgent', 'isCallToAttention', 'isCsCalledInPerson', 'isContempt', 'isShowCause', "registry", "caseNumber"
+    'id', 'createdby', 'updatedby', 'caseTitle', 'isDeleted', 'UpdatedBy', 'DeletedAr', 'CreatedAt', 'UpdatedAt', 'createdAt', 'updatedAt', 'deletedAt', 'createdBy', 'updatedBy', 'deletedBy',
+    'isUrgent', 'isCallToAttention','committeeApprovalFile', 'isCsCalledInPerson', 'isContempt', 'isShowCause', "registry", "caseNumber"
   ];
   const getLabel = (key: string, value: any) => {
     // Format date fields
@@ -154,7 +154,7 @@ const CaseViewModal: React.FC<CaseViewModalProps> = ({ open, onClose, caseData }
       width={700}
       title={
         <div className="caseview-modal-header-abs">
-          <b>Case Details</b>
+          <b>{caseData?.caseTitle}</b>
           <button
             type="button"
             className="caseview-file-preview-viewall caseview-details-btn-abs"
@@ -193,7 +193,7 @@ const CaseViewModal: React.FC<CaseViewModalProps> = ({ open, onClose, caseData }
               displayKey = key.replace(/([A-Z])/g, ' $1').replace(/^./, (str: string) => str.toUpperCase());
             }
 
-            if (key === 'committeeApprovalFile' || key === 'uploadedFiles') {
+            if (key === 'uploadedFiles') {
               return (
                 <div className="col-md-6" key={key}>
                   <div className="mb-2">

@@ -8,6 +8,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { APICalls } from "@/api/api-calls";
 import Image from "next/image";
 import { useNotifications } from "@/contexts/NotificationContext";
+import { ToastContainer } from "react-toastify";
 
 const { Sider, Content } = Layout;
 
@@ -187,6 +188,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
           )}
         </Content>
       </Layout>
+      <ToastContainer position="top-right" autoClose={3000} />
     </Layout>
   );
 };

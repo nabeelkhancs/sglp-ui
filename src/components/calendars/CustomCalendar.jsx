@@ -4,9 +4,9 @@ import { Select, Button, Row, Col } from 'antd';
 const { Option } = Select;
 
 const months = [
-  'January', 'February', 'March', 'April',
-  'May', 'June', 'July', 'August',
-  'September', 'October', 'November', 'December'
+  'December', 'November', 'October', 'September',
+  'August', 'July', 'June', 'May',
+  'April', 'March', 'February', 'January'
 ];
 
 const generateYears = () => {

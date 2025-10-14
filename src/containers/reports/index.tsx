@@ -9,17 +9,22 @@ import { pdf } from '@react-pdf/renderer';
 import ReportPDF from '../../components/reports/ReportPDF';
 
 const ReportsContainer: React.FC = () => {
-  const [selectedCaseType, setSelectedCaseType] = useState<string | null>(null);
+  const [selectedCaseTypes, setSelectedCaseTypes] = useState<string[]>([]);
   const [selectedYear, setSelectedYear] = useState<string>("2025");
   const [selectedMonths, setSelectedMonths] = useState<string[]>([]);
-  const [isDirectionCase, setIsDirectionCase] = useState<boolean>(false);
-  const [isCsCalledInPerson, setIsCsCalledInPerson] = useState<boolean>(false);
+  const [reportSections, setReportSections] = useState({
+    contemptApplication: false,
+    committee: false,
+    inquiry: false,
+    compliance: false,
+    callForAppearanceUrgency: false,
+  });
   const [loading, setLoading] = useState<boolean>(false);
   const [reportData, setReportData] = useState<any>(null);
 
   const handleCaseTypeChange: SelectProps['onChange'] = (value) => {
     console.log(`selected ${value}`);
-    setSelectedCaseType(value);
+    setSelectedCaseTypes(Array.isArray(value) ? value : [value]);
   };
 
   const handleYearChange = (year: number) => {
@@ -27,14 +32,12 @@ const ReportsContainer: React.FC = () => {
     setSelectedYear(year.toString());
   };
 
-  const handleDirectionChange = (e: CheckboxChangeEvent) => {
-    console.log(`direction checked = ${e.target.checked}`);
-    setIsDirectionCase(e.target.checked);
-  };
-
-  const handleCallToAttentionChange = (e: CheckboxChangeEvent) => {
-    console.log(`cs called in person checked = ${e.target.checked}`);
-    setIsCsCalledInPerson(e.target.checked);
+  const handleReportSectionChange = (section: keyof typeof reportSections) => (e: CheckboxChangeEvent) => {
+    console.log(`${section} checked = ${e.target.checked}`);
+    setReportSections(prev => ({
+      ...prev,
+      [section]: e.target.checked
+    }));
   };
 
   const handleMonthsChange = (months: string[]) => {
@@ -42,12 +45,29 @@ const ReportsContainer: React.FC = () => {
   };
 
   const handleGenerate = async () => {
+    // Validation checks
+    if (selectedMonths.length === 0) {
+      alert('Please select at least one month');
+      return;
+    }
+
+    const hasSelectedSections = Object.values(reportSections).some(value => value);
+    if (!hasSelectedSections) {
+      alert('Please select at least one report section');
+      return;
+    }
+
+    // Use the old API format that was working before
     const requestData = {
-      caseType: selectedCaseType,
+      caseType: selectedCaseTypes.length > 0 ? selectedCaseTypes[0] : null, // Take first case type for backward compatibility
       year: selectedYear,
       months: selectedMonths,
-      isDirectionCase,
-      isCsCalledInPerson,
+      isDirectionCase: reportSections.contemptApplication,
+      isCsCalledInPerson: reportSections.callForAppearanceUrgency,
+      // Add new fields for extended functionality
+      reportSections,
+      selectedCaseTypes,
+      reportTitle: "Legal Case Management Report",
     };
     
     console.log('Generating report with data:', requestData);
@@ -65,6 +85,36 @@ const ReportsContainer: React.FC = () => {
       window.open(url, '_blank');
     } catch (error) {
       console.error('Failed to generate report:', error);
+      
+      // Create fallback data for testing PDF generation
+      const fallbackData = {
+        totalCases: 0,
+        reportTitle: "Legal Case Management Report",
+        filters: {
+          caseType: selectedCaseTypes[0] || 'All Types',
+          caseTypes: selectedCaseTypes,
+          year: selectedYear,
+          months: selectedMonths,
+          isDirectionCase: reportSections.contemptApplication,
+          isCsCalledInPerson: reportSections.callForAppearanceUrgency,
+          reportSections: reportSections
+        },
+        cases: []
+      };
+      
+      console.log('Using fallback data for PDF generation:', fallbackData);
+      
+      try {
+        // Generate PDF with fallback data
+        const pdfDoc = <ReportPDF data={fallbackData} />;
+        const blob = await pdf(pdfDoc).toBlob();
+        const url = URL.createObjectURL(blob);
+        window.open(url, '_blank');
+        alert('Report generated with limited data due to API error.');
+      } catch (pdfError) {
+        console.error('PDF generation failed:', pdfError);
+        alert('Failed to generate report. Please check console for errors.');
+      }
     } finally {
       setLoading(false);
     }
@@ -83,23 +133,49 @@ const ReportsContainer: React.FC = () => {
 
           <div className="col-md-4">
             <div className="form-group">
-              <label className="fw-medium text-muted d-block mb-2">Select Case Type</label>
+              <label className="fw-medium text-muted d-block mb-2">Select Case Types (Multiple)</label>
               <Select
+                mode="multiple"
                 showSearch
                 variant="filled"
-                placeholder="Select "
-                style={{ width: 220 }}
+                placeholder="Select case types"
+                style={{ width: '100%' }}
                 onChange={handleCaseTypeChange}
                 options={getCaseTypeData()}
               />
             </div>
             <Divider />
             <div className="checks mb-4">
-              <Checkbox className="w-100 mb-3 fw-medium primary-font" onChange={handleDirectionChange}>
-                Select Direction Cases
+              <label className="fw-medium text-muted d-block mb-2">Generate Report Sections</label>
+              <Checkbox 
+                className="w-100 mb-2 fw-medium primary-font" 
+                onChange={handleReportSectionChange('contemptApplication')}
+              >
+                Contempt Application
               </Checkbox>
-              <Checkbox className="w-100 fw-medium primary-font" onChange={handleCallToAttentionChange}>
-                Select CS Called in Person Cases
+              <Checkbox 
+                className="w-100 mb-2 fw-medium primary-font" 
+                onChange={handleReportSectionChange('committee')}
+              >
+                Committee
+              </Checkbox>
+              <Checkbox 
+                className="w-100 mb-2 fw-medium primary-font" 
+                onChange={handleReportSectionChange('inquiry')}
+              >
+                Inquiry
+              </Checkbox>
+              <Checkbox 
+                className="w-100 mb-2 fw-medium primary-font" 
+                onChange={handleReportSectionChange('compliance')}
+              >
+                Compliance
+              </Checkbox>
+              <Checkbox 
+                className="w-100 fw-medium primary-font" 
+                onChange={handleReportSectionChange('callForAppearanceUrgency')}
+              >
+                Call for Appearance and Urgency Cases
               </Checkbox>
             </div>
           </div>
@@ -107,12 +183,47 @@ const ReportsContainer: React.FC = () => {
           <div className="col-md-3 text-end">
             <Button 
               className="primary-btn" 
-              style={{ height: '40px', width: '170px' }}
+              style={{ height: '40px', width: '170px', marginBottom: '10px' }}
               onClick={handleGenerate}
               loading={loading}
               disabled={loading}
             >
               {loading ? 'Generating...' : 'Generate'}
+            </Button>
+            <br />
+            <Button 
+              className="secondary-btn" 
+              style={{ height: '40px', width: '170px' }}
+              onClick={() => {
+                const testData = {
+                  totalCases: 5,
+                  reportTitle: "Test Report",
+                  filters: {
+                    caseTypes: selectedCaseTypes,
+                    year: selectedYear,
+                    months: selectedMonths.length > 0 ? selectedMonths : ['October'],
+                    reportSections: reportSections
+                  },
+                  cases: [
+                    {
+                      id: 1,
+                      cpNumber: 'TEST001',
+                      caseTitle: 'Test Case',
+                      court: 'Test Court',
+                      caseType: 'Test Type',
+                      dateReceived: new Date().toISOString(),
+                      caseStatus: ['Active']
+                    }
+                  ]
+                };
+                
+                pdf(<ReportPDF data={testData} />).toBlob().then(blob => {
+                  const url = URL.createObjectURL(blob);
+                  window.open(url, '_blank');
+                });
+              }}
+            >
+              Test PDF
             </Button>
           </div>
         </div>

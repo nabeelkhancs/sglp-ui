@@ -14,8 +14,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logo: {
-    width: 80,
-    height: 80,
+    width: 50,
+    height: 50,
     marginRight: 20,
   },
   headerText: {
@@ -122,13 +122,21 @@ const styles = StyleSheet.create({
 
 interface ReportData {
   totalCases: number;
+  reportTitle?: string;
   filters: {
-    caseType: string;
+    caseType?: string; // Keep for backward compatibility
+    caseTypes?: string[];
     year: string;
     months: string[];
-    isDirectionCase: boolean;
-    isCallToAttention?: boolean;
-    isCsCalledInPerson: boolean | string;
+    isDirectionCase?: boolean; // Keep for backward compatibility
+    isCsCalledInPerson?: boolean | string; // Keep for backward compatibility
+    reportSections?: {
+      contemptApplication: boolean;
+      committee: boolean;
+      inquiry: boolean;
+      compliance: boolean;
+      callForAppearanceUrgency: boolean;
+    };
   };
   cases: Array<{
     id: number;
@@ -197,35 +205,67 @@ const ReportPDF: React.FC<{ data: ReportData }> = ({ data }) => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Report Summary</Text>
           <View style={styles.filterRow}>
+            <Text style={styles.filterLabel}>Report Title:</Text>
+            <Text style={styles.filterValue}>{data.reportTitle || 'Legal Case Management Report'}</Text>
+          </View>
+          <View style={styles.filterRow}>
+            <Text style={styles.filterLabel}>Case Types:</Text>
+            <Text style={styles.filterValue}>
+              {data.filters.caseTypes && data.filters.caseTypes.length > 0 
+                ? data.filters.caseTypes.join(', ') 
+                : data.filters.caseType || 'All Types'}
+            </Text>
+          </View>
+          <View style={styles.filterRow}>
+            <Text style={styles.filterLabel}>Period Covered:</Text>
+            <Text style={styles.filterValue}>
+              {data.filters.months.length > 0 ? `${data.filters.months.join(', ')} ${data.filters.year}` : `All of ${data.filters.year}`}
+            </Text>
+          </View>
+          <View style={styles.filterRow}>
             <Text style={styles.filterLabel}>Total Cases:</Text>
             <Text style={styles.filterValue}>{data.totalCases}</Text>
           </View>
-          <View style={styles.filterRow}>
-            <Text style={styles.filterLabel}>Report Year:</Text>
-            <Text style={styles.filterValue}>{data.filters.year || 'All Years'}</Text>
-          </View>
-          <View style={styles.filterRow}>
-            <Text style={styles.filterLabel}>Selected Months:</Text>
-            <Text style={styles.filterValue}>
-              {data.filters.months.length > 0 ? data.filters.months.join(', ') : 'All Months'}
-            </Text>
-          </View>
-          <View style={styles.filterRow}>
-            <Text style={styles.filterLabel}>Case Type:</Text>
-            <Text style={styles.filterValue}>{data.filters.caseType || 'All Types'}</Text>
-          </View>
-          <View style={styles.filterRow}>
-            <Text style={styles.filterLabel}>Direction Cases:</Text>
-            <Text style={styles.filterValue}>{data.filters.isDirectionCase ? 'Yes' : 'No'}</Text>
-          </View>
-          <View style={styles.filterRow}>
-            <Text style={styles.filterLabel}>CS Called in Person:</Text>
-            <Text style={styles.filterValue}>
-              {typeof data.filters.isCsCalledInPerson === 'boolean' 
-                ? (data.filters.isCsCalledInPerson ? 'Yes' : 'No')
-                : data.filters.isCsCalledInPerson}
-            </Text>
-          </View>
+          {data.filters.reportSections && (
+            <View style={styles.filterRow}>
+              <Text style={styles.filterLabel}>Report Sections:</Text>
+              <Text style={styles.filterValue}>
+                {Object.entries(data.filters.reportSections)
+                  .filter(([_, enabled]) => enabled)
+                  .map(([key, _]) => {
+                    switch(key) {
+                      case 'contemptApplication': return 'Contempt Application';
+                      case 'committee': return 'Committee';
+                      case 'inquiry': return 'Inquiry';
+                      case 'compliance': return 'Compliance';
+                      case 'callForAppearanceUrgency': return 'Call for Appearance and Urgency Cases';
+                      default: return key;
+                    }
+                  })
+                  .join(', ') || 'None Selected'}
+              </Text>
+            </View>
+          )}
+          {(data.filters.isDirectionCase !== undefined || data.filters.isCsCalledInPerson !== undefined) && (
+            <View>
+              {data.filters.isDirectionCase !== undefined && (
+                <View style={styles.filterRow}>
+                  <Text style={styles.filterLabel}>Direction Cases:</Text>
+                  <Text style={styles.filterValue}>{data.filters.isDirectionCase ? 'Yes' : 'No'}</Text>
+                </View>
+              )}
+              {data.filters.isCsCalledInPerson !== undefined && (
+                <View style={styles.filterRow}>
+                  <Text style={styles.filterLabel}>CS Called in Person:</Text>
+                  <Text style={styles.filterValue}>
+                    {typeof data.filters.isCsCalledInPerson === 'boolean' 
+                      ? (data.filters.isCsCalledInPerson ? 'Yes' : 'No')
+                      : data.filters.isCsCalledInPerson}
+                  </Text>
+                </View>
+              )}
+            </View>
+          )}
         </View>
 
         {/* Cases Table */}
