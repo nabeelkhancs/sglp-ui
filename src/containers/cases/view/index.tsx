@@ -4,9 +4,8 @@ import React, { useState, useEffect } from "react";
 import ReminderModal from "@/components/modal/ReminderModal";
 import { Button, Divider } from "antd";
 import { useRouter, useSearchParams } from "next/navigation";
-import Image from "next/image";
 import { APICalls } from "@/api/api-calls";
-import UploadedFilesTable from "@/components/tables/UploadedFilesTable";
+import { getSubjectData, getCaseStatusData, getDepartmentData, getCourtData, getCaseTypeData, getRegionData } from "@/utils/dropdownData";
 
 const CaseViewContainer = () => {
 
@@ -31,15 +30,12 @@ const CaseViewContainer = () => {
   };
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const showModal = () => setIsModalOpen(true);
   const handleOk = () => setIsModalOpen(false);
   const handleCancel = () => setIsModalOpen(false);
 
   const [caseLogs, setCaseLogs] = useState<any[]>([]);
   const [createdDate, setCreatedDate] = useState<string>('');
-  // const [showAllFiles, setShowAllFiles] = useState<{ [key: string]: boolean }>({});
 
-  // File download function
   const downloadFile = async (filename: string) => {
     if (!filename) return;
     try {
@@ -136,7 +132,6 @@ const CaseViewContainer = () => {
         const logs = await APICalls.getCaseLogs(cpNumber);
         setCaseLogs(logs);
 
-        // Find CREATE_CASE action and extract createdAt
         const createLog = logs.find((log: any) => log.action === 'CREATE_CASE');
         if (createLog && createLog.createdAt) {
           setCreatedDate(formatCreatedDate(createLog.createdAt));
@@ -207,20 +202,102 @@ const CaseViewContainer = () => {
                       return true;
                     })
                     .map(([key, value]) => {
-                      // Format date fields
                       let formattedValue = value;
+                      
+                      // Format date fields
                       if ((key === 'dateReceived' || key === 'dateOfHearing') && value) {
                         try {
                           const date = new Date(value as string);
                           if (!isNaN(date.getTime())) {
-                            // Format as DD/MM/YYYY HH:MM A
                             const day = date.getDate().toString().padStart(2, '0');
                             const month = (date.getMonth() + 1).toString().padStart(2, '0');
                             const year = date.getFullYear();
                             formattedValue = `${day}/${month}/${year}`;
                           }
+                        } catch (e) {}
+                      }
+                      
+                      // Format subjectOfApplication field using getSubjectData
+                      if (key === 'subjectOfApplication' && value) {
+                        try {
+                          const subjectOptions = getSubjectData();
+                          const foundOption = subjectOptions.find(opt => opt.value === value);
+                          formattedValue = foundOption ? foundOption.label : value;
                         } catch (e) {
-                          // Keep original value if parsing fails
+                          // Keep original value if formatting fails
+                        }
+                      }
+                      
+                      // Format caseStatus field using getCaseStatusData
+                      if (key === 'caseStatus' && value) {
+                        try {
+                          const statusOptions = getCaseStatusData();
+                          if (Array.isArray(value)) {
+                            // Handle array of status values
+                            const formattedStatuses = value.map((status: string) => {
+                              const foundOption = statusOptions.find(opt => opt.value === status);
+                              return foundOption ? foundOption.label : status;
+                            });
+                            formattedValue = formattedStatuses;
+                          } else {
+                            // Handle single status value
+                            const foundOption = statusOptions.find(opt => opt.value === value);
+                            formattedValue = foundOption ? foundOption.label : value;
+                          }
+                        } catch (e) {
+                          // Keep original value if formatting fails
+                        }
+                      }
+                      
+                      // Format relativeDepartment field using getDepartmentData
+                      if (key === 'relativeDepartment' && value) {
+                        try {
+                          const departmentOptions = getDepartmentData();
+                          if (Array.isArray(value)) {
+                            const formattedDepartments = value.map((dept: string) => {
+                              const foundOption = departmentOptions.find(opt => opt.value === dept);
+                              return foundOption ? foundOption.label : dept;
+                            });
+                            formattedValue = formattedDepartments;
+                          } else {
+                            const foundOption = departmentOptions.find(opt => opt.value === value);
+                            formattedValue = foundOption ? foundOption.label : value;
+                          }
+                        } catch (e) {
+                          // Keep original value if formatting fails
+                        }
+                      }
+                      
+                      // Format court field using getCourtData
+                      if (key === 'court' && value) {
+                        try {
+                          const courtOptions = getCourtData();
+                          const foundOption = courtOptions.find(opt => opt.value === value);
+                          formattedValue = foundOption ? foundOption.label : value;
+                        } catch (e) {
+                          // Keep original value if formatting fails
+                        }
+                      }
+                      
+                      // Format caseType field using getCaseTypeData
+                      if (key === 'caseType' && value) {
+                        try {
+                          const caseTypeOptions = getCaseTypeData();
+                          const foundOption = caseTypeOptions.find(opt => opt.value === value);
+                          formattedValue = foundOption ? foundOption.label : value;
+                        } catch (e) {
+                          // Keep original value if formatting fails
+                        }
+                      }
+                      
+                      // Format region field using getRegionData
+                      if (key === 'region' && value) {
+                        try {
+                          const regionOptions = getRegionData();
+                          const foundOption = regionOptions.find(opt => opt.value === value);
+                          formattedValue = foundOption ? foundOption.label : value;
+                        } catch (e) {
+                          // Keep original value if formatting fails
                         }
                       }
 
@@ -259,6 +336,10 @@ const CaseViewContainer = () => {
                     <div className="row mb-3">
                       <span className="col-md-5 labels">User Govt ID:</span>
                       <span className="col-md-7 value fw-medium">{log.user?.govtID || log.userGovtID || '-'}</span>
+                    </div>
+                    <div className="row mb-3">
+                      <span className="col-md-5 labels">Role Type:</span>
+                      <span className="col-md-7 value fw-medium">{log.user?.roleType || '-'}</span>
                     </div>
                   </div>
                   <div className="col-md-3"></div>
