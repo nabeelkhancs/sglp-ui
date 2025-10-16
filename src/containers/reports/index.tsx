@@ -143,37 +143,37 @@ const ReportsContainer: React.FC = () => {
             <div className="checks mb-4">
               <label className="fw-medium text-muted d-block mb-2">Generate Report Sections</label>
               <Checkbox 
-                className="w-100 mb-2 fw-medium primary-font" 
+                className="w-100 mb-2 fw-medium report-checkbox" 
                 onChange={handleReportSectionChange('contemptApplication')}
               >
                 Contempt Application
               </Checkbox>
               <Checkbox 
-                className="w-100 mb-2 fw-medium primary-font" 
+                className="w-100 mb-2 fw-medium report-checkbox" 
                 onChange={handleReportSectionChange('committee')}
               >
                 Committee
               </Checkbox>
               <Checkbox 
-                className="w-100 mb-2 fw-medium primary-font" 
+                className="w-100 mb-2 fw-medium report-checkbox" 
                 onChange={handleReportSectionChange('inquiry')}
               >
                 Inquiry
               </Checkbox>
               <Checkbox 
-                className="w-100 mb-2 fw-medium primary-font" 
+                className="w-100 mb-2 fw-medium report-checkbox" 
                 onChange={handleReportSectionChange('compliance')}
               >
                 Compliance
               </Checkbox>
               <Checkbox 
-                className="w-100 mb-2 fw-medium primary-font" 
+                className="w-100 mb-2 fw-medium report-checkbox" 
                 onChange={handleReportSectionChange('callForAppearanceUrgency')}
               >
                 Call for Appearance and Urgency Cases
               </Checkbox>
               <Checkbox 
-                className="w-100 fw-medium primary-font" 
+                className="w-100 fw-medium report-checkbox" 
                 onChange={handleReportSectionChange('directions')}
               >
                 Directions

@@ -302,7 +302,17 @@ const ReportPDF: React.FC<{ data: ReportData }> = ({ data }) => {
           <View style={styles.filterRow}>
             <Text style={styles.filterLabel}>Period Covered:</Text>
             <Text style={styles.filterValue}>
-              {data.filters.months.length > 0 ? data.filters.months.join(', ') : 'All Months'}
+              {data.filters.months.length > 0 ? 
+                data.filters.months
+                  .sort((a, b) => {
+                    const monthOrder = [
+                      'January', 'February', 'March', 'April', 'May', 'June',
+                      'July', 'August', 'September', 'October', 'November', 'December'
+                    ];
+                    return monthOrder.indexOf(a) - monthOrder.indexOf(b);
+                  })
+                  .join(', ') 
+                : 'All Months'}
             </Text>
           </View>
           <View style={styles.filterRow}>

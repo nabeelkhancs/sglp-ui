@@ -628,6 +628,10 @@ header .user-dropdown .user-wrapper {
   font-weight: bold !important;
 }
 
+.report-checkbox {
+  font-weight: normal !important;
+}
+
 /* Calendar Styles */
 
 .react-calendar {
