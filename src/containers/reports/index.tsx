@@ -2,7 +2,7 @@ import { Button, Checkbox, Divider, Select } from "antd";
 import CustomMonthSelector from "../../components/calendars/CustomCalendar";
 import type { CheckboxChangeEvent } from "antd/es/checkbox";
 import type { SelectProps } from "antd";
-import { getCaseTypeData } from "@/utils/dropdownData";
+import { getCaseTypeData, getCourtData, getRegionData, getDepartmentData, getCaseStatusData, getSubjectData } from "@/utils/dropdownData";
 import { APICalls } from "@/api/api-calls";
 import { useState } from "react";
 import { pdf } from '@react-pdf/renderer';
@@ -18,6 +18,7 @@ const ReportsContainer: React.FC = () => {
     inquiry: false,
     compliance: false,
     callForAppearanceUrgency: false,
+    directions: false,
   });
   const [loading, setLoading] = useState<boolean>(false);
   const [reportData, setReportData] = useState<any>(null);
@@ -48,12 +49,6 @@ const ReportsContainer: React.FC = () => {
     // Validation checks
     if (selectedMonths.length === 0) {
       alert('Please select at least one month');
-      return;
-    }
-
-    const hasSelectedSections = Object.values(reportSections).some(value => value);
-    if (!hasSelectedSections) {
-      alert('Please select at least one report section');
       return;
     }
 
@@ -126,14 +121,14 @@ const ReportsContainer: React.FC = () => {
         <h1 className="mb-0">Generate Reports</h1>
       </div>
       <div className="content p-4 bg-white content-wrapper">
-        <div className="row align-items-end">
+        <div className="row">
           <div className="col-md-5">
             <CustomMonthSelector onMonthsChange={handleMonthsChange} onYearChange={handleYearChange} />
           </div>
 
           <div className="col-md-4">
             <div className="form-group">
-              <label className="fw-medium text-muted d-block mb-2">Select Case Types (Multiple)</label>
+              <label className="fw-medium text-muted d-block mb-2">Select Case Types</label>
               <Select
                 mode="multiple"
                 showSearch
@@ -172,10 +167,16 @@ const ReportsContainer: React.FC = () => {
                 Compliance
               </Checkbox>
               <Checkbox 
-                className="w-100 fw-medium primary-font" 
+                className="w-100 mb-2 fw-medium primary-font" 
                 onChange={handleReportSectionChange('callForAppearanceUrgency')}
               >
                 Call for Appearance and Urgency Cases
+              </Checkbox>
+              <Checkbox 
+                className="w-100 fw-medium primary-font" 
+                onChange={handleReportSectionChange('directions')}
+              >
+                Directions
               </Checkbox>
             </div>
           </div>
@@ -208,19 +209,19 @@ const ReportsContainer: React.FC = () => {
                     {
                       id: 1,
                       caseTitle: 'Test Case',
-                      court: 'Test Court',
-                      region: 'Test Region',
-                      relativeDepartment: ['Test Department'],
-                      subjectOfApplication: 'Test Subject',
+                      court: getCourtData()[0]?.value || 'Test Court',
+                      region: getRegionData()[0]?.value || 'Test Region',
+                      relativeDepartment: [getDepartmentData()[0]?.value || 'Test Department'],
+                      subjectOfApplication: getSubjectData()[0]?.value || 'Test Subject',
                       dateReceived: new Date().toISOString(),
                       dateOfHearing: null,
-                      caseStatus: ['Active'],
+                      caseStatus: [getCaseStatusData()[0]?.value || 'Active'],
                       applicant: 'Test Applicant',
                       respondent: 'Test Respondent',
                       remarks: 'Test Remarks',
                       createdAt: new Date().toISOString(),
                       updatedAt: new Date().toISOString(),
-                      caseType: 'Test Type',
+                      caseType: getCaseTypeData()[0]?.value || 'Test Type',
                       cpNumber: 'TEST001',
                       caseRemarks: 'Test Case Remarks',
                       isUrgent: false,

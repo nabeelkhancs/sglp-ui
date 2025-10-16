@@ -1,5 +1,6 @@
 import React from 'react';
 import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
+import { getCaseTypeData, getCourtData, getRegionData, getDepartmentData, getCaseStatusData, getSubjectData } from '@/utils/dropdownData';
 
 const styles = StyleSheet.create({
   page: {
@@ -174,18 +175,100 @@ const ReportPDF: React.FC<{ data: ReportData }> = ({ data }) => {
 
   const formatCourtName = (court: string) => {
     if (!court) return 'N/A';
-    return court
-      .replace(/([A-Z])/g, ' $1')
-      .replace(/^./, str => str.toUpperCase())
-      .trim();
+    try {
+      const courtOptions = getCourtData();
+      const foundOption = courtOptions.find(opt => opt.value === court);
+      return foundOption ? foundOption.label : court
+        .replace(/([A-Z])/g, ' $1')
+        .replace(/^./, str => str.toUpperCase())
+        .trim();
+    } catch {
+      return court
+        .replace(/([A-Z])/g, ' $1')
+        .replace(/^./, str => str.toUpperCase())
+        .trim();
+    }
   };
 
   const formatCaseType = (caseType: string) => {
     if (!caseType) return 'N/A';
-    return caseType
-      .replace(/([A-Z])/g, ' $1')
-      .replace(/^./, str => str.toUpperCase())
-      .trim();
+    try {
+      const caseTypeOptions = getCaseTypeData();
+      const foundOption = caseTypeOptions.find(opt => opt.value === caseType);
+      return foundOption ? foundOption.label : caseType
+        .replace(/([A-Z])/g, ' $1')
+        .replace(/^./, str => str.toUpperCase())
+        .trim();
+    } catch {
+      return caseType
+        .replace(/([A-Z])/g, ' $1')
+        .replace(/^./, str => str.toUpperCase())
+        .trim();
+    }
+  };
+
+  const formatRegionName = (region: string) => {
+    if (!region) return 'N/A';
+    try {
+      const regionOptions = getRegionData();
+      const foundOption = regionOptions.find(opt => opt.value === region);
+      return foundOption ? foundOption.label : region;
+    } catch {
+      return region;
+    }
+  };
+
+  const formatDepartmentNames = (departments: string[]) => {
+    if (!departments || departments.length === 0) return 'N/A';
+    try {
+      const departmentOptions = getDepartmentData();
+      const formattedDepartments = departments.map(dept => {
+        const foundOption = departmentOptions.find(opt => opt.value === dept);
+        return foundOption ? foundOption.label : dept;
+      });
+      return formattedDepartments.join(', ');
+    } catch {
+      return departments.join(', ');
+    }
+  };
+
+  const formatSubjectOfApplication = (subject: string) => {
+    if (!subject) return 'N/A';
+    try {
+      const subjectOptions = getSubjectData();
+      const foundOption = subjectOptions.find(opt => opt.value === subject);
+      return foundOption ? foundOption.label : subject;
+    } catch {
+      return subject;
+    }
+  };
+
+  const formatCaseStatus = (statuses: string[]) => {
+    if (!statuses || statuses.length === 0) return 'N/A';
+    try {
+      const statusOptions = getCaseStatusData();
+      const formattedStatuses = statuses.map(status => {
+        const foundOption = statusOptions.find(opt => opt.value === status);
+        return foundOption ? foundOption.label : status;
+      });
+      return formattedStatuses.join(', ');
+    } catch {
+      return statuses.join(', ');
+    }
+  };
+
+  const formatCaseTypes = (caseTypes: string[]) => {
+    if (!caseTypes || caseTypes.length === 0) return 'All Types';
+    try {
+      const caseTypeOptions = getCaseTypeData();
+      const formattedTypes = caseTypes.map(type => {
+        const foundOption = caseTypeOptions.find(opt => opt.value === type);
+        return foundOption ? foundOption.label : type;
+      });
+      return formattedTypes.join(', ');
+    } catch {
+      return caseTypes.join(', ');
+    }
   };
 
   return (
@@ -212,15 +295,19 @@ const ReportPDF: React.FC<{ data: ReportData }> = ({ data }) => {
             <Text style={styles.filterLabel}>Case Types:</Text>
             <Text style={styles.filterValue}>
               {data.filters.caseTypes && data.filters.caseTypes.length > 0 
-                ? data.filters.caseTypes.join(', ') 
-                : data.filters.caseType || 'All Types'}
+                ? formatCaseTypes(data.filters.caseTypes) 
+                : formatCaseType(data.filters.caseType || 'All Types')}
             </Text>
           </View>
           <View style={styles.filterRow}>
             <Text style={styles.filterLabel}>Period Covered:</Text>
             <Text style={styles.filterValue}>
-              {data.filters.months.length > 0 ? `${data.filters.months.join(', ')} ${data.filters.year}` : `All of ${data.filters.year}`}
+              {data.filters.months.length > 0 ? data.filters.months.join(', ') : 'All Months'}
             </Text>
+          </View>
+          <View style={styles.filterRow}>
+            <Text style={styles.filterLabel}>Year:</Text>
+            <Text style={styles.filterValue}>{data.filters.year}</Text>
           </View>
           <View style={styles.filterRow}>
             <Text style={styles.filterLabel}>Total Cases:</Text>
@@ -239,6 +326,7 @@ const ReportPDF: React.FC<{ data: ReportData }> = ({ data }) => {
                       case 'inquiry': return 'Inquiry';
                       case 'compliance': return 'Compliance';
                       case 'callForAppearanceUrgency': return 'Call for Appearance and Urgency Cases';
+                      case 'directions': return 'Directions';
                       default: return key;
                     }
                   })
@@ -301,7 +389,7 @@ const ReportPDF: React.FC<{ data: ReportData }> = ({ data }) => {
                   {formatDate(caseItem.dateReceived)}
                 </Text>
                 <Text style={[styles.tableCell, styles.status]}>
-                  {caseItem.caseStatus.length > 0 ? caseItem.caseStatus[0] : 'Pending'}
+                  {caseItem.caseStatus.length > 0 ? formatCaseStatus(caseItem.caseStatus) : 'Pending'}
                 </Text>
               </View>
             ))}
