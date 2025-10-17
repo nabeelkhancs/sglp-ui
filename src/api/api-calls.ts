@@ -248,4 +248,13 @@ export class APICalls {
       throw error;
     }
   }
+
+  static async getNoticeBoardEntries() {
+    try {
+      const result = await HTTPMethods.get(`${cases}/notice-board`);
+      return result?.data || [];
+    } catch (error) {
+      throw error;
+    }  
+  }
 }

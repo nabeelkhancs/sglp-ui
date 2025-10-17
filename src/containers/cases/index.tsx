@@ -113,7 +113,7 @@ const CasesContainer = ({ pageName = "", dashboardLayout = false, caseType = "",
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
               <span
                 className='table-action d-flex align-items-center gap-1 text-dark text-decoration-none'
-                style={{ cursor: 'pointer' }}
+                style={{ cursor: 'pointer', zIndex: '2147483976 !important' }}
                 onClick={() => {
                   window.location.href = `/cases/${record.id}/edit`;
                 }}

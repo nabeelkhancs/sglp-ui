@@ -1,3 +1,4 @@
+"use client";
 import NoticeBoardContainer from "@/containers/notice-board";
 import DashboardLayout from "../layouts/DashboardLayout";
 
