@@ -1,4 +1,4 @@
-import { cases, permissions, users, verifyEmail, committees, dashboard, casesCourts, notifications, reports, uploadsDetails, casesSearch, casesLogs } from "./communications";
+import { cases, permissions, users, verifyEmail, committees, dashboard, casesCourts, notifications, reports, uploadsDetails, casesSearch, casesLogs, calendar } from "./communications";
 import HTTPMethods from "./index";
 
 export class APICalls {
@@ -235,6 +235,15 @@ export class APICalls {
     try {
       const result = await HTTPMethods.get(`${casesLogs}?cpNumber=${encodeURIComponent(cpNumber)}`);
       return result?.data?.rows || [];
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async getCalendarCases(startDate: string, endDate: string) {
+    try {
+      const result = await HTTPMethods.get(`${calendar}?startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`);
+      return result?.data || [];
     } catch (error) {
       throw error;
     }

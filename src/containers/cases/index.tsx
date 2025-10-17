@@ -159,6 +159,7 @@ const CasesContainer = ({ pageName = "", dashboardLayout = false, caseType = "",
       params.pageNumber = currentPage;
       params.pageSize = pageSize;
       params.cpNumber = searchParams.get('cpNumber') || undefined;
+      params.dateOfHearing = searchParams.get('dateOfHearing') || undefined;
       // if (caseType && caseType.includes("court")) {
       //   params.court = caseType;
       // } else if (caseType) {

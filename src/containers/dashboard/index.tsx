@@ -1,6 +1,6 @@
 import React, { use } from 'react';
 import Link from 'next/link';
-import { Divider } from "antd";
+import { useRouter } from 'next/navigation';
 import CountCards from "../../components/CountCard";
 import UsersContainer from "../users";
 import Cookies from "js-cookie";
@@ -12,7 +12,6 @@ import { useState, useEffect } from "react";
 import CasesContainer from "../cases";
 import CourtsCards from '@/components/CourtsCard';
 import AnalyticsChart from '@/components/charts/AnalyticChart';
-import DonutChart from '@/components/charts/AnalyticChart2';
 import AnalyticsChart2 from '@/components/charts/AnalyticChart2';
 import { APICalls } from "@/api/api-calls";
 import { Spin, Alert } from "antd";
@@ -25,9 +24,13 @@ function isSameDay(a: Date, b: Date) {
 }
 
 const DashboardContainer = () => {
+  const router = useRouter();
   const { notifications, unreadCount, loading: notificationLoading, getDashboardNotifications, markMultipleAsRead } = useNotifications();
   
   const [value, setValue] = useState<Date | null>(new Date());
+  const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
+  const [calendarCases, setCalendarCases] = useState<any[]>([]);
+
   useEffect(() => {
     if (value) {
       const formatted = value.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -75,28 +78,80 @@ const DashboardContainer = () => {
     fetchDashboardNotificationsCount();
   }, [getDashboardNotifications]);
 
+  // Fetch calendar cases for the current month
+  useEffect(() => {
+    const fetchCalendarCases = async () => {
+      try {
+        // Get start and end dates of the current month
+        const year = currentMonth.getFullYear();
+        const month = currentMonth.getMonth();
+        const startDate = new Date(year, month, 1).toISOString().split('T')[0];
+        const endDate = new Date(year, month + 1, 0).toISOString().split('T')[0];
+        
+        console.log('Fetching calendar cases for:', { startDate, endDate });
+        const cases = await APICalls.getCalendarCases(startDate, endDate);
+        console.log('Calendar cases fetched:', cases);
+        setCalendarCases(cases);
+      } catch (error) {
+        console.error('Failed to fetch calendar cases:', error);
+        setCalendarCases([]);
+      }
+    };
+
+    fetchCalendarCases();
+  }, [currentMonth]);
+
   useEffect(() => {
     const reds: Date[] = [];
     const yellows: Date[] = [];
     const greens: Date[] = [];
-    if (dashboardData?.cases) {
-      dashboardData.cases.forEach((item: any) => {
+    
+    // Use calendar cases instead of dashboard cases for calendar highlighting
+    if (calendarCases && calendarCases.length > 0) {
+      console.log("Processing calendar cases for highlighting:", calendarCases);
+      calendarCases.forEach((item: any) => {
         if (item.dateOfHearing) {
           const hearingDate = new Date(item.dateOfHearing);
-          if (Array.isArray(item.caseStatus) && item.caseStatus.includes('urgent')) {
+          console.log(`Processing case ${item.id}: status=${JSON.stringify(item.caseStatus)}, date=${hearingDate.toDateString()}`);
+          
+          // Red for urgent and high priority cases
+          if (Array.isArray(item.caseStatus) && (
+            item.caseStatus.includes('urgent') || 
+            item.caseStatus.includes('callToAttention')
+          )) {
             reds.push(hearingDate);
-          } else if (Array.isArray(item.caseStatus) && item.caseStatus.includes('direction')) {
+            console.log("Added to red dates:", hearingDate.toDateString());
+          } 
+          // Yellow for committee and under review cases
+          else if (Array.isArray(item.caseStatus) && (
+            item.caseStatus.includes('committeConstitution') || 
+            item.caseStatus.includes('underReview') ||
+            item.caseStatus.includes('direction')
+          )) {
             yellows.push(hearingDate);
-          } else if (Array.isArray(item.caseStatus) && item.caseStatus.includes('csCalledInPerson')) {
+            console.log("Added to yellow dates:", hearingDate.toDateString());
+          } 
+          // Green for completed/complied cases
+          else if (Array.isArray(item.caseStatus) && (
+            item.caseStatus.includes('compliedWith') ||
+            item.caseStatus.includes('csCalledInPerson')
+          )) {
             greens.push(hearingDate);
+            console.log("Added to green dates:", hearingDate.toDateString());
+          }
+          // Default - any case with hearing date gets yellow highlight
+          else if (item.dateOfHearing) {
+            yellows.push(hearingDate);
+            console.log("Added to yellow dates (default):", hearingDate.toDateString());
           }
         }
       });
     }
+    console.log("Final date arrays:", { reds, yellows, greens });
     setRedDates(reds);
     setYellowDates(yellows);
     setGreenDates(greens);
-  }, [dashboardData]);
+  }, [calendarCases]);
 
   useEffect(() => {
     setLoading(true);
@@ -217,6 +272,29 @@ const DashboardContainer = () => {
       setDashboardNotificationsCount(updatedData);
     } catch (error) {
       console.error(`Failed to mark ${category} notifications as read:`, error);
+    }
+  };
+
+  // Handle calendar date click
+  const handleDateClick = (date: Date) => {
+    // Convert clicked date to the same format as API data (full ISO timestamp)
+    // Set time to match the typical API format (19:00:00.000Z which is likely end of day in UTC)
+    const apiFormattedDate = new Date(date);
+    apiFormattedDate.setUTCHours(19, 0, 0, 0); // Set to 19:00:00.000Z like API data
+    const fullTimestamp = apiFormattedDate.toISOString();
+    
+    // URL encode the timestamp
+    const encodedDate = encodeURIComponent(fullTimestamp);
+    
+    console.log('Calendar date clicked:', date);
+    console.log('API formatted timestamp:', fullTimestamp);
+    console.log('URL encoded:', encodedDate);
+    
+    // Redirect based on user type
+    if (userType === "ADMIN") {
+      router.push(`/cases?dateOfHearing=${encodedDate}`);
+    } else {
+      router.push(`/cases/submitted?dateOfHearing=${encodedDate}`);
     }
   };
 
@@ -352,6 +430,12 @@ const DashboardContainer = () => {
                 prev2Label={false}
                 onChange={(val) => setValue(val as Date | null)}
                 value={value}
+                onClickDay={handleDateClick}
+                onActiveStartDateChange={({ activeStartDate }) => {
+                  if (activeStartDate) {
+                    setCurrentMonth(activeStartDate);
+                  }
+                }}
                 tileClassName={({ date, view }) => {
                   // console.log("redDates", redDates,"yellowDates", yellowDates, "greenDates", greenDates);
                   if (view === 'month') {
