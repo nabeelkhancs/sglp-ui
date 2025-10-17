@@ -1,9 +1,14 @@
+"use client";
 import Notice from "@/components/NoticeBoard";
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
 import { APICalls } from '@/api/api-calls';
 import { Spin, Alert } from 'antd';
 
 const NoticeBoardContainer = () => {
+    const router = useRouter();
+    const userType = Cookies.get("userType");
     const [noticeBoardData, setNoticeBoardData] = useState<any[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -29,6 +34,28 @@ const NoticeBoardContainer = () => {
 
         fetchNoticeBoardEntries();
     }, []);
+
+    // Handle notice click navigation
+    const handleNoticeClick = (notice: any) => {
+        if (notice.cpNumber) {
+            // URL encode the cpNumber
+            const encodedCpNumber = encodeURIComponent(notice.cpNumber);
+            
+            console.log('Notice clicked:', notice);
+            console.log('CP Number:', notice.cpNumber);
+            console.log('User Type:', userType);
+            
+            // Redirect based on user type
+            if (userType === "ADMIN") {
+                router.push(`/cases?cpNumber=${encodedCpNumber}`);
+            } else {
+                router.push(`/cases/submitted?cpNumber=${encodedCpNumber}`);
+            }
+        } else {
+            console.warn('Notice clicked but no cpNumber found:', notice);
+        }
+    };
+
     // Loading state
     if (loading) {
         return (
@@ -67,7 +94,10 @@ const NoticeBoardContainer = () => {
                     {noticeBoardData && noticeBoardData.length > 0 ? (
                         noticeBoardData.map((notice: any, index: number) => (
                             <div className="col-md-3" key={notice.id || index}>
-                                <Notice noticeData={notice} />
+                                <Notice 
+                                    noticeData={notice} 
+                                    onClick={() => handleNoticeClick(notice)}
+                                />
                             </div>
                         ))
                     ) : (

@@ -12,9 +12,10 @@ interface NoticeProps {
         caseStatus?: string[];
         [key: string]: any;
     };
+    onClick?: () => void;
 }
 
-const Notice: React.FC<NoticeProps> = ({ noticeData }) => {
+const Notice: React.FC<NoticeProps> = ({ noticeData, onClick }) => {
     // Default values if no data is provided
     const defaultData = {
         title: "Matters",
@@ -57,7 +58,26 @@ const Notice: React.FC<NoticeProps> = ({ noticeData }) => {
     };
     
     return (
-        <div className="notice py-3 px-4 bg-white">
+        <div 
+            className="notice py-3 px-4 bg-white" 
+            onClick={onClick}
+            style={{ 
+                cursor: onClick ? 'pointer' : 'default',
+                transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+            }}
+            onMouseEnter={(e) => {
+                if (onClick) {
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+                }
+            }}
+            onMouseLeave={(e) => {
+                if (onClick) {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = 'none';
+                }
+            }}
+        >
             <p className="mb-1">{data.title || "Matters"}</p>
             <p className="mb-1 fw-medium text-danger">{getStatusText()}</p>
             <p className="mb-1">In 3 Days on - {data.dueDate || "24/11/2025"}</p>
