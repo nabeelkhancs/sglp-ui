@@ -24,14 +24,12 @@ const NotificationDropdown = () => {
   const [selectedNotifications, setSelectedNotifications] = useState<number[]>([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  // Initialize notifications when component mounts or when dropdown is opened
   useEffect(() => {
     if (!initialized) {
       refreshNotifications();
     }
   }, [initialized, refreshNotifications]);
 
-  // Refresh notifications when dropdown is opened for the first time
   const handleDropdownVisibleChange = async (visible: boolean) => {
     setDropdownOpen(visible);
     if (visible && !initialized) {
