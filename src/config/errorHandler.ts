@@ -5,7 +5,7 @@ export const errorHandler = (error: AxiosError | any): string => {
   const userType = Cookies.get('userType') || 'ADMIN';
   if (error?.response) {
     if (error.response.status === 401) {
-      if(error.response.data?.message) {
+      if(error.response.data?.message && !window.location.pathname.includes('login')) {
         return error.response.data.message;
       }
       setTimeout(() => {
@@ -19,7 +19,7 @@ export const errorHandler = (error: AxiosError | any): string => {
         }
       }, 1000);
     }
-    return error.response.data?.message || 'Unauthorized';
+    return error.response.data || 'Unauthorized';
   } else if (error?.request) {
     return error.message || 'No response from server';
   } else {
