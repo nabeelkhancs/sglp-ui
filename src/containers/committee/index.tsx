@@ -78,8 +78,12 @@ const CommitteeContainer = () => {
             <span
               className='table-action d-flex align-items-center gap-1 text-dark text-decoration-none'
               style={{ cursor: 'pointer' }}
-              onClick={() => {
-                window.location.href = `/committee/${record.id}/edit`;
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                setTimeout(() => {
+                  window.location.href = `/committee/${record.id}/edit`;
+                }, 0);
               }}
             >
               <img src="/icons/edit-icon.svg" width={18} height={18} alt="Edit" />
@@ -87,7 +91,9 @@ const CommitteeContainer = () => {
             <span
               className='table-action d-flex align-items-center gap-1 text-dark text-decoration-none'
               style={{ cursor: 'pointer' }}
-              onClick={() => handleViewCommittee(record)}
+              onClick={(e) => {
+                handleViewCommittee(record);
+              }}
             >
               <img src="/icons/view-icon.svg" width={18} height={18} alt="View" />
             </span>
@@ -123,6 +129,16 @@ const CommitteeContainer = () => {
         data={committeeData}
         loading={loading}
         totalCases={totalData}
+        onRow={(record: any) => ({
+          onClick: () => handleViewCommittee(record),
+          style: { cursor: 'pointer' },
+          onMouseEnter: (e: any) => {
+            e.currentTarget.style.backgroundColor = '#f5f5f5';
+          },
+          onMouseLeave: (e: any) => {
+            e.currentTarget.style.backgroundColor = '';
+          }
+        })}
       />
       
       <CommitteeViewModal

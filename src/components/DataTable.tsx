@@ -19,6 +19,7 @@ interface DataTableProps {
   onPageSizeChange?: (size: number) => void;
   setSelectedCase?: (record: any) => void;
   setViewModalOpen?: (open: boolean) => void;
+  onRow?: (record: any) => any;
 }
 
 const DataTable: FC<DataTableProps> = ({
@@ -36,6 +37,7 @@ const DataTable: FC<DataTableProps> = ({
   setSelectedCase,
   setViewModalOpen,
   userSelected = false,
+  onRow,
 }) => {
   const router = useRouter();
   
@@ -68,7 +70,7 @@ const DataTable: FC<DataTableProps> = ({
           pagination={false}
           rowKey="id"
           loading={loading}
-          onRow={record => ({
+          onRow={onRow || (record => ({
             onClick: () => {
               if (userSelected) {
                 router.push(`/users/${record.id}/view`);
@@ -78,7 +80,7 @@ const DataTable: FC<DataTableProps> = ({
               }
             },
             style: { cursor: 'pointer' },
-          })}
+          }))}
         />
       </div>
       <TablePagination 

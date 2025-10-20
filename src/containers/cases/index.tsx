@@ -114,7 +114,9 @@ const CasesContainer = ({ pageName = "", dashboardLayout = false, caseType = "",
               <span
                 className='table-action d-flex align-items-center gap-1 text-dark text-decoration-none'
                 style={{ cursor: 'pointer', zIndex: '2147483976 !important' }}
-                onClick={() => {
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
                   window.location.href = `/cases/${record.id}/edit`;
                 }}
               >
