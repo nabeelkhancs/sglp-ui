@@ -42,7 +42,7 @@ const Header = () => {
     if (!value.trim()) return;
     
     // Check for special characters
-    const specialCharRegex = /[!@#$%^&*()_+=\[\]{};':"\\|,.<>?~]/;
+    const specialCharRegex = /[!@#$%^&*()_+=\[\]{};':"\\|,.<>?~`]/;
     if (specialCharRegex.test(value)) {
       toast.error("You cannot search through special characters");
       setSearchResults([]);
