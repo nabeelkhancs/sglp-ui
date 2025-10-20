@@ -1,4 +1,3 @@
-import { message } from "antd";
 import Axios from "../config/axios";
 import { errorHandler } from "../config/errorHandler";
 
@@ -18,10 +17,7 @@ class HTTPMethods {
             const result = await Axios.post(endPoint, data, config);
             if (result?.status === 200) return result?.data;
             else throw result;
-        } catch (e: any) {
-            if (endPoint.includes('login')) {
-                message.error(e?.response?.data?.message || "Login failed");
-            }
+        } catch (e) {
             throw errorHandler(e);
         }
     }
