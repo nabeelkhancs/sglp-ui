@@ -18,6 +18,9 @@ class HTTPMethods {
             if (result?.status === 200) return result?.data;
             else throw result;
         } catch (e) {
+            if(endPoint.includes('login')) {
+                throw e;
+            }
             console.log("POST Error:", e);
             throw errorHandler(e);
         }
