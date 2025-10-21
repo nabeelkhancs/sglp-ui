@@ -290,6 +290,66 @@ header .user-dropdown .user-wrapper {
   gap: 15px;
 }
 
+/* User Avatar & Name Styles */
+.user-name {
+  margin-left: 8px;
+  font-weight: 500;
+  color: #333;
+}
+
+.user-trigger {
+  margin-left: 8px;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+}
+
+/* User Dropdown Overlay Styles */
+.user-dropdown-overlay .ant-dropdown {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  border: 1px solid #e8e8e8;
+  padding: 4px 0;
+}
+
+/* User Dropdown Item Styles */
+.user-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  min-width: 120px;
+}
+
+.user-dropdown-item:hover {
+  background-color: #f5f5f5;
+}
+
+.user-dropdown-item span {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.user-dropdown-item svg {
+  color: #666;
+  transition: color 0.2s ease;
+}
+
+/* Logout Item Special Styling */
+.user-dropdown-logout:hover {
+  background-color: #fff2f0 !important;
+  color: #ff4d4f;
+}
+
+.user-dropdown-logout:hover svg {
+  color: #ff4d4f;
+}
+
 
 /* Admin Sidebar */
 

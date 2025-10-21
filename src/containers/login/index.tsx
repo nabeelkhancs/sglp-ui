@@ -39,7 +39,8 @@ const LoginContainer = () => {
       const res = await HTTPMethods.post(revieweroperatorLogin, { email, password });
       if (res?.data?.token) {
         Cookies.set("token", res?.data?.token);
-        Cookies.set("userType", res?.data?.designation);
+        Cookies.set("userType", res?.data?.roleType);
+        Cookies.set("userName", res?.data?.name);
         Cookies.set("firstPageVisited", res?.data?.firstPageVisited);
         console.log("Login successful response:", res);
         toast.success("Login successful!");

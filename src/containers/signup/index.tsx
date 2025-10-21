@@ -4,7 +4,7 @@ import PersonalDetails from "./PersonalDetails";
 import EmployerDetails from "./EmlpoyerDetails";
 import PasswordScreen from "./PasswordScreen";
 import { useState } from "react";
-import { register, uploads, verification } from "@/api/communications";
+import { register, uploadsPublic, verification } from "@/api/communications";
 import HTTPMethods from "@/api";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
@@ -114,7 +114,7 @@ const SignupContainer = () => {
         docFiles.forEach((file) => formData.append("file", file));
 
         try {
-          const uploadRes = await HTTPMethods.post(uploads, formData, {
+          const uploadRes = await HTTPMethods.post(uploadsPublic, formData, {
             headers: {
               "Content-Type": "multipart/form-data",
             },
