@@ -8,7 +8,7 @@ export const permissions = `${commonAdminEP}auth/permissions`;
 export const revieweroperatorLogin = `/v1/auth/login`;
 export const logout = `/v1/auth/logout`;
 
-export const forgotPassword = `${commonAdminEP}forgotPassword`;
+export const forgotPassword = `${commonEP}forgot-password`;
 export const modules = `${commonAdminEP}modules`;
 export const typedata = `${commonAdminEP}general/typedata`;
 export const uploads = `${commonEP}uploads`;

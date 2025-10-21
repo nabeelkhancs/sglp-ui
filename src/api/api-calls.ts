@@ -1,4 +1,4 @@
-import { cases, permissions, users, verifyEmail, committees, dashboard, casesCourts, notifications, reports, uploadsDetails, casesSearch, casesLogs, calendar } from "./communications";
+import { cases, permissions, users, verifyEmail, committees, dashboard, casesCourts, notifications, reports, uploadsDetails, casesSearch, casesLogs, calendar, forgotPassword } from "./communications";
 import HTTPMethods from "./index";
 
 export class APICalls {
@@ -119,6 +119,15 @@ export class APICalls {
     try {
       const result = await HTTPMethods.post(`${verifyEmail}?token=${token}`);
       return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async forgotPassword(email: string) {
+    try {
+      const result = await HTTPMethods.post(forgotPassword, { email });
+      return result?.data;
     } catch (error) {
       throw error;
     }
