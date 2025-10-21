@@ -3,25 +3,26 @@ import { useEffect, useState } from "react";
 import { useNotifications } from "@/contexts/NotificationContext";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import moment from "moment";
 
 
 
 const NotificationDropdown = () => {
-  const { 
-    notifications, 
-    loading, 
+  const {
+    notifications,
+    loading,
     initialized,
     hasMore,
     totalCount,
     currentPage,
-    markAsRead, 
-    markAllAsRead, 
+    markAsRead,
+    markAllAsRead,
     markMultipleAsRead,
     refreshNotifications,
     loadMoreNotifications,
     unreadCount
   } = useNotifications();
-  
+
   const [items, setItems] = useState<any[]>([]);
   const [selectedNotifications, setSelectedNotifications] = useState<number[]>([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -86,7 +87,7 @@ const NotificationDropdown = () => {
 
   const handleNotificationClick = (notif: any) => {
     if ((notif.type === 'CREATE_CASE' || notif.type === 'UPDATE_CASE') && notif.auditLog?.cpNumber && userType) {
-     
+
       if (!notif.isRead) {
         markAsRead(notif.id);
       }
@@ -108,6 +109,8 @@ const NotificationDropdown = () => {
         return `New Committee Created`;
       case 'UPDATE_COMMITTEE':
         return `Committee Updated`;
+      case 'HEARING_REMINDER_24H':
+        return `Hearing Reminder: ${notif?.cpNumber || 'Unknown Case'}`;
       default:
         return notif.type || 'Notification';
     }
@@ -115,7 +118,7 @@ const NotificationDropdown = () => {
 
   const getNotificationDescription = (notif: any) => {
     const userName = notif.auditLog?.user?.name || 'Unknown User';
-    
+
     switch (notif.type) {
       case 'CREATE_CASE':
         return `Case ${notif.auditLog?.cpNumber} has been created by ${userName}`;
@@ -125,13 +128,15 @@ const NotificationDropdown = () => {
         return `New committee has been created by ${userName}`;
       case 'UPDATE_COMMITTEE':
         return `Committee has been updated by ${userName}`;
+      case 'HEARING_REMINDER_24H':
+        return `Reminder: Hearing for case ${notif?.caseTitle} is scheduled on ${moment(notif?.dateOfHearing).format('MMMM Do YYYY')}`;
       default:
         return 'New notification';
     }
   };
 
   const createNotificationLabel = (notif: any) => (
-    <div 
+    <div
       style={{ padding: '8px 0', minWidth: '320px' }}
       onClick={(e) => e.stopPropagation()}
     >
@@ -144,9 +149,9 @@ const NotificationDropdown = () => {
           }}
           style={{ marginTop: '2px' }}
         />
-        <div 
-          style={{ 
-            flex: 1, 
+        <div
+          style={{
+            flex: 1,
             cursor: (notif.type === 'CREATE_CASE' || notif.type === 'UPDATE_CASE') && notif.auditLog?.cpNumber ? 'pointer' : 'default'
           }}
           onClick={(e) => {
@@ -154,8 +159,13 @@ const NotificationDropdown = () => {
             handleNotificationClick(notif);
           }}
         >
-          <div style={{ fontWeight: 'bold', marginBottom: '4px', color: notif.isRead ? '#666' : '#000' }}>
+          <div style={{ fontWeight: 'bold', marginBottom: '4px', color: notif.isRead ? '#666' : '#000', display: 'flex', alignItems: 'center', gap: '4px' }}>
             {getNotificationTitle(notif)}
+            {(notif.type === 'HEARING_REMINDER_24H') && (
+              <span style={{ color: '#ff4d4f', fontSize: '16px', fontWeight: 'bold' }} title="Urgent Case">
+                ❗
+              </span>
+            )}
           </div>
           <div style={{ fontSize: '12px', color: '#666', marginBottom: '4px' }}>
             {getNotificationDescription(notif)}
@@ -172,9 +182,9 @@ const NotificationDropdown = () => {
               e.stopPropagation();
               markAsRead(notif.id);
             }}
-            style={{ 
-              padding: '4px 8px', 
-              height: 'auto', 
+            style={{
+              padding: '4px 8px',
+              height: 'auto',
               minWidth: 'auto',
               fontSize: '10px',
               borderRadius: '4px',
@@ -192,34 +202,35 @@ const NotificationDropdown = () => {
 
   useEffect(() => {
     if (!initialized && loading) {
-      setItems([{ 
+      setItems([{
         label: (
           <div style={{ padding: '16px', textAlign: 'center' }}>
             Loading notifications...
           </div>
-        ), 
-        key: 'loading' 
+        ),
+        key: 'loading'
       }]);
       return;
     }
 
     if (notifications.length === 0) {
-      setItems([{ 
+      setItems([{
         label: (
           <div style={{ padding: '16px', textAlign: 'center', color: '#999' }}>
             No notifications
           </div>
-        ), 
-        key: 'none' 
+        ),
+        key: 'none'
       }]);
       return;
     }
 
     const scrollableContent = (
       <div style={{ width: '100%' }}>
-        <div 
-          style={{ 
-            maxHeight: '300px', 
+        <div
+          style={{
+            maxWidth: '381px',
+            maxHeight: '300px',
             overflowY: 'auto',
             padding: '4px 8px'
           }}
@@ -233,9 +244,9 @@ const NotificationDropdown = () => {
 
         {/* Show More section - outside scrollable area */}
         {notifications.length < totalCount && (
-          <div 
-            style={{ 
-              padding: '8px 12px', 
+          <div
+            style={{
+              padding: '8px 12px',
               textAlign: 'right',
               borderTop: '1px solid #f0f0f0',
               backgroundColor: '#fafafa'
@@ -249,7 +260,7 @@ const NotificationDropdown = () => {
                   loadMoreNotifications();
                 }
               }}
-              style={{ 
+              style={{
                 fontSize: '12px',
                 color: loading ? '#999' : '#1890ff',
                 cursor: loading ? 'default' : 'pointer',
@@ -271,9 +282,9 @@ const NotificationDropdown = () => {
         )}
 
         {notifications.length >= totalCount && (
-          <div style={{ 
-            padding: '8px 12px', 
-            textAlign: 'center', 
+          <div style={{
+            padding: '8px 12px',
+            textAlign: 'center',
             color: '#999',
             fontSize: '11px',
             borderTop: '1px solid #f0f0f0',
@@ -284,10 +295,10 @@ const NotificationDropdown = () => {
         )}
 
         {/* Footer controls - outside scrollable area */}
-        <div 
-          style={{ 
-            padding: '12px', 
-            borderTop: '2px solid #e8e8e8', 
+        <div
+          style={{
+            padding: '12px',
+            borderTop: '2px solid #e8e8e8',
             backgroundColor: '#f8f9fa'
           }}
           onClick={(e) => e.stopPropagation()}
@@ -315,7 +326,7 @@ const NotificationDropdown = () => {
                     handleMarkSelectedAsRead();
                   }}
                   loading={loading}
-                  style={{ 
+                  style={{
                     fontSize: '11px',
                     padding: '4px 12px',
                     height: 'auto'
@@ -332,7 +343,7 @@ const NotificationDropdown = () => {
                     handleMarkAllAsRead();
                   }}
                   loading={loading}
-                  style={{ 
+                  style={{
                     fontSize: '11px',
                     padding: '4px 12px',
                     height: 'auto'
@@ -353,9 +364,9 @@ const NotificationDropdown = () => {
     }]);
   }, [notifications, selectedNotifications, loading, initialized, totalCount, loadMoreNotifications]);
   return (
-    <Dropdown 
-      menu={{ items }} 
-      trigger={['click']} 
+    <Dropdown
+      menu={{ items }}
+      trigger={['click']}
       placement="bottomLeft"
       onOpenChange={handleDropdownVisibleChange}
       open={dropdownOpen}
