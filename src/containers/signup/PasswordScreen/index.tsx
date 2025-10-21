@@ -20,6 +20,7 @@ const PasswordScreen: React.FC<PasswordScreenProps> = ({ values, errors, onChang
       <div className="form-group">
         <label className="input-label mb-1">Password</label>
         <Input.Password
+          style={{ color: "white"}}
           placeholder="Password"
           iconRender={visible => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
           value={values.password}
@@ -34,6 +35,7 @@ const PasswordScreen: React.FC<PasswordScreenProps> = ({ values, errors, onChang
       <div className="form-group mb-4">
         <label className="input-label mb-1">Confirm Password</label>
         <Input.Password
+          style={{ color: "white"}}
           placeholder="Confirm Password"
           iconRender={visible => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
           value={values.confirmPassword}

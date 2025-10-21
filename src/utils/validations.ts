@@ -110,7 +110,7 @@ export class Validations {
   }) {
     let valid = true;
     let errors: Partial<Record<string, string>> = {};
-    if (!form.cpNumber) { errors.cpNumber = "CP Number is required"; valid = false; }
+    if (!form.cpNumber) { errors.cpNumber = "Case Number is required"; valid = false; }
     if (!form.caseTitle) { errors.caseTitle = "Case Title is required"; valid = false; }
     return { valid, errors };
   }
@@ -127,7 +127,7 @@ export class Validations {
     let errors: Partial<Record<string, string>> = {};
     
     if (!form.cpNumber) { 
-      errors.cpNumber = "CP Number is required"; 
+      errors.cpNumber = "Case Number is required"; 
       valid = false; 
     }
     if (!form.court) { 
