@@ -16,6 +16,123 @@ const UserView: FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [actionLoading, setActionLoading] = useState<boolean>(false);
 
+  const downloadFile = async (filename: string) => {
+    if (!filename) return;
+    try {
+      const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}v1/download?filename=${encodeURIComponent(filename)}`;
+      window.open(url, '_blank');
+    } catch (err) {
+      alert('File could not be loaded.');
+    }
+  };
+
+  const renderFilePreview = (files: string[] | string) => {
+    console.log("renderFilePreview called with:", files);
+    console.log("files type:", typeof files);
+    console.log("files is array:", Array.isArray(files));
+    
+    if (!files) {
+      console.log("No files found, returning no documents message");
+      return <div className="text-muted">No documents uploaded</div>;
+    }
+    
+    const allFiles = Array.isArray(files) ? files : [files];
+    console.log("allFiles:", allFiles);
+    const getFileUrl = (file: string) => `${process.env.NEXT_PUBLIC_API_BASE_URL}v1/download?filename=${encodeURIComponent(file)}`;
+    const isImage = (file: string) => /\.(jpg|jpeg|png|gif)$/i.test(file);
+    const isPdf = (file: string) => /\.(pdf)$/i.test(file);
+    
+    return (
+      <div className="document-preview-container">
+        {allFiles.map((file, idx) => (
+          <div key={file + idx} className="mb-3">
+            <div
+              onClick={async (e) => {
+                e.preventDefault();
+                await downloadFile(file);
+              }}
+              className="document-preview-item"
+              style={{
+                cursor: 'pointer',
+                border: '1px solid #d9d9d9',
+                borderRadius: '8px',
+                padding: '8px',
+                backgroundColor: '#fafafa',
+                transition: 'all 0.2s ease'
+              }}
+              title="Click to open file in new tab"
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#f0f0f0';
+                e.currentTarget.style.borderColor = '#bfbfbf';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#fafafa';
+                e.currentTarget.style.borderColor = '#d9d9d9';
+              }}
+            >
+              {isImage(file) && (
+                <img
+                  src={getFileUrl(file)}
+                  alt={file}
+                  style={{
+                    width: '100%',
+                    maxHeight: '200px',
+                    objectFit: 'contain',
+                    borderRadius: '4px'
+                  }}
+                />
+              )}
+              {isPdf(file) && (
+                <div style={{ 
+                  width: '100%', 
+                  height: '200px',
+                  border: '1px solid #e8e8e8',
+                  borderRadius: '4px',
+                  overflow: 'hidden'
+                }}>
+                  <iframe
+                    src={getFileUrl(file) + '#toolbar=0&navpanes=0&scrollbar=0&page=1'}
+                    title={file}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      border: 'none'
+                    }}
+                    loading="lazy"
+                  />
+                </div>
+              )}
+              {!isImage(file) && !isPdf(file) && (
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  height: '100px',
+                  backgroundColor: '#f8f9fa',
+                  borderRadius: '4px',
+                  flexDirection: 'column',
+                  gap: '8px'
+                }}>
+                  <img src="/icons/file-icon.svg" alt="File" width={32} height={32} />
+                  <span style={{ fontSize: '12px', color: '#666' }}>{file}</span>
+                </div>
+              )}
+              <div style={{ 
+                marginTop: '8px', 
+                fontSize: '12px', 
+                color: '#666',
+                fontWeight: '500',
+                textAlign: 'center'
+              }}>
+                Click to download: {file.split('_').pop() || file}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   const handleApprove = async () => {
     setActionLoading(true);
     
@@ -93,6 +210,9 @@ const UserView: FC = () => {
     if (id) {
       APICalls.getUserById(Number(id))
         .then(data => {
+          console.log("Full user data received:", data);
+          console.log("dptIdDoc field:", data?.dptIdDoc);
+          console.log("dptIdDoc type:", typeof data?.dptIdDoc);
           setUserData(data);
           setLoading(false);
         })
@@ -165,7 +285,7 @@ const UserView: FC = () => {
                 </div>
                 <div className="row mb-3">
                   <span className="col-md-5 labels">Government ID:</span>
-                  <span className="col-md-7 value fw-medium">{userData.governmentId || 'N/A'}</span>
+                  <span className="col-md-7 value fw-medium">{userData.govtID || 'N/A'}</span>
                 </div>
                 <div className="row mb-3">
                   <span className="col-md-5 labels">Email:</span>
@@ -186,10 +306,12 @@ const UserView: FC = () => {
           <div className="col-md-6">
             <div className="row h-100">
               <div className="col-md-4">
-                <span className="labels">Document:</span>
+                <span className="labels">Document(s):</span>
               </div>
               <div className="col-md-8">
-                <div className="document h-100"></div>
+                <div className="document h-100">
+                  {renderFilePreview(userData?.dptIdDoc)}
+                </div>
               </div>
             </div>
           </div>
