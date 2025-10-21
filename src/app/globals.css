@@ -625,7 +625,7 @@ header .user-dropdown .user-wrapper {
 .ant-checkbox-wrapper,
 .ant-checkbox+span,
 .ant-checkbox-inner {
-  font-weight: bold !important;
+  /* font-weight: bold !important; */
 }
 
 .report-checkbox {

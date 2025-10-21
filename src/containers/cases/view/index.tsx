@@ -184,6 +184,10 @@ const CaseViewContainer = () => {
                     return 'Case Entered';
                   case 'UPDATE_CASE':
                     return 'Case Updated';
+                  case 'CREATE_COMMITTEE':
+                    return 'Committee is Created';
+                  case 'UPDATE_COMMITTEE':
+                    return 'Committee Updated';
                   default:
                     return action;
                 }
@@ -303,6 +307,7 @@ const CaseViewContainer = () => {
 
                       return {
                         label: key === 'cpNumber' ? 'Case Number' : 
+                               key === 'tors' ? 'TORs' :
                                key.replace(/([A-Z])/g, ' $1') 
                                  .replace(/^./, str => str.toUpperCase()), 
                         value: Array.isArray(formattedValue) ? formattedValue.join(', ') : String(formattedValue),

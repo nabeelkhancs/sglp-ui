@@ -189,6 +189,8 @@ const CaseViewModal: React.FC<CaseViewModalProps> = ({ open, onClose, caseData }
               displayKey = 'Case Number';
             } else if (key == "uploadedFiles") {
               displayKey = 'Recent Uploaded Files';
+            } else if (key === 'dateReceived') {
+              displayKey = 'Date of Order';
             } else {
               displayKey = key.replace(/([A-Z])/g, ' $1').replace(/^./, (str: string) => str.toUpperCase());
             }

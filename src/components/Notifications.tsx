@@ -1,6 +1,8 @@
 import { Dropdown, Button, Checkbox, Divider } from "antd";
 import { useEffect, useState } from "react";
 import { useNotifications } from "@/contexts/NotificationContext";
+import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 
 
 
@@ -23,12 +25,29 @@ const NotificationDropdown = () => {
   const [items, setItems] = useState<any[]>([]);
   const [selectedNotifications, setSelectedNotifications] = useState<number[]>([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [userType, setUserType] = useState<string | undefined>(undefined);
+  const router = useRouter();
+
+  // Read cookie only on client
+  useEffect(() => {
+    setUserType(Cookies.get("userType"));
+  }, []);
 
   useEffect(() => {
     if (!initialized) {
       refreshNotifications();
     }
   }, [initialized, refreshNotifications]);
+
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     if (initialized) {
+  //       refreshNotifications();
+  //     }
+  //   }, 5000); // 5 seconds
+
+  //   return () => clearInterval(interval);
+  // }, [initialized, refreshNotifications]);
 
   const handleDropdownVisibleChange = async (visible: boolean) => {
     setDropdownOpen(visible);
@@ -63,6 +82,21 @@ const NotificationDropdown = () => {
   const handleMarkAllAsRead = async () => {
     await markAllAsRead();
     setSelectedNotifications([]);
+  };
+
+  const handleNotificationClick = (notif: any) => {
+    if ((notif.type === 'CREATE_CASE' || notif.type === 'UPDATE_CASE') && notif.auditLog?.cpNumber && userType) {
+     
+      if (!notif.isRead) {
+        markAsRead(notif.id);
+      }
+      setDropdownOpen(false);
+      if (userType === "ADMIN") {
+        window.location.href = `/cases?cpNumber=${encodeURIComponent(notif.auditLog.cpNumber)}`;
+      } else {
+        window.location.href = `/cases/submitted?cpNumber=${encodeURIComponent(notif.auditLog.cpNumber)}`;
+      }
+    }
   };
   const getNotificationTitle = (notif: any) => {
     switch (notif.type) {
@@ -110,7 +144,16 @@ const NotificationDropdown = () => {
           }}
           style={{ marginTop: '2px' }}
         />
-        <div style={{ flex: 1 }}>
+        <div 
+          style={{ 
+            flex: 1, 
+            cursor: (notif.type === 'CREATE_CASE' || notif.type === 'UPDATE_CASE') && notif.auditLog?.cpNumber ? 'pointer' : 'default'
+          }}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleNotificationClick(notif);
+          }}
+        >
           <div style={{ fontWeight: 'bold', marginBottom: '4px', color: notif.isRead ? '#666' : '#000' }}>
             {getNotificationTitle(notif)}
           </div>
@@ -148,7 +191,6 @@ const NotificationDropdown = () => {
   );
 
   useEffect(() => {
-    // Show loading state if not initialized or currently loading first page
     if (!initialized && loading) {
       setItems([{ 
         label: (
@@ -161,7 +203,6 @@ const NotificationDropdown = () => {
       return;
     }
 
-    // If no notifications
     if (notifications.length === 0) {
       setItems([{ 
         label: (
@@ -174,10 +215,8 @@ const NotificationDropdown = () => {
       return;
     }
 
-    // Create scrollable container with notifications, show more button, and footer controls
     const scrollableContent = (
       <div style={{ width: '100%' }}>
-        {/* Scrollable notifications area */}
         <div 
           style={{ 
             maxHeight: '300px', 
@@ -231,7 +270,6 @@ const NotificationDropdown = () => {
           </div>
         )}
 
-        {/* All notifications loaded indicator */}
         {notifications.length >= totalCount && (
           <div style={{ 
             padding: '8px 12px', 

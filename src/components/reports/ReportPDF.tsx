@@ -286,11 +286,11 @@ const ReportPDF: React.FC<{ data: ReportData }> = ({ data }) => {
 
         {/* Report Summary */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Report Summary</Text>
-          <View style={styles.filterRow}>
+          <Text style={styles.sectionTitle}>{data.reportTitle || 'Legal Case Management Report'}</Text>
+          {/* <View style={styles.filterRow}>
             <Text style={styles.filterLabel}>Report Title:</Text>
-            <Text style={styles.filterValue}>{data.reportTitle || 'Legal Case Management Report'}</Text>
-          </View>
+            <Text style={styles.filterValue}>{data.reportTitle || ''}</Text>
+          </View> */}
           <View style={styles.filterRow}>
             <Text style={styles.filterLabel}>Case Types:</Text>
             <Text style={styles.filterValue}>
@@ -344,7 +344,7 @@ const ReportPDF: React.FC<{ data: ReportData }> = ({ data }) => {
               </Text>
             </View>
           )}
-          {(data.filters.isDirectionCase !== undefined || data.filters.isCsCalledInPerson !== undefined) && (
+          {/* {(data.filters.isDirectionCase !== undefined || data.filters.isCsCalledInPerson !== undefined) && (
             <View>
               {data.filters.isDirectionCase !== undefined && (
                 <View style={styles.filterRow}>
@@ -363,7 +363,7 @@ const ReportPDF: React.FC<{ data: ReportData }> = ({ data }) => {
                 </View>
               )}
             </View>
-          )}
+          )} */}
         </View>
 
         {/* Cases Table */}

@@ -264,7 +264,7 @@ const CaseForm: React.FC<CaseFormProps> = ({ id }) => {
         router.push("/cases");
       }
     } catch (error: any) {
-      toast.error(error?.message || "Submission failed");
+      toast.error(error?.message || error || "Submission failed");
     } finally {
       setLoading(false);
     }
