@@ -13,6 +13,11 @@ const UsersContainer = () => {
   const [actions, setActions] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState<string>('All');
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
   const columns = [
     {
       title: "Users",
@@ -40,9 +45,11 @@ const UsersContainer = () => {
   const fetchUsers = async (status?: string) => {
     setLoading(true);
     try {
-      const data = await APICalls.getAllUsers(status);
+      const data = await APICalls.getAllUsers(status, currentPage, pageSize);
       setUsers(data?.records || []);
       setActions(data?.actions || []);
+      setTotalRecords(data?.totalRecords || 0);
+      setTotalPages(data?.totalPages || 0);
     } catch (error) {
       toast.error("Failed to fetch users. Please try again later.");
     } finally {
@@ -56,7 +63,7 @@ const UsersContainer = () => {
 
   useEffect(() => {
     fetchUsers(filter);
-  }, [filter]);
+  }, [filter, currentPage, pageSize]);
 
   useEffect(() => {
     console.log("Users fetched:", users);
@@ -80,11 +87,16 @@ const UsersContainer = () => {
                 createdAt: new Date(user.createdAt).toLocaleString(),
               }
             })}
-            // userSelected={true}
             columns={columns}
             filters={true}
             onFilterChange={handleFilterChange}
             filterValue={filter}
+            loading={loading}
+            totalCases={totalRecords}
+            currentPage={currentPage}
+            pageSize={pageSize}
+            onPageChange={setCurrentPage}
+            onPageSizeChange={setPageSize}
           />
         )}
       </div>

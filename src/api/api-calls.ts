@@ -83,9 +83,14 @@ export class APICalls {
     }
   }
 
-  static async getAllUsers(filter?: string) {
+  static async getAllUsers(filter?: string, pageNumber?: number, pageSize?: number) {
     try {
-      const result = await HTTPMethods.get(`${users}?status=${filter || ''}`);
+      const params = new URLSearchParams();
+      if (filter) params.append('status', filter);
+      if (pageNumber) params.append('pageNumber', pageNumber.toString());
+      if (pageSize) params.append('pageSize', pageSize.toString());
+      
+      const result = await HTTPMethods.get(`${users}?${params.toString()}`);
       return result?.data;
     } catch (error) {
       throw error;

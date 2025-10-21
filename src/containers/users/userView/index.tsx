@@ -175,10 +175,10 @@ const UserView: FC = () => {
                   <span className="col-md-5 labels">Designation:</span>
                   <span className="col-md-7 value fw-medium">{userData.designation || 'N/A'}</span>
                 </div>
-                <div className="row mb-3">
+                {/* <div className="row mb-3">
                   <span className="col-md-5 labels">Phone Number:</span>
                   <span className="col-md-7 value fw-medium">{userData.phone || 'N/A'}</span>
-                </div>
+                </div> */}
               </>
             )}
           </div>
