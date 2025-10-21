@@ -1,5 +1,6 @@
 import { AxiosError } from "axios";
 import Cookies from "js-cookie";
+import { toast } from "react-toastify";
 export const errorHandler = (error: AxiosError | any): string => {
   const userType = Cookies.get('userType') || 'ADMIN';
   
@@ -20,7 +21,8 @@ export const errorHandler = (error: AxiosError | any): string => {
         'Bad Request';
       
       console.log('400 Error Message:', errorMessage);
-      return errorMessage;
+      toast.error(errorMessage);
+      return errorMessage; // Return error message since we're showing toast
     }
     
     // Handle 401 Unauthorized
