@@ -3,6 +3,10 @@ import Cookies from "js-cookie";
 export const errorHandler = (error: AxiosError | any): string => {
   const userType = Cookies.get('userType') || 'ADMIN';
   if (error?.response) {
+    if(error.response.status === 400) {
+      return error.response.data?.data?.errors[0]?.message || 'Bad Request';
+    }
+    console.log('Error Response:', error.response);
     if (error.response.status === 401) {
       setTimeout(() => {
         Cookies.remove('token');
