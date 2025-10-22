@@ -30,10 +30,8 @@ export interface SignupPayload {
   name: string;
   cnic: string;
   email: string;
-  govtID: string;
   designation: string;
   roleType: string;
-  deptID: string;
   dptIdDoc: string[];
   password: string;
   confirmPassword: string;

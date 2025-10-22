@@ -45,20 +45,12 @@ export class Validations {
     return { valid, errors };
   }
 
-  static validateEmployerDetails(govtID: string, designation: string, deptID: string, dptIdDoc: string[]) {
+  static validateEmployerDetails( designation: string, dptIdDoc: string[]) {
     let valid = true;
-    let errors: { govtID?: string; designation?: string; deptID?: string; dptIdDoc?: string } = {};
+    let errors: { designation?: string; dptIdDoc?: string } = {};
 
-    if (!govtID) {
-      errors.govtID = "Government ID is required";
-      valid = false;
-    }
     if (!designation) {
       errors.designation = "Designation is required";
-      valid = false;
-    }
-    if (!deptID) {
-      errors.deptID = "Department ID is required";
       valid = false;
     }
     if (!dptIdDoc.length) {

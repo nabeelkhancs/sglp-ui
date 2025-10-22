@@ -7,24 +7,18 @@ const { Dragger } = Upload;
 
 interface EmployerDetailsProps {
   values: {
-    govtID: string;
     designation: string;
     roleType: string;
-    deptID: string;
     dptIdDoc: string[];
   };
   errors: {
-    govtID?: string;
     roleType?: string;
     designation?: string;
-    deptID?: string;
     // dptIdDoc?: string;
   };
   onChange: (data: {
-    govtID: string;
     designation: string;
     roleType: string;
-    deptID: string;
     dptIdDoc: string[];
   }) => void;
   onFileChange: (files: File[]) => void;
@@ -47,70 +41,38 @@ const EmployerDetails: React.FC<EmployerDetailsProps> = ({
   
   return (
     <>
-      <div className="row">
-        <div className="col-md-6">
-          <div className="form-group">
-            <label className="input-label mb-1">Government ID</label>
-            <Input
-              placeholder="Government ID"
-              value={values.govtID}
-              onChange={(e) => onChange({ ...values, govtID: e.target.value })}
-              status={errors.govtID ? "error" : ""}
-            />
-            {errors.govtID && <div style={errorStyle}>{errors.govtID}</div>}
-          </div>
-        </div>
-        <div className="col-md-6">
-          <div className="form-group">
-            <label className="input-label mb-1">Designation</label>
-            <Input
-              placeholder="Designation"
-              value={values.designation}
-              onChange={(e) =>
-                onChange({ ...values, designation: e.target.value })
-              }
-              status={errors.designation ? "error" : ""}
-            />
-            {errors.designation && (
-              <div style={errorStyle}>{errors.designation}</div>
-            )}
-          </div>
-        </div>
-      </div>
 
-      <div className="row">
-        <div className="col-md-6">
-          <div className="form-group">
-            <label className="input-label mb-1">Role Type</label>
-            <Select
-              className="w-100"
-              placeholder="Select"
-              value={values.roleType}
-              onChange={(val) => onChange({ ...values, roleType: val })}
-              options={[
-                { value: "OPERATOR", label: "Case Operator" },
-                { value: "REVIEWER", label: "Review Manager" },
-              ]}
-              status={errors.roleType ? "error" : ""}
-            />
-            {errors.roleType && (
-              <div style={errorStyle}>{errors.roleType}</div>
-            )}
-          </div>
+      <div className="">
+        <div className="form-group">
+          <label className="input-label">Designation</label>
+          <Input
+            placeholder="Designation"
+            value={values.designation}
+            onChange={(e) =>
+              onChange({ ...values, designation: e.target.value })
+            }
+            status={errors.designation ? "error" : ""}
+          />
+          {errors.designation && (
+            <div style={errorStyle}>{errors.designation}</div>
+          )}
         </div>
-        <div className="col-md-6">
-          <div className="form-group">
-            <label className="input-label mb-1">Department ID</label>
-            <Input
-              placeholder="Department ID"
-              value={values.deptID}
-              onChange={(e) =>
-                onChange({ ...values, deptID: e.target.value })
-              }
-              status={errors.deptID ? "error" : ""}
-            />
-            {errors.deptID && <div style={errorStyle}>{errors.deptID}</div>}
-          </div>
+        <div className="form-group">
+          <label className="input-label">Role Type</label>
+          <Select
+            className="w-100"
+            placeholder="Select"
+            value={values.roleType}
+            onChange={(val) => onChange({ ...values, roleType: val })}
+            options={[
+              { value: "OPERATOR", label: "Case Operator" },
+              { value: "REVIEWER", label: "Review Manager" },
+            ]}
+            status={errors.roleType ? "error" : ""}
+          />
+          {errors.roleType && (
+            <div style={errorStyle}>{errors.roleType}</div>
+          )}
         </div>
       </div>
 

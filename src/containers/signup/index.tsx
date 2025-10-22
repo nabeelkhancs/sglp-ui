@@ -21,9 +21,7 @@ const SignupContainer = () => {
     name: "",
     cnic: "",
     email: "",
-    govtID: "",
     designation: "",
-    deptID: "",
     dptIdDoc: [],
     password: "",
     roleType: "",
@@ -41,10 +39,9 @@ const SignupContainer = () => {
   };
 
   const handleEmployerDetails = (data: {
-    govtID: string;
     designation: string;
-    deptID: string;
     dptIdDoc: string[];
+    roleType: string;
   }) => {
     setForm((prev) => ({ ...prev, ...data }));
   };
@@ -63,7 +60,6 @@ const SignupContainer = () => {
       setErrors(errors);
       if (!valid) return;
 
-      // Server-side verification for email & cnic
       try {
         await HTTPMethods.post(verification, {
           email: form.email,
@@ -84,31 +80,12 @@ const SignupContainer = () => {
 
     } else if (step === 2) {
       const { valid, errors } = Validations.validateEmployerDetails(
-        form.govtID,
         form.designation,
-        form.deptID,
         form.dptIdDoc
       );
       setErrors(errors);
       if (!valid) return;
 
-      // Server-side verification for govtID
-      try {
-        await HTTPMethods.post(verification, {
-          govtID: form.govtID,
-        });
-      } catch (err: any) {
-        const newErrors: any = {};
-        if (err?.data?.errors) {
-          err.data.errors.forEach((e: any) => {
-            newErrors[e.type] = e.message;
-          });
-        }
-        setErrors(newErrors);
-        return;
-      }
-
-      // Upload documents
       if (docFiles.length) {
         const formData = new FormData();
         docFiles.forEach((file) => formData.append("file", file));
