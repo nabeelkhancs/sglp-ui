@@ -9,6 +9,7 @@ export const revieweroperatorLogin = `/v1/auth/login`;
 export const logout = `/v1/auth/logout`;
 
 export const forgotPassword = `${commonEP}forgot-password`;
+export const images = `${commonAdminEP}cases/images`;
 export const resetPassword = `${commonEP}reset-password`;
 export const modules = `${commonAdminEP}modules`;
 export const typedata = `${commonAdminEP}general/typedata`;

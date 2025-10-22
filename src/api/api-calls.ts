@@ -1,4 +1,4 @@
-import { cases, permissions, users, verifyEmail, committees, dashboard, casesCourts, notifications, reports, uploadsDetails, casesSearch, casesLogs, calendar, forgotPassword, resetPassword } from "./communications";
+import { images, cases, permissions, users, verifyEmail, committees, dashboard, casesCourts, notifications, reports, uploadsDetails, casesSearch, casesLogs, calendar, forgotPassword, resetPassword } from "./communications";
 import HTTPMethods from "./index";
 
 export class APICalls {
@@ -280,5 +280,15 @@ export class APICalls {
     } catch (error) {
       throw error;
     }  
+  }
+
+  static async deleteCaseImages(caseId: string | number, imageIds: string[]) {
+    try {
+      const url = `${images}?id=${caseId}&imageIds=${imageIds.join(',')}`;
+      const result = await HTTPMethods.deleted(url);
+      return result;
+    } catch (error) {
+      throw error;
+    }
   }
 }

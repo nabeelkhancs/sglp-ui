@@ -3,6 +3,7 @@ import { Button, Checkbox, DatePicker, Input, Select, message, Upload } from "an
 const { TextArea } = Input;
 import { getCourtData, getDepartmentData, getRegionData, getSubjectData, getCaseTypeData, getCaseStatusData } from "@/utils/dropdownData";
 import HTTPMethods from "@/api";
+import { APICalls } from "@/api/api-calls";
 import { cases, uploads } from "@/api/communications";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
@@ -45,6 +46,7 @@ const CaseForm: React.FC<CaseFormProps> = ({ id }) => {
   const [errors, setErrors] = useState<Partial<Record<keyof CaseFormValues, string>>>({});
   const [loading, setLoading] = useState(false);
   const [docFiles, setDocFiles] = useState<UploadFile[]>([]);
+  const [deletedFileIds, setDeletedFileIds] = useState<string[]>([]); // Track deleted file IDs
   const [committeeFile, setCommitteeFile] = useState<UploadFile | null>(null);
   const [uploading, setUploading] = useState(false);
   const [newlyUploadedFiles, setNewlyUploadedFiles] = useState<string[]>([]); // Track newly uploaded files
@@ -84,22 +86,27 @@ const CaseForm: React.FC<CaseFormProps> = ({ id }) => {
   };
 
   const handleFileChange = async (info: any) => {
-    const { fileList } = info;
-    
+    const { fileList, file } = info;
+    // Detect removed files (only for files that have a name and no originFileObj, i.e., already uploaded)
+    if (info.file.status === 'removed' && file && !file.originFileObj && file.name) {
+      setDeletedFileIds(prev => {
+        // Only add if not already present
+        if (!prev.includes(file.name)) {
+          return [...prev, file.name];
+        }
+        return prev;
+      });
+    }
     // Files are already validated in beforeUpload, so we can use fileList directly
     const validFileList = fileList;
-    
     setDocFiles(validFileList);
-    
     const newFiles = validFileList.filter((file: UploadFile) => 
       file.originFileObj && 
       file.status !== 'done' && 
       file.status !== 'error' && 
       file.status !== 'uploading' // Prevent re-uploading files that are already uploading
     );
-    
     if (!newFiles.length) return;
-    
     // Mark files as uploading to prevent duplicate uploads
     const uploadingFileList = validFileList.map((file: UploadFile) => {
       if (newFiles.some((newFile: UploadFile) => newFile.uid === file.uid)) {
@@ -108,21 +115,17 @@ const CaseForm: React.FC<CaseFormProps> = ({ id }) => {
       return file;
     });
     setDocFiles(uploadingFileList);
-    
     setUploading(true);
     const formData = new FormData();
-    
     for (const file of newFiles) {
       if (file.originFileObj) {
         formData.append("file", file.originFileObj);
       }
     }
-    
     try {
       const uploadRes = await HTTPMethods.post(uploads, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      
       const uploadedFilenames = uploadRes?.files?.map((f: any) => f.filename) || [];
       if (uploadedFilenames.length) {
         const updatedFileList = fileList.map((file: UploadFile) => {
@@ -132,19 +135,16 @@ const CaseForm: React.FC<CaseFormProps> = ({ id }) => {
           return file;
         });
         setDocFiles(updatedFileList);
-        
         const existingFiles = form.uploadedFiles || [];
         setForm((prev) => ({ 
           ...prev, 
           uploadedFiles: [...existingFiles, ...uploadedFilenames] 
         }));
-        
         // Track newly uploaded files (only for edit mode)
         if (id) {
           setNewlyUploadedFiles(prev => [...prev, ...uploadedFilenames]);
           setUpdatedFields(prev => new Set(prev).add('uploadedFiles'));
         }
-        
         toast.success("Files uploaded successfully");
       } else {
         toast.error("No files uploaded");
@@ -210,12 +210,20 @@ const CaseForm: React.FC<CaseFormProps> = ({ id }) => {
     e.preventDefault();
     if (!validate()) return;
     setLoading(true);
-    
     let payload: any;
-    
+    // If there are deleted files and we're updating, call the delete API first
+    if (form.id && deletedFileIds.length > 0) {
+      try {
+        await APICalls.deleteCaseImages(form.id, deletedFileIds);
+        setDeletedFileIds([]); // Clear after successful delete
+      } catch (err) {
+        toast.error("Failed to delete removed files");
+        setLoading(false);
+        return;
+      }
+    }
     if (form.id) {
       payload = { id: form.id } as any;
-      
       updatedFields.forEach(field => {
         if (field === 'dateReceived') {
           payload[field] = form.dateReceived ? form.dateReceived.toISOString() : null;
@@ -228,7 +236,6 @@ const CaseForm: React.FC<CaseFormProps> = ({ id }) => {
           payload[field] = form[field];
         }
       });
-      
       console.log('Update payload (only changed fields):', payload);
       console.log('Updated fields:', Array.from(updatedFields));
       console.log('Newly uploaded files:', newlyUploadedFiles);
@@ -240,7 +247,6 @@ const CaseForm: React.FC<CaseFormProps> = ({ id }) => {
       };
       console.log('Create payload (all fields):', payload);
     }
-    
     try {
       if (form.id) {
         await HTTPMethods.put(`${cases}/${form.id}`, payload);
@@ -249,19 +255,18 @@ const CaseForm: React.FC<CaseFormProps> = ({ id }) => {
         await HTTPMethods.post(cases, payload);
         toast.success("Case added successfully");
       }
-      
       setForm(initialForm);
       setOriginalForm(initialForm);
       setUpdatedFields(new Set());
       setNewlyUploadedFiles([]); // Reset newly uploaded files
       setDocFiles([]);
       setCommitteeFile(null);
-      
+      setDeletedFileIds([]);
       const userType = Cookies.get("userType");
       if (userType === "OPERATOR") {
-        router.push("/cases/submitted");
+        window.location.href = "/cases/submitted";
       } else if (userType === "REVIEWER") {
-        router.push("/cases");
+        window.location.href = "/cases";
       }
     } catch (error: any) {
       toast.error(error?.message || error || "Submission failed");
@@ -645,12 +650,12 @@ const CaseForm: React.FC<CaseFormProps> = ({ id }) => {
             <div className="form-group" style={{ minHeight: '160px' }}>
               <label className="input-label">Documents</label>
               <Dragger
+                id="documents"
                 name="file"
                 multiple={true}
                 showUploadList={{
                   showPreviewIcon: true,
                   showRemoveIcon: true,
-                  showDownloadIcon: true,
                 }}
                 beforeUpload={(file) => {
                   // Validate file type - if invalid, prevent adding to file list

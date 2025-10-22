@@ -50,9 +50,7 @@ const CaseViewContainer = () => {
     if (!files) return null;
     const allFiles = Array.isArray(files) ? files : [files];
     let fileList = allFiles;
-    if (allFiles.length > 2) {
-      fileList = allFiles.slice(-2);
-    }
+   
     const getFileUrl = (file: string) => `${process.env.NEXT_PUBLIC_API_BASE_URL}v1/download?filename=${encodeURIComponent(file)}`;
     const isImage = (file: string) => /\.(jpg|jpeg|png|gif)$/i.test(file);
     const isPdf = (file: string) => /\.(pdf)$/i.test(file);
@@ -168,9 +166,6 @@ const CaseViewContainer = () => {
             <span className="fw-medium text-dark">{createdDate || 'Loading...'}</span>
           </div>
 
-          {/* <div className="actions d-flex gap-2">
-            <Button onClick={showModal} className="reject btn-action" icon={<Image src="/icons/reminder-icon.svg" width={18} height={18} alt="Reminder" />}>Reminder</Button>
-          </div> */}
         </div>
 
         <div className="p-4 justify-content-between bg-white">
@@ -188,6 +183,8 @@ const CaseViewContainer = () => {
                     return 'Committee is Created';
                   case 'UPDATE_COMMITTEE':
                     return 'Committee Updated';
+                  case 'DELETE_CASE_IMAGE':
+                    return 'Case Image Deleted';
                   default:
                     return action;
                 }
@@ -197,130 +194,115 @@ const CaseViewContainer = () => {
                 try {
                   const data = JSON.parse(payload);
 
-                  return Object.entries(data)
+                  const entries = Object.entries(data)
                     .filter(([key, value]) => {
                       if (key.startsWith('is')) return false;
                       if (key === 'id') return false;
                       if (value === '' || value === null || value === undefined) return false;
                       if (Array.isArray(value) && value.length === 0) return false;
                       return true;
-                    })
-                    .map(([key, value]) => {
-                      let formattedValue = value;
-                      
-                      // Format date fields
-                      if ((key === 'dateReceived' || key === 'dateOfHearing') && value) {
-                        try {
-                          const date = new Date(value as string);
-                          if (!isNaN(date.getTime())) {
-                            const day = date.getDate().toString().padStart(2, '0');
-                            const month = (date.getMonth() + 1).toString().padStart(2, '0');
-                            const year = date.getFullYear();
-                            formattedValue = `${day}/${month}/${year}`;
-                          }
-                        } catch (e) {}
-                      }
-                      
-                      // Format subjectOfApplication field using getSubjectData
-                      if (key === 'subjectOfApplication' && value) {
-                        try {
-                          const subjectOptions = getSubjectData();
-                          const foundOption = subjectOptions.find(opt => opt.value === value);
-                          formattedValue = foundOption ? foundOption.label : value;
-                        } catch (e) {
-                          // Keep original value if formatting fails
-                        }
-                      }
-                      
-                      // Format caseStatus field using getCaseStatusData
-                      if (key === 'caseStatus' && value) {
-                        try {
-                          const statusOptions = getCaseStatusData();
-                          if (Array.isArray(value)) {
-                            // Handle array of status values
-                            const formattedStatuses = value.map((status: string) => {
-                              const foundOption = statusOptions.find(opt => opt.value === status);
-                              return foundOption ? foundOption.label : status;
-                            });
-                            formattedValue = formattedStatuses;
-                          } else {
-                            // Handle single status value
-                            const foundOption = statusOptions.find(opt => opt.value === value);
-                            formattedValue = foundOption ? foundOption.label : value;
-                          }
-                        } catch (e) {
-                          // Keep original value if formatting fails
-                        }
-                      }
-                      
-                      // Format relativeDepartment field using getDepartmentData
-                      if (key === 'relativeDepartment' && value) {
-                        try {
-                          const departmentOptions = getDepartmentData();
-                          if (Array.isArray(value)) {
-                            const formattedDepartments = value.map((dept: string) => {
-                              const foundOption = departmentOptions.find(opt => opt.value === dept);
-                              return foundOption ? foundOption.label : dept;
-                            });
-                            formattedValue = formattedDepartments;
-                          } else {
-                            const foundOption = departmentOptions.find(opt => opt.value === value);
-                            formattedValue = foundOption ? foundOption.label : value;
-                          }
-                        } catch (e) {
-                          // Keep original value if formatting fails
-                        }
-                      }
-                      
-                      // Format court field using getCourtData
-                      if (key === 'court' && value) {
-                        try {
-                          const courtOptions = getCourtData();
-                          const foundOption = courtOptions.find(opt => opt.value === value);
-                          formattedValue = foundOption ? foundOption.label : value;
-                        } catch (e) {
-                          // Keep original value if formatting fails
-                        }
-                      }
-                      
-                      // Format caseType field using getCaseTypeData
-                      if (key === 'caseType' && value) {
-                        try {
-                          const caseTypeOptions = getCaseTypeData();
-                          const foundOption = caseTypeOptions.find(opt => opt.value === value);
-                          formattedValue = foundOption ? foundOption.label : value;
-                        } catch (e) {
-                          // Keep original value if formatting fails
-                        }
-                      }
-                      
-                      // Format region field using getRegionData
-                      if (key === 'region' && value) {
-                        try {
-                          const regionOptions = getRegionData();
-                          const foundOption = regionOptions.find(opt => opt.value === value);
-                          formattedValue = foundOption ? foundOption.label : value;
-                        } catch (e) {
-                          // Keep original value if formatting fails
-                        }
-                      }
-
-                      return {
-                        label: key === 'cpNumber' ? 'Case Number' : 
-                               key === 'tors' ? 'TORs' :
-                               key.replace(/([A-Z])/g, ' $1') 
-                                 .replace(/^./, str => str.toUpperCase()), 
-                        value: Array.isArray(formattedValue) ? formattedValue.join(', ') : String(formattedValue),
-                        isFile: key === 'uploadedFiles' || key === 'committeeApprovalFile',
-                        originalValue: value
-                      };
                     });
+                    
+                  if (entries.length === 0) return [];
+                  return entries.map(([key, value]) => {
+                    let formattedValue = value;
+                    
+                    if ((key === 'dateReceived' || key === 'dateOfHearing') && value) {
+                      try {
+                        const date = new Date(value as string);
+                        if (!isNaN(date.getTime())) {
+                          const day = date.getDate().toString().padStart(2, '0');
+                          const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                          const year = date.getFullYear();
+                          formattedValue = `${day}/${month}/${year}`;
+                        }
+                      } catch (e) {}
+                    }
+                    
+                    if (key === 'subjectOfApplication' && value) {
+                      try {
+                        const subjectOptions = getSubjectData();
+                        const foundOption = subjectOptions.find(opt => opt.value === value);
+                        formattedValue = foundOption ? foundOption.label : value;
+                      } catch (e) {}
+                    }
+                    
+                    if (key === 'caseStatus' && value) {
+                      try {
+                        const statusOptions = getCaseStatusData();
+                        if (Array.isArray(value)) {
+                          const formattedStatuses = value.map((status: string) => {
+                            const foundOption = statusOptions.find(opt => opt.value === status);
+                            return foundOption ? foundOption.label : status;
+                          });
+                          formattedValue = formattedStatuses;
+                        } else {
+                          const foundOption = statusOptions.find(opt => opt.value === value);
+                          formattedValue = foundOption ? foundOption.label : value;
+                        }
+                      } catch (e) {}
+                    }
+
+                    if (key === 'relativeDepartment' && value) {
+                      try {
+                        const departmentOptions = getDepartmentData();
+                        if (Array.isArray(value)) {
+                          const formattedDepartments = value.map((dept: string) => {
+                            const foundOption = departmentOptions.find(opt => opt.value === dept);
+                            return foundOption ? foundOption.label : dept;
+                          });
+                          formattedValue = formattedDepartments;
+                        } else {
+                          const foundOption = departmentOptions.find(opt => opt.value === value);
+                          formattedValue = foundOption ? foundOption.label : value;
+                        }
+                      } catch (e) {}
+                    }
+                    
+                    if (key === 'court' && value) {
+                      try {
+                        const courtOptions = getCourtData();
+                        const foundOption = courtOptions.find(opt => opt.value === value);
+                        formattedValue = foundOption ? foundOption.label : value;
+                      } catch (e) {}
+                    }
+                    
+                    if (key === 'caseType' && value) {
+                      try {
+                        const caseTypeOptions = getCaseTypeData();
+                        const foundOption = caseTypeOptions.find(opt => opt.value === value);
+                        formattedValue = foundOption ? foundOption.label : value;
+                      } catch (e) {}
+                    }
+                    
+                    if (key === 'region' && value) {
+                      try {
+                        const regionOptions = getRegionData();
+                        const foundOption = regionOptions.find(opt => opt.value === value);
+                        formattedValue = foundOption ? foundOption.label : value;
+                      } catch (e) {}
+                    }
+                    return {
+                      label: key === 'cpNumber' ? 'Case Number' : 
+                             key === 'tors' ? 'TORs' :
+                             key.replace(/([A-Z])/g, ' $1') 
+                               .replace(/^./, str => str.toUpperCase()), 
+                      value: Array.isArray(formattedValue) ? formattedValue.join(', ') : String(formattedValue),
+                      isFile: key === 'uploadedFiles' || key === 'committeeApprovalFile' || key === 'imageIds',
+                      originalValue: value
+                    };
+                  });
                 } catch (e) {
                   console.error('Error parsing payload:', e);
                   return [];
                 }
               };
 
+              const fields = log.payload ? getPayloadFields(log.payload) : [];
+              // If payload is only {id: ...}, hide action/time/username and changes
+              if (!fields || fields.length === 0) {
+                return null;
+              }
               return (
                 <div className="row" key={log.id || index}>
                   <div className="case-card col-md-4">
@@ -349,30 +331,27 @@ const CaseViewContainer = () => {
                   </div>
                   <div className="col-md-3"></div>
                   <div className="case-card col-md-5">
-                    {log.payload && getPayloadFields(log.payload).length > 0 && (
-                      <>
-                        <div className="row mb-2">
-                          <div className="col-md-12">
-                            <h6 className="fw-bold mb-2">Changes:</h6>
+                    <>
+                      <div className="row mb-2">
+                        <div className="col-md-12">
+                          <h6 className="fw-bold mb-2">Changes:</h6>
+                        </div>
+                      </div>
+                      {fields.map((field, fieldIndex) => (
+                        <div className="row mb-2" key={fieldIndex}>
+                          <span className="col-md-5 labels">{field.label}:</span>
+                          <div className="col-md-7">
+                            {field.isFile ? (
+                              renderFileLinks(field.originalValue as string | string[], index)
+                            ) : (
+                              <span className="value fw-medium text-truncate" title={field.value}>
+                                {field.value}
+                              </span>
+                            )}
                           </div>
                         </div>
-                        {(getPayloadFields(log.payload).map((field, fieldIndex) => (
-                            <div className="row mb-2" key={fieldIndex}>
-                              <span className="col-md-5 labels">{field.label}:</span>
-                              <div className="col-md-7">
-                                {field.isFile ? (
-                                  renderFileLinks(field.originalValue as string | string[], index)
-                                ) : (
-                                  <span className="value fw-medium text-truncate" title={field.value}>
-                                    {field.value}
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                          ))
-                        )}
-                      </>
-                    )}
+                      ))}
+                    </>
                   </div>
                   <Divider />
                 </div>
