@@ -38,8 +38,9 @@ const LoginContainer = () => {
     try {
       const res = await HTTPMethods.post(revieweroperatorLogin, { email, password });
       if (res?.data?.token) {
+        console.log("Setting cookies after login",res?.data?.["Role.type"]);
         Cookies.set("token", res?.data?.token);
-        Cookies.set("userType", res?.data?.roleType);
+        Cookies.set("userType", res?.data?.roleType == null ? res?.data?.["Role.type"] || "" : res?.data?.roleType);
         Cookies.set("userName", res?.data?.name);
         Cookies.set("firstPageVisited", res?.data?.firstPageVisited);
         console.log("Login successful response:", res);
