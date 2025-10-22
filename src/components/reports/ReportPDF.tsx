@@ -14,6 +14,21 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     alignItems: 'center',
   },
+  subHeader: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#2c3e50',
+    marginBottom: 5,
+    width: '100%',
+    textAlign: 'center',
+  },
+  subHeader_subtitle: {
+    fontSize: 12,
+    color: '#7f8c8d',
+    marginBottom: 3,
+    width: '100%',
+    textAlign: 'center',
+  },
   logo: {
     width: 50,
     height: 50,
@@ -125,18 +140,14 @@ interface ReportData {
   totalCases: number;
   reportTitle?: string;
   filters: {
-    caseType?: string; // Keep for backward compatibility
+    caseType?: string | string[]; // Support both single and multiple case types
     caseTypes?: string[];
     year: string;
     months: string[];
     isDirectionCase?: boolean; // Keep for backward compatibility
     isCsCalledInPerson?: boolean | string; // Keep for backward compatibility
     reportSections?: {
-      contemptApplication: boolean;
-      committee: boolean;
-      inquiry: boolean;
-      compliance: boolean;
-      callForAppearanceUrgency: boolean;
+      [key: string]: { enabled: boolean; filterType: string };
     };
   };
   cases: Array<{
@@ -283,10 +294,34 @@ const ReportPDF: React.FC<{ data: ReportData }> = ({ data }) => {
             <Text style={styles.date}>Generated on: {new Date().toLocaleDateString()}</Text>
           </View>
         </View>
+        <View style={{ display: 'flex' }}>
+          <Text style={styles.subHeader}>Report of Legal Cases</Text>
+          {data.filters.reportSections && (
+            <Text style={styles.subHeader_subtitle}>
+              ({Object.entries(data.filters.reportSections)
+                .filter(([key, value]) => {
+                  console.log(`Checking ${key}:`, value);
+                  return value?.enabled === true;
+                })
+                .map(([key, _]) => {
+                  switch (key) {
+                    case 'contemptApplication': return 'Contempt Application';
+                    case 'committee': return 'Committee';
+                    case 'inquiryReport': return 'Inquiry';
+                    case 'underCompliance': return 'Compliance';
+                    case 'csCalledInPerson': return 'Call for Appearance and Urgency Cases';
+                    case 'direction': return 'Directions';
+                    default: return key;
+                  }
+                })
+                .join(', ') || 'None Selected'})
+            </Text>
+          )}
+        </View>
 
         {/* Report Summary */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{data.reportTitle || 'Legal Case Management Report'}</Text>
+          <Text style={styles.sectionTitle}>{data.reportTitle || 'Report Summary'}</Text>
           {/* <View style={styles.filterRow}>
             <Text style={styles.filterLabel}>Report Title:</Text>
             <Text style={styles.filterValue}>{data.reportTitle || ''}</Text>
@@ -294,15 +329,17 @@ const ReportPDF: React.FC<{ data: ReportData }> = ({ data }) => {
           <View style={styles.filterRow}>
             <Text style={styles.filterLabel}>Case Types:</Text>
             <Text style={styles.filterValue}>
-              {data.filters.caseTypes && data.filters.caseTypes.length > 0 
-                ? formatCaseTypes(data.filters.caseTypes) 
-                : formatCaseType(data.filters.caseType || 'All Types')}
+              {data.filters.caseTypes && data.filters.caseTypes.length > 0
+                ? formatCaseTypes(data.filters.caseTypes)
+                : Array.isArray(data.filters.caseType) 
+                  ? formatCaseTypes(data.filters.caseType)
+                  : formatCaseType(data.filters.caseType || 'All Types')}
             </Text>
           </View>
           <View style={styles.filterRow}>
             <Text style={styles.filterLabel}>Period Covered:</Text>
             <Text style={styles.filterValue}>
-              {data.filters.months.length > 0 ? 
+              {data.filters.months.length > 0 ?
                 data.filters.months
                   .sort((a, b) => {
                     const monthOrder = [
@@ -311,7 +348,7 @@ const ReportPDF: React.FC<{ data: ReportData }> = ({ data }) => {
                     ];
                     return monthOrder.indexOf(a) - monthOrder.indexOf(b);
                   })
-                  .join(', ') 
+                  .join(', ')
                 : 'All Months'}
             </Text>
           </View>
@@ -323,7 +360,7 @@ const ReportPDF: React.FC<{ data: ReportData }> = ({ data }) => {
             <Text style={styles.filterLabel}>Total Cases:</Text>
             <Text style={styles.filterValue}>{data.totalCases}</Text>
           </View>
-          {data.filters.reportSections && (
+          {/* {data.filters.reportSections && (
             <View style={styles.filterRow}>
               <Text style={styles.filterLabel}>Report Sections:</Text>
               <Text style={styles.filterValue}>
@@ -343,7 +380,7 @@ const ReportPDF: React.FC<{ data: ReportData }> = ({ data }) => {
                   .join(', ') || 'None Selected'}
               </Text>
             </View>
-          )}
+          )} */}
           {/* {(data.filters.isDirectionCase !== undefined || data.filters.isCsCalledInPerson !== undefined) && (
             <View>
               {data.filters.isDirectionCase !== undefined && (

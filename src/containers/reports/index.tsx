@@ -13,12 +13,12 @@ const ReportsContainer: React.FC = () => {
   const [selectedYear, setSelectedYear] = useState<string>("2025");
   const [selectedMonths, setSelectedMonths] = useState<string[]>([]);
   const [reportSections, setReportSections] = useState({
-    contemptApplication: false,
-    committee: false,
-    inquiry: false,
-    compliance: false,
-    callForAppearanceUrgency: false,
-    directions: false,
+    contemptApplication: { enabled: false, filterType: 'subjectData' },
+    committee: { enabled: false, filterType: 'subjectData' },
+    inquiryReport: { enabled: false, filterType: 'subjectData' },
+    underCompliance: { enabled: false, filterType: 'statusData' },
+    csCalledInPerson: { enabled: false, filterType: 'statusData' },
+    direction: { enabled: false, filterType: 'statusData' },
   });
   const [loading, setLoading] = useState<boolean>(false);
   const [reportData, setReportData] = useState<any>(null);
@@ -33,11 +33,14 @@ const ReportsContainer: React.FC = () => {
     setSelectedYear(year.toString());
   };
 
-  const handleReportSectionChange = (section: keyof typeof reportSections) => (e: CheckboxChangeEvent) => {
-    console.log(`${section} checked = ${e.target.checked}`);
+  const handleReportSectionChange = (section: keyof typeof reportSections, filterType: string) => (e: CheckboxChangeEvent) => {
+    console.log(`${String(section)} checked = ${e.target.checked}, filterType = ${filterType}`);
     setReportSections(prev => ({
       ...prev,
-      [section]: e.target.checked
+      [section]: {
+        enabled: e.target.checked,
+        filterType: filterType
+      }
     }));
   };
 
@@ -52,13 +55,12 @@ const ReportsContainer: React.FC = () => {
       return;
     }
 
-    // Use the old API format that was working before
+    // Use multiple case types
     const requestData = {
-      caseType: selectedCaseTypes.length > 0 ? selectedCaseTypes[0] : null, // Take first case type for backward compatibility
+      caseType: selectedCaseTypes.length > 0 ? selectedCaseTypes : null, // Support multiple case types
+      caseTypes: selectedCaseTypes, // Keep for backward compatibility
       year: selectedYear,
       months: selectedMonths,
-      isDirectionCase: reportSections.contemptApplication,
-      isCsCalledInPerson: reportSections.callForAppearanceUrgency,
       // Add new fields for extended functionality
       reportSections,
       selectedCaseTypes,
@@ -86,12 +88,10 @@ const ReportsContainer: React.FC = () => {
         totalCases: 0,
         reportTitle: "Legal Case Management Report",
         filters: {
-          caseType: selectedCaseTypes[0] || 'All Types',
+          caseType: selectedCaseTypes.length > 0 ? selectedCaseTypes : ['All Types'], // Support multiple case types
           caseTypes: selectedCaseTypes,
           year: selectedYear,
           months: selectedMonths,
-          isDirectionCase: reportSections.contemptApplication,
-          isCsCalledInPerson: reportSections.callForAppearanceUrgency,
           reportSections: reportSections
         },
         cases: []
@@ -144,37 +144,37 @@ const ReportsContainer: React.FC = () => {
               <label className="fw-medium text-muted d-block mb-2">Generate Report Sections</label>
               <Checkbox 
                 className="w-100 mb-2 fw-medium report-checkbox" 
-                onChange={handleReportSectionChange('contemptApplication')}
+                onChange={handleReportSectionChange('contemptApplication', 'subjectData')}
               >
                 Contempt Application
               </Checkbox>
               <Checkbox 
                 className="w-100 mb-2 fw-medium report-checkbox" 
-                onChange={handleReportSectionChange('committee')}
+                onChange={handleReportSectionChange('committee', 'subjectData')}
               >
                 Committee
               </Checkbox>
               <Checkbox 
                 className="w-100 mb-2 fw-medium report-checkbox" 
-                onChange={handleReportSectionChange('inquiry')}
+                onChange={handleReportSectionChange('inquiryReport', 'subjectData')}
               >
                 Inquiry
               </Checkbox>
               <Checkbox 
                 className="w-100 mb-2 fw-medium report-checkbox" 
-                onChange={handleReportSectionChange('compliance')}
+                onChange={handleReportSectionChange('underCompliance', 'statusData')}
               >
                 Compliance
               </Checkbox>
               <Checkbox 
                 className="w-100 mb-2 fw-medium report-checkbox" 
-                onChange={handleReportSectionChange('callForAppearanceUrgency')}
+                onChange={handleReportSectionChange('csCalledInPerson', 'statusData')}
               >
                 Call for Appearance and Urgency Cases
               </Checkbox>
               <Checkbox 
                 className="w-100 fw-medium report-checkbox" 
-                onChange={handleReportSectionChange('directions')}
+                onChange={handleReportSectionChange('direction', 'statusData')}
               >
                 Directions
               </Checkbox>
