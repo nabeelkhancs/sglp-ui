@@ -262,12 +262,12 @@ const CaseForm: React.FC<CaseFormProps> = ({ id }) => {
       setDocFiles([]);
       setCommitteeFile(null);
       setDeletedFileIds([]);
-      // const userType = Cookies.get("userType");
-      // if (userType === "OPERATOR") {
+      const userType = Cookies.get("userType");
+       if (userType === "ADMIN") {
+        window.location.href = "/cases";
+      } else {
         window.location.href = "/cases/submitted";
-      // } else if (userType === "REVIEWER") {
-      //   window.location.href = "/cases";
-      // }
+      }
     } catch (error: any) {
       toast.error(error?.message || error || "Submission failed");
     } finally {
