@@ -299,7 +299,7 @@ const CaseViewContainer = () => {
               };
 
               const fields = log.payload ? getPayloadFields(log.payload) : [];
-              // If payload is only {id: ...}, hide action/time/username and changes
+              
               if (!fields || fields.length === 0) {
                 return null;
               }
@@ -344,7 +344,7 @@ const CaseViewContainer = () => {
                             {field.isFile ? (
                               renderFileLinks(field.originalValue as string | string[], index)
                             ) : (
-                              <span className="value fw-medium text-truncate" title={field.value}>
+                              <span className="value fw-medium text-truncate text-break text-wrap" title={field.value}>
                                 {field.value}
                               </span>
                             )}

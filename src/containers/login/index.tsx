@@ -38,12 +38,10 @@ const LoginContainer = () => {
     try {
       const res = await HTTPMethods.post(revieweroperatorLogin, { email, password });
       if (res?.data?.token) {
-        console.log("Setting cookies after login",res?.data?.["Role.type"]);
         Cookies.set("token", res?.data?.token);
         Cookies.set("userType", res?.data?.roleType == null ? res?.data?.["Role.type"] || "" : res?.data?.roleType);
         Cookies.set("userName", res?.data?.name);
         Cookies.set("firstPageVisited", res?.data?.firstPageVisited);
-        console.log("Login successful response:", res);
         toast.success("Login successful!");
         router.push(res?.data?.firstPageVisited);
       } else {
@@ -85,7 +83,7 @@ const LoginContainer = () => {
                 onChange={e => setPassword(e.target.value)}
                 iconRender={visible => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
                 status={passwordError ? "error" : ""}
-                style={{ color: "#fff"}}
+                style={{ color: !passwordError ? "#fff" : '#000'}}
               />
               {passwordError && (
                 <div style={{ color: "#ff4d4f", fontSize: "13px", marginTop: "4px", background: "transparent", padding: 0 }}>{passwordError}</div>
