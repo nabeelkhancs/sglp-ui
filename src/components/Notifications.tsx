@@ -86,6 +86,13 @@ const NotificationDropdown = () => {
   };
 
   const handleNotificationClick = (notif: any) => {
+    if(notif.type === 'CREATE_COMMITTEE' || notif.type === 'UPDATE_COMMITTEE') {
+      if (!notif.isRead) {
+        markAsRead(notif.id);
+      }
+      setDropdownOpen(false);
+      window.location.href = `/committee?cpNumber=${encodeURIComponent(notif.auditLog.cpNumber)}`;
+    }
     if ((notif.type === 'CREATE_CASE' || notif.type === 'UPDATE_CASE' || notif.type === 'HEARING_REMINDER_24H' || notif.type === 'DELETE_CASE_IMAGE') && notif.auditLog?.cpNumber && userType) {
 
       if (!notif.isRead) {

@@ -7,8 +7,11 @@ import HTTPMethods from "@/api";
 import { committees } from "@/api/communications";
 import CommitteeViewModal from "@/components/modal/CommitteeViewModal";
 import { APICalls } from "@/api/api-calls";
+import { useSearchParams } from "next/navigation";
 
 const CommitteeContainer = () => {
+  const searchParams = useSearchParams();
+  const cpNumberParam = searchParams.get('cpNumber') || '';
   const [committeeData, setCommitteeData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [totalData, setTotalData] = useState<number>(0);
@@ -107,7 +110,7 @@ const CommitteeContainer = () => {
   const fetchCommittee = async () => {
     setLoading(true);
     try {
-      const res = await HTTPMethods.get(committees);
+      const res = await HTTPMethods.get(cpNumberParam ? `${committees}?cpNumber=${cpNumberParam}` : committees);
       setCommitteeData(res?.data?.result?.rows.map((r: any) => {
         return {
           ...r,
