@@ -82,7 +82,7 @@ const AnalyticsChart: React.FC<AnalyticsChartProps> = ({ chartData }) => {
     <div className="content-wrapper">
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h5 className="mb-0 fw-semibold">Urgency Status</h5>
-        <div className="d-flex gap-3">
+        <div className="d-flex gap-3" style={{opacity: 0}}>
           <Select defaultValue="2025" style={{ width: 100 }} suffixIcon={<img src='/icons/chevron-down.svg' />}>
             <Select.Option value="2024">2024</Select.Option>
             <Select.Option value="2025">2025</Select.Option>

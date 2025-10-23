@@ -108,7 +108,12 @@ const CommitteeContainer = () => {
     setLoading(true);
     try {
       const res = await HTTPMethods.get(committees);
-      setCommitteeData(res?.data?.result?.rows || []);
+      setCommitteeData(res?.data?.result?.rows.map((r: any) => {
+        return {
+          ...r,
+          status: r.status.charAt(0).toUpperCase() + r.status.slice(1)
+        };
+      }) || []);
       setTotalData(res?.data?.result?.count || 0);
     } catch (e) {
       // Optionally handle error
