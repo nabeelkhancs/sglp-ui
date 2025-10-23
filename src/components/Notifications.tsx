@@ -86,7 +86,7 @@ const NotificationDropdown = () => {
   };
 
   const handleNotificationClick = (notif: any) => {
-    if ((notif.type === 'CREATE_CASE' || notif.type === 'UPDATE_CASE') && notif.auditLog?.cpNumber && userType) {
+    if ((notif.type === 'CREATE_CASE' || notif.type === 'UPDATE_CASE' || notif.type === 'HEARING_REMINDER_24H' || notif.type === 'DELETE_CASE_IMAGE') && notif.auditLog?.cpNumber && userType) {
 
       if (!notif.isRead) {
         markAsRead(notif.id);
@@ -111,6 +111,8 @@ const NotificationDropdown = () => {
         return `Committee Updated`;
       case 'HEARING_REMINDER_24H':
         return `Hearing Reminder: ${notif?.cpNumber || 'Unknown Case'}`;
+      case 'DELETE_CASE_IMAGE':
+        return `Case Image Deleted: ${notif?.auditLog?.cpNumber || 'Unknown Case'}`;
       default:
         return notif.type || 'Notification';
     }
@@ -130,6 +132,8 @@ const NotificationDropdown = () => {
         return `Committee has been updated by ${userName}`;
       case 'HEARING_REMINDER_24H':
         return `Reminder: Hearing for case ${notif?.caseTitle} is scheduled on ${moment(notif?.dateOfHearing).format('MMMM Do YYYY')}`;
+      case 'DELETE_CASE_IMAGE':
+        return `Case image(s) has been deleted of case # ${notif?.auditLog?.cpNumber || 'Unknown Case'} by ${notif?.auditLog?.user?.name || 'Unknown User'}`;
       default:
         return 'New notification';
     }
