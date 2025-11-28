@@ -104,6 +104,7 @@ export class Validations {
     let errors: Partial<Record<string, string>> = {};
     if (!form.cpNumber) { errors.cpNumber = "Case Number is required"; valid = false; }
     if (!form.caseTitle) { errors.caseTitle = "Case Title is required"; valid = false; }
+    if (!form.dateReceived) { errors.dateReceived = "Date Received is required"; valid = false; }
     return { valid, errors };
   }
 
