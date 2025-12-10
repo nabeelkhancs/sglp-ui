@@ -6,7 +6,7 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "start4000": "set PORT=4000 && npm run start",
+    "start4000": "next start -p 4000",
     "lint": "next lint",
     "ngrok": "npx ngrok http 3000 --host-header=localhost"
   },
