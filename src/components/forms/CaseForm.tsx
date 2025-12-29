@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Button, Checkbox, DatePicker, Input, Select, message, Upload } from "antd";
 const { TextArea } = Input;
 import { getCourtData, getDepartmentData, getRegionData, getSubjectData, getCaseTypeData, getCaseStatusData } from "@/utils/dropdownData";
@@ -50,6 +50,8 @@ const CaseForm: React.FC<CaseFormProps> = ({ id }) => {
   const [committeeFile, setCommitteeFile] = useState<UploadFile | null>(null);
   const [uploading, setUploading] = useState(false);
   const [newlyUploadedFiles, setNewlyUploadedFiles] = useState<string[]>([]); // Track newly uploaded files
+  const [tempUploadedFiles, setTempUploadedFiles] = useState<string[]>([]); // Track newly uploaded files
+  const hasSetTempFiles = useRef(false);
 
   const userType = Cookies.get("userType");
 
@@ -87,6 +89,13 @@ const CaseForm: React.FC<CaseFormProps> = ({ id }) => {
 
   const handleFileChange = async (info: any) => {
     const { fileList, file } = info;
+    // Only allow the first trigger to set tempUploadedFiles; block further triggers if already set
+    if (hasSetTempFiles.current) {
+      return;
+    }
+    setTempUploadedFiles(fileList.map((file: UploadFile) => file.name));
+    hasSetTempFiles.current = true;
+
     // Detect removed files (only for files that have a name and no originFileObj, i.e., already uploaded)
     if (info.file.status === 'removed' && file && !file.originFileObj && file.name) {
       setDeletedFileIds(prev => {
