@@ -1,5 +1,6 @@
 // components/AnalyticsChart.tsx
 "use client";
+import Cookies from "js-cookie";
 
 import { Card, Select, Dropdown, Menu } from "antd";
 import { Pie } from "react-chartjs-2";
@@ -12,6 +13,7 @@ import {
 } from "chart.js";
 import { MoreOutlined } from "@ant-design/icons";
 import React from "react";
+import { useRouter } from "next/navigation";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -40,6 +42,26 @@ const defaultChartData = {
     },
   ],
 };
+
+// Define URLs for each chart segment
+const adminChartUrls = [
+  { label: "Directions", url: "/cases?type=directions" },
+  { label: "Call for Appearance", url: "/cases?type=appearance" },
+  { label: "Committee", url: "/committee" },
+  { label: "Contempt", url: "/cases?type=contempt" },
+  { label: "Status of Compliance", url: "/cases?type=compliance" },
+];
+const othersChartUrls = [
+  { label: "Directions", url: "/cases/submitted?type=directions" },
+  { label: "Call for Appearance", url: "/cases/submitted?type=appearance" },
+  { label: "Committee", url: "/committee" },
+  { label: "Contempt", url: "/cases/submitted?type=contempt" },
+  { label: "Status of Compliance", url: "/cases/submitted?type=compliance" },
+];
+
+const userType = Cookies.get("userType");
+
+const chartUrls = userType === 'ADMIN' ? adminChartUrls : othersChartUrls;
 
 const options: ChartOptions<"pie"> = {
   responsive: true,
@@ -75,9 +97,44 @@ const items = [
 
 interface AnalyticsChartProps {
   chartData?: any;
+  urls?: string[];
 }
 
-const AnalyticsChart: React.FC<AnalyticsChartProps> = ({ chartData }) => {
+const AnalyticsChart: React.FC<AnalyticsChartProps> = ({ chartData, urls }) => {
+  const router = useRouter();
+
+  const options: ChartOptions<"pie"> = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: "right",
+        labels: {
+          usePointStyle: true,
+          pointStyle: "circle",
+          boxWidth: 12,
+          padding: 15,
+        },
+      },
+    },
+    onClick: (event, elements, chart) => {
+      if (elements.length > 0) {
+        const index = elements[0].index;
+        const clickedLabel = chart.data.labels?.[index] as string;
+        const urlsToUse = urls || chartUrls;
+        
+        const urlItem = urlsToUse.find((item: any) => 
+          typeof item === 'string' ? false : item.label === clickedLabel
+        );
+        
+        if (urlItem) {
+          const url = typeof urlItem === 'string' ? urlItem : urlItem.url;
+          router.push(url);
+        }
+      }
+    },
+  };
+
   return (
     <div className="content-wrapper">
       <div className="d-flex justify-content-between align-items-center mb-3">
@@ -96,7 +153,7 @@ const AnalyticsChart: React.FC<AnalyticsChartProps> = ({ chartData }) => {
           </Dropdown>
         </div>
       </div>
-      <div className="" style={{ height: '230px' }}>
+      <div className="" style={{ height: '230px', cursor: 'pointer' }}>
         <Pie data={chartData || defaultChartData} options={options} />
       </div>
     </div>
