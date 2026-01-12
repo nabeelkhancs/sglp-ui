@@ -6,6 +6,7 @@ import { cases } from "@/api/communications";
 import { Helpers } from "@/utils/helpers";
 import Image from 'next/image';
 import { DatePicker, Select, Input, Button } from "antd";
+import { FileExcelOutlined } from "@ant-design/icons";
 import {
   getDepartmentData,
   getCourtData,
@@ -36,6 +37,7 @@ const CasesContainer = ({ pageName = "", dashboardLayout = false, caseType = "",
   const [courtFilter, setCourtFilter] = useState<string>("");
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [selectedCase, setSelectedCase] = useState<any>(null);
+  const [exportModalOpen, setExportModalOpen] = useState(false);
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -320,8 +322,16 @@ const CasesContainer = ({ pageName = "", dashboardLayout = false, caseType = "",
   }
   return (
     <div className="cases-page">
-      <div className="page-title mb-3">
+      <div className="page-title mb-3 d-flex justify-content-between">
         <h1 className="mb-0">{pageName || "Cases"}</h1>
+        <button 
+          className="caseview-file-preview-viewall caseview-details-btn-abs" 
+          onClick={() => setExportModalOpen(true)}
+          title="Export Data to Excel"
+        >
+          <FileExcelOutlined style={{ fontSize: 16, color: '#1D6F42' }} />
+          <span className="fw-semibold">Export</span>
+        </button>
       </div>
       <div className="content">
         <DataTable
@@ -349,6 +359,22 @@ const CasesContainer = ({ pageName = "", dashboardLayout = false, caseType = "",
                   open={viewModalOpen}
                   onClose={() => setViewModalOpen(false)}
                   caseData={selectedCase}
+                />
+              );
+            })()}
+          </>
+        )}
+      </React.Suspense>
+      {/* Modal for exporting data */}
+      <React.Suspense fallback={null}>
+        {exportModalOpen && (
+          <>
+            {(() => {
+              const ExportDataModal = require('@/components/modal/ExportDataModal').default;
+              return (
+                <ExportDataModal
+                  open={exportModalOpen}
+                  onClose={() => setExportModalOpen(false)}
                 />
               );
             })()}

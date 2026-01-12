@@ -1,4 +1,22 @@
-import { images, cases, permissions, users, verifyEmail, committees, dashboard, casesCourts, notifications, reports, uploadsDetails, casesSearch, casesLogs, calendar, forgotPassword, resetPassword } from "./communications";
+import { 
+  images, 
+  cases, 
+  permissions, 
+  users, 
+  verifyEmail, 
+  committees, 
+  dashboard, 
+  casesCourts, 
+  notifications, 
+  reports, 
+  uploadsDetails, 
+  casesSearch, 
+  casesLogs, 
+  calendar, 
+  forgotPassword, 
+  resetPassword,
+  caseReport
+} from "./communications";
 import HTTPMethods from "./index";
 
 export class APICalls {
@@ -287,6 +305,15 @@ export class APICalls {
       const url = `${images}?id=${caseId}&imageIds=${imageIds.join(',')}`;
       const result = await HTTPMethods.deleted(url);
       return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async getCaseReport(startDate: string, endDate: string) {
+    try {
+      const result = await HTTPMethods.get(`${caseReport}?startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`);
+      return result?.data;
     } catch (error) {
       throw error;
     }

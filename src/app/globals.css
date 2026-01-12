@@ -1285,3 +1285,36 @@ textarea.ant-input.ant-input-outlined {
   margin-left: 8px;
   font-size: 13px;
 }
+
+.cancel-btn-outline {
+  transition: all 0.3s ease;
+}
+
+.cancel-btn-outline:hover {
+  border-color: #00331A !important;
+  color: #00331A !important;
+}
+
+.ant-picker:focus,
+.ant-picker-focused,
+.ant-picker.ant-picker-range {
+  border-color: #00331A !important;
+  box-shadow: 0 0 0 2px rgba(0, 51, 26, 0.1) !important;
+}
+
+.ant-picker:hover {
+  border-color: #00331A !important;
+}
+
+.ant-picker-cell-selected .ant-picker-cell-inner {
+  background-color: #00331A !important;
+}
+
+.ant-picker-cell-in-range .ant-picker-cell-inner {
+  background-color: rgba(0, 51, 26, 0.1) !important;
+}
+
+.ant-picker-cell-range-start .ant-picker-cell-inner,
+.ant-picker-cell-range-end .ant-picker-cell-inner {
+  background-color: #00331A !important;
+}
