@@ -10,6 +10,7 @@ import {
 } from '@/utils/dropdownData';
 import dayjs from 'dayjs';
 import { useRouter } from 'next/navigation';
+import { PDFDocument } from 'pdf-lib';
 
 import UploadedFilesTable from '../tables/UploadedFilesTable';
 
@@ -23,6 +24,14 @@ export const downloadFile = async (filename: string) => {
   }
 };
 
+const fetchBlob = async (url: string) => {
+  const response = await fetch(url);
+  return await response.blob();
+};
+
+const isImageFile = (file: string) => /\.(jpg|jpeg|png|gif)$/i.test(file);
+const isPdfFile = (file: string) => /\.(pdf)$/i.test(file);
+
 
 interface CaseViewModalProps {
   open: boolean;
@@ -35,6 +44,47 @@ const CaseViewModal: React.FC<CaseViewModalProps> = ({ open, onClose, caseData }
   const router = useRouter();
   const [showAllFiles, setShowAllFiles] = React.useState(false);
   const [showFullRemarks, setShowFullRemarks] = React.useState(false);
+  const [downloading, setDownloading] = React.useState(false);
+
+  const getFileUrl = (file: string) => `${process.env.NEXT_PUBLIC_API_BASE_URL}v1/download?filename=${encodeURIComponent(file)}`;
+
+  const handleDownloadMergedPdf = async () => {
+    const files = Array.isArray(caseData.uploadedFiles) ? caseData.uploadedFiles : (caseData.uploadedFiles ? [caseData.uploadedFiles] : []);
+    if (!files.length) return;
+    
+    setDownloading(true);
+    try {
+      const pdfDoc = await PDFDocument.create();
+      for (const file of files) {
+        const url = getFileUrl(file);
+        if (isImageFile(file)) {
+          const imgBlob = await fetchBlob(url);
+          const imgBytes = await imgBlob.arrayBuffer();
+          let img;
+          if (file.match(/\.png$/i)) {
+            img = await pdfDoc.embedPng(imgBytes);
+          } else {
+            img = await pdfDoc.embedJpg(imgBytes);
+          }
+          const page = pdfDoc.addPage([img.width, img.height]);
+          page.drawImage(img, { x: 0, y: 0, width: img.width, height: img.height });
+        } else if (isPdfFile(file)) {
+          const pdfBlob = await fetchBlob(url);
+          const pdfBytes = await pdfBlob.arrayBuffer();
+          const donorPdf = await PDFDocument.load(pdfBytes);
+          const donorPages = await pdfDoc.copyPages(donorPdf, donorPdf.getPageIndices());
+          donorPages.forEach((p) => pdfDoc.addPage(p));
+        }
+      }
+      const mergedPdfBytes = await pdfDoc.save();
+      const blob = new Blob([new Uint8Array(mergedPdfBytes)], { type: 'application/pdf' });
+      const blobUrl = URL.createObjectURL(blob);
+      window.open(blobUrl, '_blank');
+    } catch (err) {
+      alert('Failed to merge and open PDF.');
+    }
+    setDownloading(false);
+  };
 
   const renderFileLinks = (files: string[] | string) => {
     if (!files) return null;
@@ -43,7 +93,6 @@ const CaseViewModal: React.FC<CaseViewModalProps> = ({ open, onClose, caseData }
     if (allFiles.length > 2) {
       fileList = allFiles.slice(-2);
     }
-    const getFileUrl = (file: string) => `${process.env.NEXT_PUBLIC_API_BASE_URL}v1/download?filename=${encodeURIComponent(file)}`;
     const isImage = (file: string) => /\.(jpg|jpeg|png|gif)$/i.test(file);
     const isPdf = (file: string) => /\.(pdf)$/i.test(file);
     return (
@@ -172,13 +221,23 @@ const CaseViewModal: React.FC<CaseViewModalProps> = ({ open, onClose, caseData }
       <hr />
       {showAllFiles ? (
         <>
-          <button
-            type="button"
-            className="caseview-back-btn"
-            onClick={() => setShowAllFiles(false)}
-          >
-            Back to details
-          </button>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
+            <button
+              type="button"
+              className="caseview-back-btn"
+              onClick={() => setShowAllFiles(false)}
+            >
+              Back to details
+            </button>
+            <button
+              type="button"
+              className="caseview-back-btn"
+              onClick={handleDownloadMergedPdf}
+              disabled={downloading}
+            >
+              {downloading ? 'Preparing PDF...' : 'Download Complete PDF'}
+            </button>
+          </div>
           <UploadedFilesTable files={Array.isArray(caseData.uploadedFiles) ? caseData.uploadedFiles : (caseData.uploadedFiles ? [caseData.uploadedFiles] : [])} />
         </>
       ) : (
