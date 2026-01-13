@@ -6,6 +6,7 @@ export interface CaseFormValues {
   id?: number;
   cpNumber: string;
   caseNumber: string;
+  fileNumber: string;
   caseTitle: string;
   caseType: string;
   court: string;

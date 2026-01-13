@@ -78,6 +78,7 @@ const Header = () => {
   // Custom dropdown content
   const renderDropdown = () => {
     if (!dropdownOpen || searchResults.length === 0) return null;
+    console.log("Rendering dropdown with results:", searchResults);
     return (
       <div className="search-dropdown-list custom-search-dropdown" style={{ position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 1000 }}>
         {searchResults.map((item: any, idx: number) => (
@@ -115,6 +116,7 @@ const Header = () => {
             <div className="search-dropdown-title">{item.caseTitle || 'No Title'}</div>
             <div className="search-dropdown-number">Case #: {item.cpNumber || '-'}</div>
             <div className="search-dropdown-date">Date of Hearing: {item.dateOfHearing ? item.dateOfHearing : '-'}</div>
+            <div className="search-dropdown-date">File Number: {item.fileNumber ? item.fileNumber : '-'}</div>
           </div>
         ))}
       </div>

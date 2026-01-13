@@ -143,6 +143,10 @@ const CaseViewModal: React.FC<CaseViewModalProps> = ({ open, onClose, caseData }
     'isUrgent', 'isCallToAttention','committeeApprovalFile', 'isCsCalledInPerson', 'isContempt', 'isShowCause', "registry", "caseNumber"
   ];
   const getLabel = (key: string, value: any) => {
+    console.log("getLabel called with key:", key, "value:", value);
+    if(value === null || value === undefined || value === '') {
+      value = '-';
+    }
     // Format date fields
     if (key.toLowerCase().includes('date') && value) {
       const d = dayjs(value);

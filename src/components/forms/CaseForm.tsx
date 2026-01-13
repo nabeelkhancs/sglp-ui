@@ -19,6 +19,7 @@ const initialForm: CaseFormValues = {
   cpNumber: "",
   caseNumber: "",
   caseTitle: "",
+  fileNumber: "",
   caseType: "",
   court: "",
   region: "",
@@ -346,6 +347,19 @@ const CaseForm: React.FC<CaseFormProps> = ({ id }) => {
                 disabled={userType === "REVIEWER"}
               />
               {errors.cpNumber && <div className="text-danger fs-12">{errors.cpNumber}</div>}
+            </div>
+          </div>
+          <div className="col-md-3">
+            <div className="form-group">
+              <label className="input-label">File Number</label>
+              <Input
+                placeholder="File Number"
+                value={form.fileNumber}
+                onChange={e => handleChange("fileNumber", e.target.value)}
+                status={errors.fileNumber ? "error" : undefined}
+                disabled={userType === "REVIEWER"}
+              />
+              {errors.fileNumber && <div className="text-danger fs-12">{errors.fileNumber}</div>}
             </div>
           </div>
           <div className="col-md-3">
