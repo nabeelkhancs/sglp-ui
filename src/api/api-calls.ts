@@ -15,7 +15,8 @@ import {
   calendar, 
   forgotPassword, 
   resetPassword,
-  caseReport
+  caseReport,
+  committeeImages
 } from "./communications";
 import HTTPMethods from "./index";
 
@@ -303,6 +304,16 @@ export class APICalls {
   static async deleteCaseImages(caseId: string | number, imageIds: string[]) {
     try {
       const url = `${images}?id=${caseId}&imageIds=${imageIds.join(',')}`;
+      const result = await HTTPMethods.deleted(url);
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+  
+  static async deleteCommitteeImages(committeeId: string | number, imageIds: string[]) {
+    try {
+      const url = `${committeeImages}?id=${committeeId}&imageIds=${imageIds.join(',')}`;
       const result = await HTTPMethods.deleted(url);
       return result;
     } catch (error) {

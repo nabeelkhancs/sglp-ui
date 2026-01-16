@@ -58,6 +58,7 @@ const CommitteeReportForm: React.FC<CommitteeReportFormProps> = ({
   const [files, setFiles] = useState<UploadFile[]>([]);
   const [committeeCases, setCommitteeCases] = useState([]);
   const [uploading, setUploading] = useState(false);
+  // Removed deletedFileIds logic as per new requirements
 
   const validate = (): boolean => {
     const { valid, errors } = Validations.validateCommitteeForm(form);
@@ -133,18 +134,22 @@ const CommitteeReportForm: React.FC<CommitteeReportFormProps> = ({
 
   const handleRemoveFile = (file: UploadFile) => {
     setFiles((prev) => prev.filter((f) => f.uid !== file.uid));
+    // Remove file name from form.uploadedFiles if present
+    setForm((prev) => ({
+      ...prev,
+      uploadedFiles: prev.uploadedFiles.filter((fname) => fname !== file.name)
+    }));
   };
 
   const handleSubmit = async () => {
     if (!validate()) return;
-    
     setLoading(true);
     try {
+      // Only update uploadedFiles array, do not call any delete API
       const payload = {
         ...form,
         uploadedFiles: form.uploadedFiles,
       };
-      
       if (form.id) {
         // Update existing committee report
         await APICalls.updateCommitteeReport(form.id, payload);
@@ -154,10 +159,8 @@ const CommitteeReportForm: React.FC<CommitteeReportFormProps> = ({
         await APICalls.createCommitteeReport(payload);
         toast.success("Committee report created successfully");
       }
-      
       setForm(initialForm);
       setFiles([]);
-      
       // Call onSuccess callback if provided
       if (onSuccess) {
         onSuccess();
